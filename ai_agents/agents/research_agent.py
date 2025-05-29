@@ -9,6 +9,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from typing import List, Optional
 import re # Import the 're' module for regular expressions
+import json # Import the 'json' module
 
 # Import tools from the refactored tools package
 from ai_agents.tools import (
@@ -42,8 +43,20 @@ RESEARCH_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
             "After reviewing the information, you MUST generate a single, valid JSON object as your final answer.\n"
             "This JSON object must strictly adhere to the following schema and contain nothing else:\n"
             "{format_instructions}\n"
-            "Do NOT include any XML-like tags, markdown, or any other text outside of this single JSON object."
-            "Ensure all string fields in the JSON are properly escaped."
+            "Do NOT include any XML-like tags, markdown, or any other text outside of this single JSON object.\n"
+            "Ensure all string fields in the JSON are properly escaped.\n\n"
+            "IMPORTANT INSTRUCTIONS FOR PROSPECT RESEARCH:\n"
+            "If the tool results include an analysis from 'research_prospect_tool' (typically for a LinkedIn URL query):\n"
+            "1. Carefully examine the 'Investment Criteria' section within that tool's output. This section usually has 'yes/no' answers for criteria like:\n"
+            "   - Focus Industry Fit\n"
+            "   - Mission Alignment (healthier, happier humanity; impact-driven)\n"
+            "   - Exciting Solution to a Problem\n"
+            "   - Founded Something Relevant Before\n"
+            "   - Impressive, Relevant Past Experience\n"
+            "   - Exceptionally Smart or Strategic\n"
+            "2. In your 'summary' field for the ResearchResponse, explicitly incorporate a brief overview of how the prospect aligns with these investment criteria based on the tool's findings. For example, mention if they seem to be a good fit based on industry, mission, and founder potential according to the analysis.\n"
+            "3. If the tool's output is missing some criteria or the assessment is unclear, you can note this in your 'search_quality_reflection' or suggest it in 'further_research_suggestions'.\n"
+            "Your main goal is to synthesize all available information, but pay special attention to the structured investment criteria assessment when present."
         ),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -137,15 +150,35 @@ def run_research_cli(query: str):
         # This regex looks for the outermost curly braces and everything in between.
         json_match = re.search(r"\{.*\}", llm_response_str, re.DOTALL)
         if json_match:
-            json_to_parse = json_match.group(0)
-            print(f"Extracted JSON block for parsing: {json_to_parse[:300]}...")
+            json_to_parse = json_match.group(0).strip()
+            print(f"Extracted JSON block for parsing (stripped): {json_to_parse[:300]}...")
         else:
             # If no clear JSON block is found, try to parse the whole string.
             # This might fail if there's extra text, but it's a fallback.
-            json_to_parse = llm_response_str
-            print(f"Warning: No clear JSON block found with regex, attempting to parse whole string: {json_to_parse[:300]}...")
+            json_to_parse = llm_response_str.strip()
+            print(f"Warning: No clear JSON block found with regex, attempting to parse whole string (stripped): {json_to_parse[:300]}...")
 
-        structured_response = ResearchResponse.model_validate_json(json_to_parse, strict=False)
+        try:
+            # Step 1: Parse the string into a Python dict using json.loads with strict=False
+            # This 'strict=False' allows control characters (like unescaped newlines) within strings.
+            parsed_dict = json.loads(json_to_parse, strict=False)
+            
+            # Step 2: Validate the Python dict against the Pydantic model
+            # The 'strict' parameter here would refer to Pydantic's type checking,
+            # which can be left as default (None) or set as needed.
+            structured_response = ResearchResponse.model_validate(parsed_dict)
+            
+        except json.JSONDecodeError as json_err:
+            print(f"JSONDecodeError: Failed to parse JSON string. Error: {json_err}")
+            print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000]}")
+            # Potentially log the full string to a file for debugging if it's very long
+            # with open("failed_json_parse.txt", "w") as f:
+            #     f.write(json_to_parse)
+            # print("Full string logged to failed_json_parse.txt")
+            raise # Re-raise the exception to stop execution or allow further handling
+        except Exception as e: # Catch other Pydantic validation errors or unexpected issues
+            print(f"Error during Pydantic validation or other issue after JSON parsing: {e}")
+            raise
 
         print("\n--- Research Agent Output ---")
         print(f"Query: {query}") # Use the original query as the topic
