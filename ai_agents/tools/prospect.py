@@ -47,7 +47,7 @@ def research_prospect_tool(linkedin_url: str) -> str:
 
     print(f"research_prospect_tool: Calling Relevance AI for URL: {linkedin_url}")
     try:
-        response = requests.post(endpoint, headers=headers, data=json.dumps(payload), timeout=90)
+        response = requests.post(endpoint, headers=headers, data=json.dumps(payload), timeout=60)
         response.raise_for_status()
         response_data = response.json()
 
@@ -60,7 +60,7 @@ def research_prospect_tool(linkedin_url: str) -> str:
             return response.text # Or json.dumps(response_data, indent=2)
 
     except requests.exceptions.Timeout:
-        return f"Error calling Relevance AI: Request timed out (tried 90 seconds) for URL {linkedin_url}. The tool might be long-running."
+        return f"Error calling Relevance AI: Request timed out (tried 60 seconds) for URL {linkedin_url}. The tool might be long-running."
     except requests.exceptions.HTTPError as http_err:
         return f"Error calling Relevance AI: HTTP error occurred: {http_err}. Response: {response.text}"
     except requests.exceptions.RequestException as req_err:

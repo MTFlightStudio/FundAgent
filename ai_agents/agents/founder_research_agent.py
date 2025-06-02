@@ -74,10 +74,14 @@ def get_llm():
     """Initializes and returns the appropriate LLM based on available API keys."""
     if os.getenv("ANTHROPIC_API_KEY"):
         print("Using Anthropic Claude model for founder research.")
-        return ChatAnthropic(model="claude-3-haiku-20240307", temperature=0.2) # Slightly lower temp for structured output
+        return ChatAnthropic(
+            model="claude-3-haiku-20240307", 
+            temperature=0.2, 
+            max_tokens=4000  # Increased max tokens
+        )
     elif os.getenv("OPENAI_API_KEY"):
         print("Using OpenAI GPT model for founder research.")
-        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1) # Or gpt-4-turbo-preview
+        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1)
     else:
         print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.")
         return None
@@ -134,33 +138,62 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
     try:
         raw_agent_output_container = agent_executor.invoke(agent_input)
         
-        llm_response_str = None
+        # Robustly extract the string content from the agent's output
+        llm_response_content_str = None # This will hold the string that potentially contains the JSON
         if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
-            output_content = raw_agent_output_container["output"]
-            if isinstance(output_content, str):
-                llm_response_str = output_content
+            output_payload = raw_agent_output_container["output"]
+            if isinstance(output_payload, str):
+                llm_response_content_str = output_payload
+            elif isinstance(output_payload, list) and output_payload:
+                # Handle cases where output is a list of content blocks (e.g., from Anthropic)
+                first_block = output_payload[0]
+                if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
+                    llm_response_content_str = first_block["text"]
+                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...")
+                else:
+                    # Fallback if the list structure is not as expected
+                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}")
+                    llm_response_content_str = str(output_payload) 
             else:
-                print(f"Warning: Unexpected structure in agent output['output']: {output_content}")
-                llm_response_str = str(output_content)
+                # Fallback for other unexpected structures within output['output']
+                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}")
+                llm_response_content_str = str(output_payload)
+        elif isinstance(raw_agent_output_container, str): # If the agent directly returns a string
+             llm_response_content_str = raw_agent_output_container
         else:
-            print(f"Warning: Unexpected output structure from agent: {raw_agent_output_container}")
-            llm_response_str = str(raw_agent_output_container)
+            # Fallback for other unexpected overall output structures
+            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}")
+            llm_response_content_str = str(raw_agent_output_container)
 
-        if not llm_response_str:
+        if not llm_response_content_str:
             print("Agent did not produce a parsable output string for FounderProfile.")
             return None
 
-        print(f"\nRaw LLM response string (before JSON extraction for FounderProfile): {llm_response_str[:700]}...")
+        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...")
 
-        json_match = re.search(r"\{.*\}", llm_response_str, re.DOTALL)
+        # Attempt to extract the JSON block from the content string
+        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str) # Use [\s\S]* for robust multiline match
         if json_match:
             json_to_parse = json_match.group(0).strip()
             print(f"Extracted JSON block for FounderProfile parsing (stripped): {json_to_parse[:300]}...")
         else:
-            json_to_parse = llm_response_str.strip()
-            print(f"Warning: No clear JSON block found, attempting to parse whole string for FounderProfile (stripped): {json_to_parse[:300]}...")
-
-        parsed_dict = json.loads(json_to_parse, strict=False)
+            # Fallback if regex doesn't find a clear JSON object.
+            temp_str = llm_response_content_str.strip()
+            if temp_str.startswith("```json"):
+                temp_str = temp_str[len("```json"):].strip()
+            if temp_str.endswith("```"):
+                temp_str = temp_str[:-len("```")].strip()
+            
+            if temp_str.startswith("{") and temp_str.endswith("}"):
+                json_to_parse = temp_str
+                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...")
+            else:
+                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...")
+                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+                return None
+        
+        # Parse the JSON string into FounderProfile object
+        parsed_dict = json.loads(json_to_parse, strict=False) # strict=False for leniency with newlines in strings
         founder_profile_obj = FounderProfile.model_validate(parsed_dict)
 
         print("\n--- Founder Profile Research Output ---")

@@ -51,7 +51,11 @@ def get_llm():
     """Initializes and returns the appropriate LLM based on available API keys."""
     if os.getenv("ANTHROPIC_API_KEY"):
         print("Using Anthropic Claude model for company research.")
-        return ChatAnthropic(model="claude-3-haiku-20240307", temperature=0.3)
+        return ChatAnthropic(
+            model="claude-3-haiku-20240307", 
+            temperature=0.3,
+            max_tokens=4000  # Increased max tokens
+        )
     elif os.getenv("OPENAI_API_KEY"):
         print("Using OpenAI GPT model for company research.")
         return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.2) # Or gpt-4-turbo-preview
@@ -90,38 +94,78 @@ def run_company_research_cli(company_name: str) -> Optional[CompanyProfile]:
         handle_parsing_errors=True # Handles errors if LLM output is not perfect JSON for tool calls
     )
 
-    raw_agent_output_container = None # To store raw output for debugging
+    raw_agent_output_container = None
     try:
         raw_agent_output_container = agent_executor.invoke({"input": company_name})
-        
-        llm_response_str = None
-        if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
-            output_content = raw_agent_output_container["output"]
-            if isinstance(output_content, str):
-                llm_response_str = output_content
-            # Add other extraction logic if needed, similar to research_agent.py
-            else:
-                print(f"Warning: Unexpected structure in agent output['output']: {output_content}")
-                llm_response_str = str(output_content) # Fallback
-        else:
-            print(f"Warning: Unexpected output structure from agent: {raw_agent_output_container}")
-            llm_response_str = str(raw_agent_output_container)
 
-        if not llm_response_str:
+        # Robustly extract the string content from the agent's output
+        llm_response_content_str = None # This will hold the string that potentially contains the JSON
+        if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
+            output_payload = raw_agent_output_container["output"]
+            if isinstance(output_payload, str):
+                llm_response_content_str = output_payload
+            elif isinstance(output_payload, list) and output_payload:
+                # Handle cases where output is a list of content blocks (e.g., from Anthropic)
+                first_block = output_payload[0]
+                if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
+                    llm_response_content_str = first_block["text"]
+                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...")
+                else:
+                    # Fallback if the list structure is not as expected
+                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}")
+                    llm_response_content_str = str(output_payload) 
+            else:
+                # Fallback for other unexpected structures within output['output']
+                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}")
+                llm_response_content_str = str(output_payload)
+        elif isinstance(raw_agent_output_container, str): # If the agent directly returns a string
+             llm_response_content_str = raw_agent_output_container
+        else:
+            # Fallback for other unexpected overall output structures
+            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}")
+            llm_response_content_str = str(raw_agent_output_container)
+
+        if not llm_response_content_str:
             print("Agent did not produce a parsable output string for CompanyProfile.")
             return None
 
-        print(f"\nRaw LLM response string (before JSON extraction for CompanyProfile): {llm_response_str[:500]}...")
+        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...")
 
-        # Attempt to extract the JSON block
-        json_match = re.search(r"\{.*\}", llm_response_str, re.DOTALL)
+        # Attempt to extract the JSON block from the content string
+        # The LLM is expected to return JSON, possibly wrapped in some text (e.g. <result> or ```json)
+        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str) # Use [\s\S]* for robust multiline match
         if json_match:
             json_to_parse = json_match.group(0).strip()
             print(f"Extracted JSON block for CompanyProfile parsing (stripped): {json_to_parse[:300]}...")
         else:
-            json_to_parse = llm_response_str.strip() # Fallback if no clear JSON block
-            print(f"Warning: No clear JSON block found, attempting to parse whole string for CompanyProfile (stripped): {json_to_parse[:300]}...")
+            # Fallback if regex doesn't find a clear JSON object.
+            temp_str = llm_response_content_str.strip()
+            # Remove ```json ... ``` markdown
+            if temp_str.startswith("```json"):
+                temp_str = temp_str[len("```json"):].strip()
+            if temp_str.endswith("```"):
+                temp_str = temp_str[:-len("```")].strip()
+            
+            # Remove <result> ... </result> or similar XML-like tags if they are the outermost layer
+            # This part might need adjustment if the XML tags are nested or more complex
+            # For now, we assume simple wrapping if the primary regex fails.
+            # A more robust way for XML/HTML like tags might involve a library if it gets complex.
 
+            if temp_str.startswith("{") and temp_str.endswith("}"):
+                json_to_parse = temp_str
+                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...")
+            else:
+                # Attempt to remove known XML-like tags if they are still present and preventing JSON detection
+                # This is a more aggressive cleanup if the above didn't work.
+                cleaned_further = re.sub(r"<[^>]+>", "", temp_str).strip() # Remove all XML-like tags
+                if cleaned_further.startswith("{") and cleaned_further.endswith("}"):
+                    json_to_parse = cleaned_further
+                    print(f"Warning: Cleaned XML-like tags, attempting to parse: {json_to_parse[:300]}...")
+                else:
+                    print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...")
+                    if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+                    return None
+        
         # Parse the JSON string into CompanyProfile object
         parsed_dict = json.loads(json_to_parse, strict=False) # strict=False for leniency with newlines in strings
         company_profile_obj = CompanyProfile.model_validate(parsed_dict)

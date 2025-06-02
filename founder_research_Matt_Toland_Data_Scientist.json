@@ -1,0 +1,39 @@
+{
+  "name": "Matt Toland",
+  "linkedin_url": "https://uk.linkedin.com/in/matt-toland-b97662151",
+  "role_in_company": "Senior Data Scientist",
+  "background_summary": "Matt Toland is a Senior Data Scientist at FLIGHTSTORY, based in London, UK. He brings experience from previous roles at Accenture and Arvato.",
+  "previous_companies": [
+    {
+      "company_name": "FLIGHTSTORY",
+      "role": "Senior Data Scientist",
+      "duration": null,
+      "description": null,
+      "was_founder": false
+    },
+    {
+      "company_name": "Accenture",
+      "role": null,
+      "duration": null,
+      "description": null,
+      "was_founder": false
+    },
+    {
+      "company_name": "Arvato",
+      "role": null,
+      "duration": null,
+      "description": null,
+      "was_founder": false
+    }
+  ],
+  "education": null,
+  "key_skills_and_expertise": null,
+  "public_speaking_or_content": [
+    {
+      "type": "article",
+      "title": "My work got featured in the Sunday Times",
+      "url": "https://www.linkedin.com/posts/matt-toland-b97662151_my-work-got-featured-in-the-sunday-times-activity-7308795640027754496-2KjJ"
+    }
+  ],
+  "investment_criteria_assessment": null
+}

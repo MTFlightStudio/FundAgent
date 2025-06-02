@@ -1,0 +1,33 @@
+{
+  "company_name": "Perfect Ted Matcha",
+  "website": "https://www.perfectted.com/",
+  "linkedin_url": "https://uk.linkedin.com/company/perfectted",
+  "description": "Perfect Ted is a leading UK brand specializing in matcha products and healthy energy drinks. Their extensive product range includes ceremonial matcha powder, matcha-infused energy drinks, and Nespresso-compatible matcha pods.",
+  "industry": "Food and Beverage Services",
+  "sub_industry": "Matcha and Energy Drinks",
+  "founded_year": 2021,
+  "funding_stage": "Seed",
+  "total_funding_raised": "$1.3M",
+  "funding_rounds_details": [
+    {
+      "round_name": "Seed",
+      "amount_raised": "$1.3M",
+      "date_announced": "2024-09-05T00:00:00Z",
+      "key_investors": [
+        "Steven Bartlett"
+      ]
+    }
+  ],
+  "key_products_services": [
+    "Ceremonial grade matcha powder",
+    "Matcha-infused energy drinks",
+    "Nespresso-compatible matcha pods"
+  ],
+  "business_model": "Selling natural, matcha-based energy products",
+  "target_customer": "Health-conscious consumers looking for a better-for-you energy boost",
+  "key_metrics": null,
+  "team_size": "11-50 employees",
+  "location_hq": "London, UK",
+  "other_locations": null,
+  "mission_statement": "To spread positive energy and help people feel their best selves through natural, matcha-powered products."
+}

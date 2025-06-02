@@ -1,0 +1,33 @@
+{
+  "name": "Matt Toland",
+  "linkedin_url": "https://uk.linkedin.com/in/matt-toland-b97662151",
+  "role_in_company": "Data Scientist",
+  "background_summary": "Matt Toland is a Data Scientist at FLIGHTSTORY, a company that provides data-driven insights for the aviation industry. He has previous experience working at Accenture and Arvato. Beyond his professional work, the available information indicates that Matt has an interest in architecture, design, and the outdoors.",
+  "previous_companies": [
+    {
+      "company_name": "Accenture",
+      "role": null,
+      "duration": null,
+      "description": null,
+      "was_founder": null
+    },
+    {
+      "company_name": "Arvato",
+      "role": null,
+      "duration": null,
+      "description": null,
+      "was_founder": null
+    },
+    {
+      "company_name": "FLIGHTSTORY",
+      "role": "Data Scientist",
+      "duration": null,
+      "description": null,
+      "was_founder": null
+    }
+  ],
+  "education": null,
+  "key_skills_and_expertise": null,
+  "public_speaking_or_content": null,
+  "investment_criteria_assessment": null
+}

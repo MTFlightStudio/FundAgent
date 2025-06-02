@@ -26,20 +26,20 @@ MARKET_INTELLIGENCE_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a specialized market intelligence AI analyst. Your goal is to gather comprehensive information about a given market or industry and structure it into a JSON object adhering to the MarketAnalysis schema provided below.\n"
-            "You MUST use the 'search_tool' and 'wiki_tool' to find the required information. Make multiple targeted search queries to cover all aspects:\n\n"
-            "Required Research Areas:\n"
+            "You are a specialized market intelligence AI analyst. Your goal is to gather comprehensive information about a given market or industry, focusing on a specific GEOGRAPHIC JURISDICTION if provided or implied in the user's query. Structure the output into a JSON object adhering to the MarketAnalysis schema provided below.\n"
+            "If the user's query specifies a region (e.g., 'US market for X', 'European Y industry'), focus your research and analysis on that region. Populate the 'jurisdiction' field in your JSON output accordingly (e.g., 'USA', 'Europe', 'UK'). If no specific jurisdiction is given, attempt to determine the most relevant one from your search results or default to 'Global' and note this in the 'jurisdiction' field.\n\n"
+            "You MUST use the 'search_tool' and 'wiki_tool' to find the required information. Make multiple targeted search queries to cover all aspects for the SPECIFIED JURISDICTION:\n\n"
+            "Required Research Areas (for the specified jurisdiction):\n"
             "1. Market Size and Growth:\n"
-            "   - Search for 'TAM SAM SOM [market name]', '[market name] market size billion'\n"
-            "   - Find Total Addressable Market (TAM), Serviceable Addressable Market (SAM), and Serviceable Obtainable Market (SOM)\n"
-            "   - Look for CAGR (Compound Annual Growth Rate) and growth projections\n"
-            "   - Use terms like 'market forecast', 'industry analysis', 'market research report'\n"
-            "2. Key Market Trends:\n"
-            "   - Search for '[market name] trends 2024-2025', 'future of [market]'\n"
+            "   - Search for '[jurisdiction] [market name] market size', '[market name] market size [jurisdiction] billion'\n"
+            "   - Find Total Addressable Market (TAM), Serviceable Addressable Market (SAM), and Serviceable Obtainable Market (SOM) for the jurisdiction.\n"
+            "   - Look for CAGR (Compound Annual Growth Rate) and growth projections within the jurisdiction.\n"
+            "2. Key Market Trends (within the jurisdiction):\n"
+            "   - Search for '[jurisdiction] [market name] trends 2024-2025', 'future of [market] in [jurisdiction]'\n"
             "   - Look for technological shifts, consumer behavior changes, emerging segments\n"
-            "3. Competitive Landscape:\n"
-            "   - Search for 'top companies [market name]', '[market name] competitive landscape'\n"
-            "   - Find 3-5 key competitors with their funding amounts, strengths, and positioning\n"
+            "3. Competitive Landscape (within the jurisdiction):\n"
+            "   - Search for 'top companies [market name] [jurisdiction]', '[market name] competitive landscape [jurisdiction]'\n"
+            "   - Find 3-5 key competitors active in the jurisdiction with their funding, strengths, and positioning\n"
             "   - Look for market share data, competitive advantages, and differentiation\n"
             "4. Market Timing and Maturity:\n"
             "   - Assess if the market is in early/growth/mature/declining phase\n"
@@ -47,8 +47,8 @@ MARKET_INTELLIGENCE_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
             "5. Barriers to Entry:\n"
             "   - Search for 'barriers to entry [market name]', 'challenges [market name] startups'\n"
             "   - Consider regulatory, capital, technical, and network effect barriers\n"
-            "6. Regulatory Environment:\n"
-            "   - Search for '[market name] regulations', 'compliance requirements [market]'\n"
+            "6. Regulatory Environment (specific to the jurisdiction):\n"
+            "   - Search for '[jurisdiction] [market name] regulations', 'compliance requirements [market] [jurisdiction]'\n"
             "   - Look for government policies, licensing requirements, data protection laws\n\n"
             "Search Strategy Tips:\n"
             "- Start with Wikipedia for industry overview and established facts\n"
@@ -56,7 +56,7 @@ MARKET_INTELLIGENCE_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
             "- Look for credible sources: research firms (Gartner, McKinsey, CB Insights), industry reports, news outlets\n"
             "- Cross-reference multiple sources for market size estimates\n"
             "- Be specific with competitor searches to get funding and positioning data\n\n"
-            "After gathering comprehensive information, your FINAL output MUST be a single, valid JSON object that strictly conforms to the MarketAnalysis schema below. Do NOT include any other text, explanations, or markdown outside of this JSON object.\n"
+            "After gathering comprehensive information, your FINAL output MUST be a single, valid JSON object that strictly conforms to the MarketAnalysis schema below, including the 'jurisdiction' field. Do NOT include any other text, explanations, or markdown outside of this JSON object.\n"
             "If specific information cannot be found, set its value to null or provide your best estimate with a note about uncertainty.\n"
             "For market size figures, always include the currency (e.g., '$10B', '€5M').\n"
             "For growth rates, use percentages (e.g., '25%').\n"
@@ -72,9 +72,16 @@ def get_llm():
     """Initializes and returns the appropriate LLM based on available API keys."""
     if os.getenv("ANTHROPIC_API_KEY"):
         print("Using Anthropic Claude model for market intelligence.")
-        return ChatAnthropic(model="claude-3-haiku-20240307", temperature=0.2)
+        return ChatAnthropic(
+            model="claude-3-haiku-20240307", 
+            temperature=0.2,
+            max_tokens=4000  # Increased max tokens
+        )
     elif os.getenv("OPENAI_API_KEY"):
         print("Using OpenAI GPT model for market intelligence.")
+        # OpenAI models in Langchain usually handle max tokens differently or have higher defaults
+        # For GPT-3.5-turbo, the max output is typically around 4096 tokens.
+        # If using GPT-4-turbo, it's much higher.
         return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.2)
     else:
         print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.")
@@ -130,35 +137,71 @@ def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnaly
     try:
         raw_agent_output_container = agent_executor.invoke({"input": market_or_industry})
         
-        llm_response_str = None
+        # Robustly extract the string content from the agent's output
+        llm_response_content_str = None # This will hold the string that potentially contains the JSON
         if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
-            output_content = raw_agent_output_container["output"]
-            if isinstance(output_content, str):
-                llm_response_str = output_content
+            output_payload = raw_agent_output_container["output"]
+            if isinstance(output_payload, str):
+                llm_response_content_str = output_payload
+            elif isinstance(output_payload, list) and output_payload:
+                # Handle cases where output is a list of content blocks (e.g., from Anthropic)
+                first_block = output_payload[0]
+                if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
+                    llm_response_content_str = first_block["text"]
+                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...")
+                else:
+                    # Fallback if the list structure is not as expected
+                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}")
+                    llm_response_content_str = str(output_payload) 
             else:
-                print(f"Warning: Unexpected structure in agent output['output']: {output_content}")
-                llm_response_str = str(output_content)
+                # Fallback for other unexpected structures within output['output']
+                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}")
+                llm_response_content_str = str(output_payload)
+        elif isinstance(raw_agent_output_container, str): # If the agent directly returns a string
+             llm_response_content_str = raw_agent_output_container
         else:
-            print(f"Warning: Unexpected output structure from agent: {raw_agent_output_container}")
-            llm_response_str = str(raw_agent_output_container)
+            # Fallback for other unexpected overall output structures
+            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}")
+            llm_response_content_str = str(raw_agent_output_container)
 
-        if not llm_response_str:
+        if not llm_response_content_str:
             print("Agent did not produce a parsable output string for MarketAnalysis.")
             return None
 
-        print(f"\nRaw LLM response string (before JSON extraction for MarketAnalysis): {llm_response_str[:500]}...")
+        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...")
 
-        # Extract JSON block using regex
-        json_match = re.search(r"\{.*\}", llm_response_str, re.DOTALL)
+        # Attempt to extract the JSON block from the content string
+        # The LLM is expected to return JSON, possibly wrapped in some text (e.g. <result> or ```json)
+        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str) # Use [\s\S]* for robust multiline match
         if json_match:
             json_to_parse = json_match.group(0).strip()
             print(f"Extracted JSON block for MarketAnalysis parsing (stripped): {json_to_parse[:300]}...")
         else:
-            json_to_parse = llm_response_str.strip()
-            print(f"Warning: No clear JSON block found, attempting to parse whole string for MarketAnalysis (stripped): {json_to_parse[:300]}...")
+            # Fallback if regex doesn't find a clear JSON object.
+            # This might happen if the LLM fails to produce JSON or if the wrapping is unusual.
+            # Attempt to clean common markdown/XML-like wrappers.
+            temp_str = llm_response_content_str.strip()
+            # Remove ```json ... ``` markdown
+            if temp_str.startswith("```json"):
+                temp_str = temp_str[len("```json"):].strip()
+            if temp_str.endswith("```"):
+                temp_str = temp_str[:-len("```")].strip()
+            
+            # Remove <result> ... </result> or similar XML-like tags if they are the outermost layer
+            # A more robust way for XML/HTML like tags might involve a library if it gets complex,
+            # but for simple cases, string methods or simpler regex might work.
+            # For now, we rely on the primary regex or a simple check if the cleaned string is JSON.
 
+            if temp_str.startswith("{") and temp_str.endswith("}"):
+                json_to_parse = temp_str
+                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...")
+            else:
+                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...")
+                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+                return None
+        
         # Parse the JSON string into MarketAnalysis object
-        parsed_dict = json.loads(json_to_parse, strict=False)
+        parsed_dict = json.loads(json_to_parse, strict=False) # strict=False for leniency with newlines in strings
         market_analysis_obj = MarketAnalysis.model_validate(parsed_dict)
 
         print("\n--- Market Intelligence Output ---")

@@ -82,9 +82,10 @@ class CompetitorInfo(BaseModel):
     funding_raised: Optional[str] = Field(None, description="Funding raised by the competitor, if known.")
 
 class MarketAnalysis(BaseModel):
-    """Analysis of the market the company operates in."""
-    industry_overview: Optional[str] = Field(None, description="General overview of the industry.")
-    target_market_segment: Optional[str] = Field(None, description="Specific segment of the market the company is targeting.")
+    """Comprehensive analysis of a specific market or industry."""
+    jurisdiction: Optional[str] = Field(None, description="The specific geographic region or country this analysis pertains to (e.g., 'USA', 'Europe', 'Global'). If not specified, analysis may be global or based on best available data.")
+    industry_overview: Optional[str] = Field(None, description="General overview of the industry, its definition, and scope.")
+    target_market_segment: Optional[str] = Field(None, description="Specific customer segments the market targets.")
     market_size_tam: Optional[str] = Field(None, description="Total Addressable Market (TAM) estimate (e.g., '$10B').")
     market_size_sam: Optional[str] = Field(None, description="Serviceable Addressable Market (SAM) estimate (e.g., '$1B').")
     market_size_som: Optional[str] = Field(None, description="Serviceable Obtainable Market (SOM) estimate (e.g., '$100M').")
