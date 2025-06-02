@@ -2,10 +2,13 @@ import os
 import requests
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from typing import Optional
+from datetime import datetime
+import dateutil.parser
 
 load_dotenv()
 
-HUBSPOT_API_KEY = os.getenv("HUBSPOT_API_KEY") # Or HUBSPOT_TOKEN based on your .env
+HUBSPOT_ACCESS_TOKEN = os.getenv("HUBSPOT_ACCESS_TOKEN")
 HUBSPOT_BASE_URL = "https://api.hubapi.com"
 
 # Define common HubSpot API errors that might be retriable
@@ -36,13 +39,13 @@ hubspot_retry_decorator = retry(
 )
 
 def _make_request(method, endpoint, params=None, json_data=None, headers=None):
-    if not HUBSPOT_API_KEY:
-        print("Error: HUBSPOT_API_KEY not set in .env")
-        raise ValueError("HubSpot API key not configured.")
+    if not HUBSPOT_ACCESS_TOKEN:
+        print("Error: HUBSPOT_ACCESS_TOKEN not set in .env")
+        raise ValueError("HubSpot Access Token not configured.")
 
     url = f"{HUBSPOT_BASE_URL}{endpoint}"
     default_headers = {
-        "Authorization": f"Bearer {HUBSPOT_API_KEY}",
+        "Authorization": f"Bearer {HUBSPOT_ACCESS_TOKEN}",
         "Content-Type": "application/json"
     }
     if headers:
@@ -124,6 +127,85 @@ def create_contact(email: str, firstname: Optional[str] = None, lastname: Option
         print(f"HTTP error creating contact {email}: {e.response.status_code} - {e.response.text}")
         return None
 
+@hubspot_retry_decorator
+def list_objects(
+    object_type: str,
+    properties: Optional[list[str]] = None,
+    limit: int = 100,
+    after: Optional[str] = None,
+) -> dict:
+    """
+    Generic pager for HubSpot CRM objects (v3), e.g. feedback_submissions.
+    """
+    endpoint = f"/crm/v3/objects/{object_type}"
+    params = {"limit": limit, "archived": "false"}
+    if after:
+        params["after"] = after
+    if properties:
+        params["properties"] = ",".join(properties)
+    return _make_request("GET", endpoint, params=params)
+
+
+def get_feedback_submissions(
+    since: Optional[datetime] = None,
+    survey_name_filter: Optional[str] = None,
+) -> list[dict]:
+    """
+    Returns survey / feedback submissions after `since` (UTC) and optionally
+    whose survey name *contains* `survey_name_filter` (case-insensitive).
+    """
+    props = [
+        "hs_object_id",
+        "hs_createdate",
+        "hs_survey_name",
+        "hs_feedback_submitted",
+        "hs_sentiment_score",
+    ]
+    submissions, after = [], None
+
+    while True:
+        page = list_objects("feedback_submissions", properties=props, after=after)
+        for item in page.get("results", []):
+            created = dateutil.parser.isoparse(item["properties"]["hs_createdate"])
+            if since and created < since:
+                continue
+            if survey_name_filter and survey_name_filter.lower() not in (
+                item["properties"].get("hs_survey_name", "").lower()
+            ):
+                continue
+            submissions.append(item)
+        after = page.get("paging", {}).get("next", {}).get("after")
+        if not after:
+            break
+
+    return submissions
+
+@hubspot_retry_decorator
+def get_deal_by_id(deal_id: str, properties: Optional[list[str]] = None) -> Optional[dict]:
+    """Fetches a single deal by its ID from HubSpot."""
+    print(f"HubSpot: Fetching deal by ID: {deal_id}")
+    endpoint = f"/crm/v3/objects/deals/{deal_id}"
+    
+    params = {}
+    if properties:
+        params["properties"] = ",".join(properties)
+    else:
+        # Default properties if none are specified
+        params["properties"] = "dealname,amount,dealstage,hs_object_id"
+
+    try:
+        data = _make_request("GET", endpoint, params=params)
+        return data.get("properties") # Or data if you need the full object with ID, createdDate etc.
+    except HubSpotAPIError as e:
+        if e.status_code == 404: # Not found
+            print(f"HubSpot: Deal {deal_id} not found.")
+            return None
+        print(f"HubSpot API error getting deal {deal_id}: {e}")
+        return None
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error getting deal {deal_id}: {e.response.status_code} - {e.response.text}")
+        return None
+
 # Add other HubSpot functions like create_deal, send_email_transactional etc.
 # decorated with @hubspot_retry_decorator as needed.
 
@@ -162,8 +244,8 @@ def create_contact(email: str, firstname: Optional[str] = None, lastname: Option
 
 if __name__ == "__main__":
     print("Testing HubSpot client...")
-    if not HUBSPOT_API_KEY:
-        print("HUBSPOT_API_KEY not set. Cannot run HubSpot tests.")
+    if not HUBSPOT_ACCESS_TOKEN:
+        print("HUBSPOT_ACCESS_TOKEN not set. Cannot run HubSpot tests.")
     else:
         # Test get_contact_by_email
         test_email_exists = "test@hubspot.com" # Use an email you know exists in your portal for testing
@@ -189,4 +271,19 @@ if __name__ == "__main__":
         # if created_contact:
         #     print(f"Created contact: {created_contact.get('hs_object_id')}, {created_contact.get('email')}")
         # else:
-        #     print(f"Failed to create contact {test_email_not_exists} or it already existed.") 
+        #     print(f"Failed to create contact {test_email_not_exists} or it already existed.")
+
+        # Test get_deal_by_id
+        # !!! REPLACE 'YOUR_TEST_DEAL_ID_HERE' WITH AN ACTUAL DEAL ID FROM YOUR PORTAL !!!
+        TEST_DEAL_ID = "227364270285" 
+        if TEST_DEAL_ID != "YOUR_TEST_DEAL_ID_HERE":
+            print(f"\nAttempting to get deal: {TEST_DEAL_ID}")
+            # You can specify properties: deal = get_deal_by_id(TEST_DEAL_ID, properties=["dealname", "amount", "hubspot_owner_id"])
+            deal = get_deal_by_id(TEST_DEAL_ID)
+            if deal:
+                print(f"Found deal: {deal}")
+                # print(f"Found deal: ID {deal.get('hs_object_id')}, Name: {deal.get('dealname')}, Amount: {deal.get('amount')}, Stage: {deal.get('dealstage')}")
+            else:
+                print(f"Deal {TEST_DEAL_ID} not found or error occurred.")
+        else:
+            print("\nSkipping get_deal_by_id test: TEST_DEAL_ID not set in the script.") 

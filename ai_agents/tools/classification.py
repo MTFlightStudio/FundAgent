@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
@@ -22,6 +22,7 @@ class EmailClassification(BaseModel):
     extracted_person_name: Optional[str] = Field(None, description="Name of the key person mentioned (e.g., applicant, sender, contact person).")
     funding_ask_amount_usd: Optional[float] = Field(None, description="If it's an investment opportunity, the amount of funding asked for in USD. Extract only the number.")
     job_title_mentioned: Optional[str] = Field(None, description="If it's a job application or recruitment, the job title mentioned.")
+    recent_survey_responses: Optional[List[dict]] = Field(None, description="Recent survey responses related to the sender or company, if available.")
 
 # --- LLM and Parser Setup ---
 llm = None
