@@ -123,7 +123,7 @@ def create_contact(email: str, firstname: Optional[str] = None, lastname: Option
             print(f"HubSpot: Contact {email} might already exist (409 Conflict). Attempting to fetch.")
             return get_contact_by_email(email) # Try fetching instead
         print(f"HubSpot API error creating contact {email}: {e}")
-        return None # Or raise e
+        return None
     except requests.exceptions.HTTPError as e:
         print(f"HTTP error creating contact {email}: {e.response.status_code} - {e.response.text}")
         return None
@@ -191,20 +191,23 @@ def get_deal_by_id(deal_id: str, properties: Optional[list[str]] = None) -> Opti
     if properties:
         params["properties"] = ",".join(properties)
     else:
-        # Default properties if none are specified
+        # Default properties if none are specified from your provided file
         params["properties"] = "dealname,amount,dealstage,hs_object_id"
 
     try:
-        data = _make_request("GET", endpoint, params=params)
-        return data.get("properties") # Or data if you need the full object with ID, createdDate etc.
+        api_response_data = _make_request("GET", endpoint, params=params)
+        return api_response_data
+        
     except HubSpotAPIError as e:
-        if e.status_code == 404: # Not found
-            print(f"HubSpot: Deal {deal_id} not found.")
-            return None
-        print(f"HubSpot API error getting deal {deal_id}: {e}")
+        print(f"HubSpot API error fetching deal {deal_id}: {e.status_code} - {e.message}")
+        if e.status_code == 404:
+            print(f"HubSpot: Deal with ID {deal_id} specifically not found (404).")
         return None
-    except requests.exceptions.HTTPError as e:
-        print(f"HTTP error getting deal {deal_id}: {e.response.status_code} - {e.response.text}")
+    except requests.exceptions.HTTPError as e: 
+        print(f"HTTP error fetching deal {deal_id}: {e.response.status_code} - {e.response.text}")
+        return None
+    except Exception as e: 
+        print(f"An unexpected error occurred while fetching deal {deal_id}: {type(e).__name__} - {str(e)}")
         return None
 
 @hubspot_retry_decorator
@@ -284,7 +287,7 @@ def get_company_by_id(company_id: str, properties: Optional[list[str]] = None) -
         print(f"HubSpot API error getting company {company_id}: {e}")
         return None
     except requests.exceptions.HTTPError as e:
-        print(f"HTTP error getting company {company_id}: {e.response.status_code} - {e.response.text}")
+        print(f"HTTP error fetching company by ID {company_id}: {e.response.status_code} - {e.response.text}")
         return None
 
 @hubspot_retry_decorator
@@ -421,6 +424,34 @@ def parse_form_submission_values(submission: dict) -> dict:
     
     return parsed
 
+@hubspot_retry_decorator
+def get_pipeline_stages(pipeline_id: str, object_type: str = "deals") -> list[dict]:
+    """
+    Fetches all stages for a given pipeline.
+
+    Args:
+        pipeline_id: The ID of the pipeline.
+        object_type: The type of object the pipeline is for (e.g., "deals", "tickets").
+
+    Returns:
+        A list of stage dictionaries, where each dictionary includes 'id' and 'label'.
+        Returns an empty list if an error occurs or stages cannot be fetched.
+    """
+    print(f"HubSpot: Fetching stages for {object_type} pipeline ID: {pipeline_id}")
+    endpoint = f"/crm/v3/pipelines/{object_type}/{pipeline_id}/stages"
+    try:
+        data = _make_request("GET", endpoint)
+        return data.get("results", [])
+    except HubSpotAPIError as e:
+        print(f"HubSpot API error fetching stages for pipeline {pipeline_id}: {e}")
+        return []
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error fetching stages for pipeline {pipeline_id}: {e.response.status_code} - {e.response.text}")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred while fetching stages for pipeline {pipeline_id}: {e}")
+        return []
+
 # Renaming and modifying this function to focus on deal, contact, and company properties
 def get_deal_with_associated_data(deal_id: str) -> dict:
     """
@@ -433,46 +464,84 @@ def get_deal_with_associated_data(deal_id: str) -> dict:
         Dictionary containing deal info, contacts, and companies with their properties.
     """
     result = {
-        "deal": None,
+        "deal": {}, # Initialize deal as an empty dict
         "associated_contacts": [],
         "associated_companies": []
     }
     
     # Define properties to fetch for each object type
-    # Add any other standard or custom properties you deem important
     deal_properties_to_fetch = [
-        "dealname", "amount", "dealstage", "hs_object_id", "createdate", 
-        "hubspot_owner_id", "closedate", "pipeline", "hs_lastmodifieddate",
-        # Add other deal properties you need
+        "dealname", "amount", "dealstage", "pipeline", "closedate", 
+        "hubspot_owner_id", "hs_object_id", "createdate", "hs_lastmodifieddate",
+        "request" 
     ]
     
-    # !!! REPLACE THESE CUSTOM PROPERTY NAMES WITH YOUR ACTUAL INTERNAL HUBSPOT NAMES !!!
+    # !!! Use the ACTUAL INTERNAL HUBSPOT NAMES found from the script output !!!
     contact_custom_properties = [
-        "linkedin_profile_url",     # Placeholder for "Your LinkedIn or other social profile URL"
-        "uk_work_eligibility",      # Placeholder for "Do the founders have the right to work in the UK?"
-        # Add any other relevant custom contact property internal names from your form
+        "hs_linkedin_url",                                      # For "Your LinkedIn or other social profile URL"
+        "attach_link_to_all_founders_linkedin_profiles",      # For "Attach link to other founders LinkedIn profiles"
+        "do_you_and_the_founders_have_the_right_to_work_in_the_uk_", # For "Do the founders have the right to work in the UK?"
+        "list_name_of_all_founders",                          # For "List name of all founders" (often a contact property)
     ]
     contact_properties_to_fetch = [
         "email", "firstname", "lastname", "hs_object_id", "company", "phone", 
-        "lifecyclestage", "hs_createdate", "lastmodifieddate", "jobtitle",
-        # Add other standard contact properties
+        "lifecyclestage", "hs_createdate", "lastmodifieddate", "jobtitle", "website", # Added website here as it's standard
     ] + contact_custom_properties
     
     company_properties_to_fetch = [
         "name", "domain", "hs_object_id", "industry", "city", "country", 
-        "description", "numberofemployees", "lifecyclestage", "hs_createdate", 
+        "description", 
+        "numberofemployees", # Standard HubSpot property
+        "number_of_employees", # Alternative standard HubSpot property (with underscore)
+        "lifecyclestage", "hs_createdate", 
         "hs_lastmodifieddate", "phone", "website",
-        # Add other company properties
+        # Adding key webform fields for company properties based on your list
+        "describe_the_business_product_in_one_sentence",
+        "what_is_your_usp__what_makes_you_different_from_your_competitors_",
+        "where_is_your_business_based_",
+        "what_best_describes_your_stage_of_business_",
+        "does_your_product_contribute_to_a_healthier__happier_whole_human_experience_",
+        "how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_",
+        "how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__", # Use of innovation
+        "what_sector_is_your_business_product_",
+        "which__if_any__of_the_un_sdg_17_goals_does_your_business_address_",
+        "what_best_describes_your_customer_base_",
+        "how_many_employees_do_you_have__full_time_equivalents_", # Custom field for FTE employees
+        "what_is_your_ltm__last_12_months__revenue_", # Corrected internal name for LTM Revenue
+        "what_is_your_current_monthly_revenue_",    # Corrected internal name for Current Monthly Revenue
+        "how_much_are_you_raising_at_this_stage_",
+        "what_valuation_are_you_raising_at_",
+        "how_much_have_you_raised_prior_to_this_round_",
+        "how_much_of_the_equity_do_you_your_team_have_",
+        "what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_",
+        "please_expand",
+        "please_attach_your_pitch_deck"
     ]
 
-    # Get the deal
+    # Fetch the deal
     deal_full_object = get_deal_by_id(deal_id, properties=deal_properties_to_fetch)
     
-    if not deal_full_object:
-        print(f"Deal {deal_id} not found or error fetching its properties.")
-        return result
-    result["deal"] = deal_full_object # Contains 'id', 'properties', 'createdAt', etc.
-    
+    if deal_full_object and isinstance(deal_full_object, dict) and deal_full_object.get("properties"):
+        result["deal"] = deal_full_object.get("properties")
+        
+        # Attempt to get deal stage label (using the existing get_pipeline_stages function)
+        deal_stage_id = result["deal"].get("dealstage")
+        pipeline_id = result["deal"].get("pipeline")
+        deal_stage_label = "N/A"
+
+        if deal_stage_id and pipeline_id:
+            stages = get_pipeline_stages(pipeline_id, "deals")
+            for stage in stages:
+                if stage.get("id") == deal_stage_id:
+                    deal_stage_label = stage.get("label", "N/A")
+                    break
+        result["deal"]["deal_stage_label"] = deal_stage_label
+    else:
+        print(f"HubSpot (get_deal_with_associated_data): Could not retrieve valid deal properties for deal ID {deal_id}. deal_full_object was: {json.dumps(deal_full_object, indent=2)}")
+        # Ensure deal_stage_label is present even if deal properties are missing
+        if not isinstance(result["deal"], dict): result["deal"] = {} # Ensure result["deal"] is a dict
+        result["deal"]["deal_stage_label"] = "N/A"
+
     # Get associated contacts
     contact_associations = get_deal_associations(deal_id, "contacts")
     print(f"Found {len(contact_associations)} associated contact IDs for deal {deal_id}")
@@ -504,6 +573,32 @@ def get_deal_with_associated_data(deal_id: str) -> dict:
             print(f"Could not fetch details for company ID: {company_id}")
             
     return result
+
+@hubspot_retry_decorator
+def get_all_contact_properties() -> list[tuple[str, str]]:
+    """Lists all contact properties to find internal names and their display labels."""
+    print("\nHubSpot: Fetching all contact properties...")
+    endpoint = "/crm/v3/properties/contacts"
+    try:
+        data = _make_request("GET", endpoint)
+        # Ensure 'name' (internal name) and 'label' (display name) exist
+        return [(prop['name'], prop['label']) for prop in data.get('results', []) if 'name' in prop and 'label' in prop]
+    except Exception as e:
+        print(f"Error fetching contact properties: {e}")
+        return []
+
+@hubspot_retry_decorator  
+def get_all_company_properties() -> list[tuple[str, str]]:
+    """Lists all company properties to find internal names and their display labels."""
+    print("\nHubSpot: Fetching all company properties...")
+    endpoint = "/crm/v3/properties/companies"
+    try:
+        data = _make_request("GET", endpoint)
+        # Ensure 'name' (internal name) and 'label' (display name) exist
+        return [(prop['name'], prop['label']) for prop in data.get('results', []) if 'name' in prop and 'label' in prop]
+    except Exception as e:
+        print(f"Error fetching company properties: {e}")
+        return []
 
 # Alternative approach using CRM search for form submissions
 @hubspot_retry_decorator
@@ -553,49 +648,84 @@ if __name__ == "__main__":
     if not HUBSPOT_ACCESS_TOKEN:
         print("HUBSPOT_ACCESS_TOKEN not set. Cannot run HubSpot tests.")
     else:
-        TEST_DEAL_ID = "227837886703" # Your test deal ID
+        # --- List Contact and Company Properties to find internal names ---
+        # print(f"\n{'='*60}")
+        # print("Listing relevant Contact Properties (to find internal names):")
+        # print(f"{'='*60}")
+        # contact_props_list = get_all_contact_properties()
+        # if contact_props_list:
+        #     found_relevant_contact_prop = False
+        #     for internal_name, display_name in contact_props_list:
+        #         if 'linkedin' in display_name.lower() or \
+        #            'work' in display_name.lower() or \
+        #            'founder' in display_name.lower() or \
+        #            'eligibility' in display_name.lower() or \
+        #            'url' in display_name.lower() or \
+        #            'profile' in display_name.lower(): # Added more keywords
+        #             print(f"  Contact Property: Internal Name = '{internal_name}', Display Label = '{display_name}'")
+        #             found_relevant_contact_prop = True
+        #     if not found_relevant_contact_prop:
+        #         print("  No contact properties found matching keywords like 'linkedin', 'work', 'founder', 'eligibility', 'url', 'profile'.")
+        #         print("  Consider printing all properties or adjusting keywords if expected properties are missing.")
+        # else:
+        #     print("  Could not retrieve contact properties.")
+
+        # print(f"\n{'='*60}")
+        # print("Listing some Company Properties (to find internal names):")
+        # print(f"{'='*60}")
+        # company_props_list = get_all_company_properties()
+        # if company_props_list:
+        #     print("  (Showing all company properties for review)")
+        #     for internal_name, display_name in company_props_list:
+        #         print(f"  Company Property: Internal Name = '{internal_name}', Display Label = '{display_name}'")
+        # else:
+        #     print("  Could not retrieve company properties.")
+        # --- End Listing Properties ---
+
+        TEST_DEAL_ID = "227710582988" # Your test deal ID
         
-        print(f"\n{'='*60}")
-        print(f"Fetching comprehensive data for deal: {TEST_DEAL_ID}")
-        print(f"{'='*60}")
+        print(f"\nFetching comprehensive data for deal: {TEST_DEAL_ID}")
+        # print(f"{'='*60}") # Optional: remove for less verbose output
         
-        # Call the revised function to get deal, contact, and company data
         comprehensive_deal_data = get_deal_with_associated_data(TEST_DEAL_ID)
         
         output_filename = "deal_data_export.json"
         try:
             with open(output_filename, 'w') as f:
                 json.dump(comprehensive_deal_data, f, indent=4)
-            print(f"\nSuccessfully exported comprehensive deal data to: {output_filename}")
+            print(f"Successfully exported comprehensive deal data for deal {TEST_DEAL_ID} to: {output_filename}")
         except Exception as e:
-            print(f"\nError writing data to JSON file {output_filename}: {e}")
+            print(f"Error writing data to JSON file {output_filename} for deal {TEST_DEAL_ID}: {e}")
 
-        # You can still print a summary or parts of the data to console if needed
-        if comprehensive_deal_data.get("deal"):
-            print(f"\nSummary of Fetched Data (also saved to {output_filename}):")
-            deal_props = comprehensive_deal_data["deal"].get("properties", {})
-            print(f"\nDeal Information:")
-            print(f"  ID: {comprehensive_deal_data['deal'].get('id')}")
-            print(f"  Name: {deal_props.get('dealname', 'N/A')}")
-            print(f"  Stage: {deal_props.get('dealstage', 'N/A')}")
-            print(f"  Amount: {deal_props.get('amount', 'N/A')}")
+        # Comment out the detailed summary printout to reduce console noise
+        # if comprehensive_deal_data.get("deal"):
+        #     print(f"\nSummary of Fetched Data (also saved to {output_filename}):")
+        #     deal_info = comprehensive_deal_data["deal"] 
             
-            print(f"\nAssociated Contacts Found: {len(comprehensive_deal_data['associated_contacts'])}")
-            for i, contact_data in enumerate(comprehensive_deal_data['associated_contacts'], 1):
-                contact_props = contact_data.get("properties", {})
-                print(f"  Contact {i} ID: {contact_data.get('id')}")
-                print(f"    Email: {contact_props.get('email', 'N/A')}")
-                print(f"    Name: {contact_props.get('firstname', '')} {contact_props.get('lastname', '')}")
-                # Print the custom properties (ensure internal names in get_deal_with_associated_data are correct)
-                print(f"    LinkedIn (custom): {contact_props.get('linkedin_profile_url', 'N/A')}") 
-                print(f"    UK Work Eligibility (custom): {contact_props.get('uk_work_eligibility', 'N/A')}")
+        #     print(f"\nDeal Information:")
+        #     print(f"  ID: {deal_info.get('hs_object_id', 'N/A')}")
+        #     print(f"  Name: {deal_info.get('dealname', 'N/A')}")
+        #     print(f"  Stage ID: {deal_info.get('dealstage', 'N/A')}") 
+        #     print(f"  Stage Label: {deal_info.get('deal_stage_label', 'N/A')}")
+        #     print(f"  Pipeline ID: {deal_info.get('pipeline', 'N/A')}")
+        #     print(f"  Amount: {deal_info.get('amount', 'N/A')}")
+        #     print(f"  % Request (Equity): {deal_info.get('request', 'N/A')}")
+            
+        #     if comprehensive_deal_data.get('associated_contacts'):
+        #         print(f"\nAssociated Contacts Found: {len(comprehensive_deal_data['associated_contacts'])}")
+        #         for i, contact_data in enumerate(comprehensive_deal_data['associated_contacts'], 1):
+        #             contact_props = contact_data.get("properties", {})
+        #             print(f"  Contact {i} ID: {contact_data.get('id')}")
+        #             # Print fewer contact details or none
+        #             print(f"    Email: {contact_props.get('email', 'N/A')}")
 
 
-            print(f"\nAssociated Companies Found: {len(comprehensive_deal_data['associated_companies'])}")
-            for i, company_data in enumerate(comprehensive_deal_data['associated_companies'], 1):
-                company_props = company_data.get("properties", {})
-                print(f"  Company {i} ID: {company_data.get('id')}")
-                print(f"    Name: {company_props.get('name', 'N/A')}")
-                print(f"    Domain: {company_props.get('domain', 'N/A')}")
-        else:
-            print(f"Could not retrieve data for deal {TEST_DEAL_ID} to export.") 
+        #     if comprehensive_deal_data.get('associated_companies'):
+        #         print(f"\nAssociated Companies Found: {len(comprehensive_deal_data['associated_companies'])}")
+        #         for i, company_data in enumerate(comprehensive_deal_data['associated_companies'], 1):
+        #             company_props = company_data.get("properties", {})
+        #             print(f"  Company {i} ID: {company_data.get('id')}")
+        #             # Print fewer company details or none
+        #             print(f"    Company Name: {company_props.get('name', 'N/A')}")
+        # else:
+        #     print(f"Could not retrieve sufficient data for deal {TEST_DEAL_ID} to print summary or export.") 
