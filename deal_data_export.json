@@ -1,0 +1,58 @@
+{
+    "deal": {
+        "amount": "500.000",
+        "closedate": "2025-07-03T03:30:34.149Z",
+        "createdate": "2025-06-03T03:30:34.666Z",
+        "dealname": "Arc.ade - Pitch for investment",
+        "dealstage": "1245906141",
+        "hs_lastmodifieddate": "2025-06-03T08:10:20.095Z",
+        "hs_object_id": "227837886703",
+        "hubspot_owner_id": null,
+        "pipeline": "default"
+    },
+    "associated_contacts": [
+        {
+            "id": "317963804921",
+            "properties": {
+                "company": null,
+                "createdate": "2025-06-03T03:30:30.984Z",
+                "email": "ss3546@cornell.edu",
+                "firstname": "Sipara",
+                "hs_createdate": null,
+                "hs_object_id": "317963804921",
+                "jobtitle": null,
+                "lastmodifieddate": "2025-06-03T04:00:34.545Z",
+                "lastname": "Sahilu",
+                "lifecyclestage": "salesqualifiedlead",
+                "phone": null
+            },
+            "createdAt": "2025-06-03T03:30:30.984Z",
+            "updatedAt": "2025-06-03T04:00:34.545Z",
+            "archived": false
+        }
+    ],
+    "associated_companies": [
+        {
+            "id": "166051950806",
+            "properties": {
+                "city": null,
+                "country": null,
+                "createdate": "2025-06-03T03:30:31.532Z",
+                "description": "Arc.ade is the first AI learning platform that turns kids into experts on any topic.",
+                "domain": "arc-app.app",
+                "hs_createdate": null,
+                "hs_lastmodifieddate": "2025-06-03T08:10:16.134Z",
+                "hs_object_id": "166051950806",
+                "industry": null,
+                "lifecyclestage": "salesqualifiedlead",
+                "name": "Arc.ade",
+                "numberofemployees": null,
+                "phone": null,
+                "website": "https://www.arc-app.app/"
+            },
+            "createdAt": "2025-06-03T03:30:31.532Z",
+            "updatedAt": "2025-06-03T08:10:16.134Z",
+            "archived": false
+        }
+    ]
+}
