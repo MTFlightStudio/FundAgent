@@ -3,6 +3,7 @@ import json
 import requests
 from dotenv import load_dotenv
 from langchain_core.tools import tool
+import sys
 
 # Load environment variables from .env file at the project root
 load_dotenv()
@@ -21,7 +22,7 @@ else:
     if not RELEVANCE_AI_API_KEY: missing_vars.append("RELEVANCE_AI_API_KEY")
     if not RELEVANCE_AI_STUDIO_ID: missing_vars.append("RELEVANCE_AI_STUDIO_ID")
     if not RELEVANCE_AI_PROJECT_ID: missing_vars.append("RELEVANCE_AI_PROJECT_ID")
-    print(f"Warning: Relevance AI 'Research Prospect' tool is not fully configured. Missing: {', '.join(missing_vars)} in .env file. The tool will not be available.")
+    print(f"Warning: Relevance AI 'Research Prospect' tool is not fully configured. Missing: {', '.join(missing_vars)} in .env file. The tool will not be available.", file=sys.stderr)
 
 @tool
 def research_prospect_tool(linkedin_url: str) -> str:
@@ -45,7 +46,7 @@ def research_prospect_tool(linkedin_url: str) -> str:
         "linkedin_url": linkedin_url
     }
 
-    print(f"research_prospect_tool: Calling Relevance AI for URL: {linkedin_url}")
+    print(f"research_prospect_tool: Calling Relevance AI for URL: {linkedin_url}", file=sys.stderr)
     try:
         response = requests.post(endpoint, headers=headers, data=json.dumps(payload), timeout=60)
         response.raise_for_status()
@@ -73,17 +74,17 @@ def research_prospect_tool(linkedin_url: str) -> str:
 if __name__ == '__main__':
     # Basic test
     if relevance_ai_tool_configured:
-        print("Testing prospect.py (Relevance AI)...")
+        print("Testing prospect.py (Relevance AI)...", file=sys.stderr)
         test_url = "https://www.linkedin.com/in/satyanadella/"
-        print(f"Query URL: {test_url}")
+        print(f"Query URL: {test_url}", file=sys.stderr)
         result = research_prospect_tool.invoke({"linkedin_url": test_url})
-        print("Result:")
-        print(result)
+        print("Result:", file=sys.stderr)
+        print(result, file=sys.stderr)
 
         test_invalid_url = "https://example.com"
-        print(f"\nQuery invalid URL: {test_invalid_url}")
+        print(f"\nQuery invalid URL: {test_invalid_url}", file=sys.stderr)
         result_invalid = research_prospect_tool.invoke({"linkedin_url": test_invalid_url})
-        print("Result (invalid):")
-        print(result_invalid)
+        print("Result (invalid):", file=sys.stderr)
+        print(result_invalid, file=sys.stderr)
     else:
-        print("Cannot run prospect.py test: Relevance AI tool not configured.") 
+        print("Cannot run prospect.py test: Relevance AI tool not configured.", file=sys.stderr) 

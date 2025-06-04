@@ -4,6 +4,8 @@ import re
 from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime
 from dotenv import load_dotenv
+import argparse
+import sys
 
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -166,184 +168,232 @@ def calculate_recommendation(assessment: InvestmentAssessment) -> str:
 
 
 def run_decision_support_cli(
-    company_file: Optional[str] = None,
-    founder_files: Optional[List[str]] = None,
-    market_file: Optional[str] = None,
-    additional_context: Optional[Dict[str, Any]] = None
-) -> Optional[InvestmentAssessment]:
+    company_data_dict: Dict[str, Any],
+    founder_data_list: List[Dict[str, Any]],
+    market_data_dict: Optional[Dict[str, Any]],
+    additional_context: Dict[str, Any]
+) -> Optional[InvestmentResearch]:
     """
-    Run the decision support agent to analyze an investment opportunity.
-    
-    Args:
-        company_file: Path to company research JSON
-        founder_files: List of paths to founder research JSONs
-        market_file: Path to market analysis JSON
-        additional_context: Dict with additional data (e.g., from email, HubSpot survey)
-    
-    Returns:
-        InvestmentAssessment object if successful, None otherwise
+    Runs the decision support analysis using provided data dictionaries.
     """
-    print("Starting investment decision analysis...")
-    
-    # Load research data
-    company_profile, founder_profiles, market_analysis = load_research_data(
-        company_file, founder_files, market_file
-    )
-    
-    if not company_profile:
-        print("ERROR: Company profile is required for investment decision.")
-        return None
-    
-    # Initialize LLM
     llm = get_llm()
     if not llm:
+        print("LLM could not be initialized. Aborting decision support.", file=sys.stderr)
         return None
-    
-    # Prepare data for prompt
-    company_data_str = company_profile.model_dump_json(indent=2) if company_profile else "No company data available"
-    founder_data_str = json.dumps([f.model_dump(mode='json') for f in founder_profiles], indent=2) if founder_profiles else "No founder data available"
-    market_data_str = market_analysis.model_dump_json(indent=2) if market_analysis else "No market data available"
-    additional_context_str = json.dumps(additional_context, indent=2) if additional_context else "No additional context provided"
-    
-    # Create the chain
-    # The parser will be applied *after* we extract the clean JSON string
-    chain = DECISION_SUPPORT_PROMPT_TEMPLATE | llm 
-    
+
     try:
-        print("\nAnalyzing investment opportunity against Flight Story criteria...")
-        # Get the raw string output from the LLM
+        # Validate and parse input data using Pydantic models
+        try:
+            company_profile = CompanyProfile(**company_data_dict)
+        except Exception as e:
+            print(f"Error parsing company data: {e}. Data: {company_data_dict}", file=sys.stderr)
+            return None
+
+        parsed_founder_profiles = []
+        for i, fd in enumerate(founder_data_list):
+            try:
+                parsed_founder_profiles.append(FounderProfile(**fd))
+            except Exception as e:
+                print(f"Error parsing founder data for founder {i+1}: {e}. Data: {fd}", file=sys.stderr)
+                # Continue if some founder profiles are invalid, or decide to fail
+        
+        if not parsed_founder_profiles and founder_data_list: # if input was given but all failed
+             print("No valid founder profiles could be parsed.", file=sys.stderr)
+             # return None # Or proceed without founder data if desired
+
+        parsed_market_analysis = None
+        if market_data_dict:
+            try:
+                parsed_market_analysis = MarketAnalysis(**market_data_dict)
+            except Exception as e:
+                print(f"Error parsing market data: {e}. Data: {market_data_dict}", file=sys.stderr)
+                # return None # Or proceed without market data
+
+        # Prepare data for the LLM prompt
+        company_data_str = company_profile.model_dump_json(indent=2)
+        founder_data_str = json.dumps([fp.model_dump(mode='json') for fp in parsed_founder_profiles], indent=2)
+        market_data_str = parsed_market_analysis.model_dump_json(indent=2) if parsed_market_analysis else "N/A"
+        additional_context_str = json.dumps(additional_context, indent=2)
+
+        chain = DECISION_SUPPORT_PROMPT_TEMPLATE | llm
         raw_llm_output_str = chain.invoke({
             "company_data": company_data_str,
             "founder_data": founder_data_str,
             "market_data": market_data_str,
-            "additional_context": additional_context_str
-        }).content # .content for AIMessage, or handle if it's a string directly
+            "additional_context": additional_context_str,
+        }).content
+        
+        # print(f"Raw LLM Output for Decision Support:\n{raw_llm_output_str[:1000]}...", file=sys.stderr) # For debugging
 
-        print(f"Raw LLM output for decision support: {raw_llm_output_str[:500]}...")
-
-        # Extract the JSON block
-        json_to_parse = None
-        json_match = re.search(r"\{[\s\S]*\}", raw_llm_output_str)
+        # Extract JSON from LLM response
+        json_match = re.search(r"```json\s*([\s\S]*?)\s*```", raw_llm_output_str, re.DOTALL)
+        json_to_parse = ""
         if json_match:
-            json_to_parse = json_match.group(0).strip()
-            print(f"Extracted JSON block for InvestmentAssessment: {json_to_parse[:300]}...")
+            json_to_parse = json_match.group(1).strip()
+            print("Successfully extracted JSON using markdown code block regex.", file=sys.stderr)
         else:
-            # Fallback if regex doesn't find a clear JSON object.
-            temp_str = raw_llm_output_str.strip()
-            if temp_str.startswith("```json"):
-                temp_str = temp_str[len("```json"):].strip()
-            if temp_str.endswith("```"):
-                temp_str = temp_str[:-len("```")].strip()
-            
-            if temp_str.startswith("{") and temp_str.endswith("}"):
-                json_to_parse = temp_str
-                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...")
-            else:
-                print(f"Error: Could not extract a valid JSON object from LLM response: {raw_llm_output_str[:500]}...")
-                raise ValueError("Failed to extract JSON from LLM response for InvestmentAssessment.")
+            # Fallback: try to find the first '{' and last '}'
+            print("Markdown JSON block not found. Attempting fallback extraction.", file=sys.stderr)
+            try:
+                first_brace = raw_llm_output_str.index('{')
+                last_brace = raw_llm_output_str.rindex('}')
+                if last_brace > first_brace:
+                    json_to_parse = raw_llm_output_str[first_brace : last_brace+1].strip()
+                    print(f"Extracted potential JSON using brace finding: {json_to_parse[:100]}...", file=sys.stderr)
+                else:
+                    # This case should be rare if there's any valid JSON
+                    print(f"Error: Last brace found before or at first brace. Cannot extract JSON.", file=sys.stderr)
+                    raise ValueError("Failed to extract JSON: Invalid brace positions.")
+            except ValueError: # Handles .index or .rindex not finding the char
+                print(f"Error: Could not find opening or closing braces for JSON extraction in LLM response: {raw_llm_output_str[:500]}...", file=sys.stderr)
+                raise ValueError("Failed to extract JSON from LLM response for InvestmentAssessment (braces not found).")
 
-        # Now parse the extracted JSON string using the PydanticOutputParser
+        if not json_to_parse:
+            print(f"Error: JSON string to parse is empty after extraction attempts. Raw output: {raw_llm_output_str[:500]}...", file=sys.stderr)
+            raise ValueError("Failed to extract JSON: Resulting string is empty.")
+
         assessment = investment_assessment_parser.parse(json_to_parse)
-        
-        # Calculate recommendation
         recommendation = calculate_recommendation(assessment)
-        
-        # Create full investment research document
+
         investment_research = InvestmentResearch(
             query_or_target_entity=company_profile.company_name,
-            primary_analyst="AI Investment Analyst",
+            primary_analyst="AI Investment Analyst (Decision Support Agent)",
             company_profile=company_profile,
-            founder_profiles=founder_profiles,
-            market_analysis=market_analysis,
+            founder_profiles=parsed_founder_profiles,
+            market_analysis=parsed_market_analysis,
             investment_assessment=assessment,
             overall_summary_and_recommendation=recommendation,
-            confidence_score_overall=0.8 if recommendation == "PASS" else 0.6 if recommendation == "EXPLORE" else 0.4,
+            confidence_score_overall=0.8 if recommendation == "PASS" else 0.6 if recommendation == "EXPLORE" else 0.4, # Simplified
             status="Complete",
-            sources_consulted=[
-                {"type": "file", "value": company_file} if company_file else None,
-                {"type": "file", "value": str(founder_files)} if founder_files else None,
-                {"type": "file", "value": market_file} if market_file else None,
-            ]
+            sources_consulted=[ # Simplified for agent context
+                {"type": "structured_input", "source": "company_profile_data"},
+                {"type": "structured_input", "source": "founder_profiles_data"},
+                {"type": "structured_input", "source": "market_analysis_data"},
+                {"type": "structured_input", "source": "additional_context"}
+            ],
+            timestamp=datetime.utcnow().isoformat()
         )
         
-        # Save the complete analysis
+        # Save the complete analysis to a file (optional, can be done by orchestrator too)
         safe_company_name = "".join(c if c.isalnum() else "_" for c in company_profile.company_name)[:30]
         output_filename = f"investment_decision_{safe_company_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        try:
+            with open(output_filename, 'w') as f:
+                f.write(investment_research.model_dump_json(indent=2))
+            print(f"Decision support analysis saved to: {output_filename}", file=sys.stderr)
+        except Exception as e:
+            print(f"Error saving decision support analysis to file: {e}", file=sys.stderr)
         
-        with open(output_filename, 'w') as f:
-            f.write(investment_research.model_dump_json(indent=2))
-        
-        print(f"\n{'='*60}")
-        print(f"INVESTMENT DECISION: {recommendation}")
-        print(f"{'='*60}")
-        print(f"Company: {company_profile.company_name}")
-        print(f"Industry: {company_profile.industry}")
-        print(f"Funding Stage: {company_profile.funding_stage}")
-        print(f"Total Raised: {company_profile.total_funding_raised}")
-        
-        print(f"\nFlight Story Criteria Assessment:")
-        print(f"1. Focus Industry Fit: {'✓' if assessment.fs_focus_industry_fit else '✗' if assessment.fs_focus_industry_fit is False else '?'}")
-        print(f"2. Mission Alignment: {'✓' if assessment.fs_mission_alignment else '✗' if assessment.fs_mission_alignment is False else '?'}")
-        print(f"3. Exciting Solution: {'✓' if assessment.fs_exciting_solution_to_problem else '✗' if assessment.fs_exciting_solution_to_problem is False else '?'}")
-        print(f"4. Founded Before: {'✓' if assessment.fs_founded_something_relevant_before else '✗' if assessment.fs_founded_something_relevant_before is False else '?'}")
-        print(f"5. Past Experience: {'✓' if assessment.fs_impressive_relevant_past_experience else '✗' if assessment.fs_impressive_relevant_past_experience is False else '?'}")
-        print(f"6. Smart/Strategic: {'✓' if assessment.fs_exceptionally_smart_or_strategic else '✗' if assessment.fs_exceptionally_smart_or_strategic is False else '?'}")
-        
-        if assessment.investment_thesis_summary:
-            print(f"\nInvestment Thesis: {assessment.investment_thesis_summary}")
-        
-        if assessment.key_risk_factors:
-            print(f"\nKey Risks:")
-            for risk in assessment.key_risk_factors[:3]:
-                print(f"  - {risk}")
-        
-        if assessment.recommended_next_steps:
-            print(f"\nRecommended Next Steps:")
-            for step in assessment.recommended_next_steps:
-                print(f"  - {step}")
-        
-        print(f"\nFull analysis saved to: {output_filename}")
-        
-        return assessment
-        
+        return investment_research # Return the full research object
+
     except Exception as e:
-        print(f"Error during investment decision analysis: {e}")
+        print(f"Error during investment decision analysis: {e}", file=sys.stderr)
         return None
 
 
-if __name__ == "__main__":
-    print("Testing decision_support_agent.py...")
+def generate_investment_recommendation(
+    founder_profile_data: Dict[str, Any],
+    company_profile_data: Dict[str, Any],
+    market_analysis_data: Dict[str, Any]
+) -> Dict[str, Any]: # Or your Pydantic model for the decision
+    """
+    Analyzes the provided data and generates an investment recommendation.
+    Replace this with your actual LLM call or decision logic.
+    """
+    print("Decision support agent: Analyzing provided data...", file=sys.stderr)
     
-    # Example usage with your test files
-    company_file = input("Enter path to company research JSON (or press Enter to skip): ").strip()
-    founder_files_input = input("Enter path(s) to founder research JSON(s), comma-separated (or press Enter to skip): ").strip()
-    market_file = input("Enter path to market analysis JSON (or press Enter to skip): ").strip()
+    recommendation = "Undecided"
+    confidence = 0.0
+    reasoning = "Initial analysis pending full implementation."
+
+    # Example: Basic checks (you'll have much more sophisticated logic)
+    if founder_profile_data.get("investment_criteria_assessment", {}).get("mission_alignment") is True:
+        reasoning += " Founder mission alignment is positive."
+        confidence += 0.2
     
-    # Parse founder files
-    founder_files = [f.strip() for f in founder_files_input.split(',')] if founder_files_input else []
-    
-    # Example additional context (would come from email/HubSpot in real usage)
-    additional_context = {
-        "source": "direct_test",
-        "notes": "Manual test run",
-        # In production, this would include:
-        # "email_summary": "...",
-        # "hubspot_survey_data": {...},
-        # "meeting_notes": "...",
-        # "pitch_deck_url": "..."
-    }
-    
-    if company_file:
-        assessment = run_decision_support_cli(
-            company_file=company_file if company_file else None,
-            founder_files=founder_files if founder_files else None,
-            market_file=market_file if market_file else None,
-            additional_context=additional_context
-        )
-        
-        if assessment:
-            print("\nDecision support analysis completed successfully!")
-        else:
-            print("\nDecision support analysis failed.")
+    if company_profile_data.get("funding_stage") == "Seed":
+        reasoning += " Company is at Seed stage."
+        confidence += 0.1
+
+    if market_analysis_data.get("market_growth_rate_cagr", "").endswith("%"):
+        try:
+            cagr = float(market_analysis_data["market_growth_rate_cagr"][:-1])
+            if cagr > 15:
+                reasoning += f" Market CAGR ({cagr}%) is strong."
+                confidence += 0.3
+        except ValueError:
+            pass
+
+    if confidence > 0.5:
+        recommendation = "Recommend Investment"
+    elif confidence > 0.2:
+        recommendation = "Further Review Required"
     else:
-        print("No company file provided. Cannot proceed without company data.")
+        recommendation = "Do Not Recommend Investment"
+
+    # This should be structured according to your InvestmentDecision model if you have one
+    decision_output = {
+        "recommendation": recommendation,
+        "confidence_score": round(confidence, 2),
+        "reasoning": reasoning.strip(),
+        "supporting_data_summary": {
+            "founder_name": founder_profile_data.get("name"),
+            "company_name": company_profile_data.get("company_name"),
+            "market_sector": market_analysis_data.get("industry_overview", market_analysis_data.get("jurisdiction", "N/A"))
+        }
+    }
+    print(f"Decision support agent: Recommendation generated: {recommendation}", file=sys.stderr)
+    return decision_output
+
+
+def main():
+    print("Decision support agent CLI starting...", file=sys.stderr)
+    parser = argparse.ArgumentParser(description="Investment Decision Support Agent")
+    parser.add_argument("--founder_profile_path", type=str, required=True, help="Path to the founder profile JSON file.")
+    parser.add_argument("--company_profile_path", type=str, required=True, help="Path to the company profile JSON file.")
+    parser.add_argument("--market_analysis_path", type=str, required=True, help="Path to the market analysis JSON file.")
+    # Alternatively, you could pass JSON strings directly:
+    # parser.add_argument("--founder_profile_json", type=str, required=True, help="JSON string of the founder profile.")
+    # parser.add_argument("--company_profile_json", type=str, required=True, help="JSON string of the company profile.")
+    # parser.add_argument("--market_analysis_json", type=str, required=True, help="JSON string of the market analysis.")
+
+    args = parser.parse_args()
+
+    try:
+        with open(args.founder_profile_path, 'r') as f:
+            founder_data = json.load(f)
+        with open(args.company_profile_path, 'r') as f:
+            company_data = json.load(f)
+        with open(args.market_analysis_path, 'r') as f:
+            market_data = json.load(f)
+        
+        # If passing JSON strings directly:
+        # founder_data = json.loads(args.founder_profile_json)
+        # company_data = json.loads(args.company_profile_json)
+        # market_data = json.loads(args.market_analysis_json)
+
+        decision = generate_investment_recommendation(founder_data, company_data, market_data)
+        
+        # Print the final decision JSON to stdout
+        print(json.dumps(decision, indent=None)) # indent=None for orchestrator
+        print("Decision support agent: Successfully generated JSON output.", file=sys.stderr)
+
+    except FileNotFoundError as fnf_err:
+        error_output = {"status": "error", "error_message": f"File not found: {fnf_err}"}
+        print(json.dumps(error_output, indent=None), file=sys.stdout) # Error to stdout
+        print(f"Decision support agent: Error - {error_output['error_message']}", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError as jd_err:
+        error_output = {"status": "error", "error_message": f"JSON decode error: {jd_err}"}
+        print(json.dumps(error_output, indent=None), file=sys.stdout) # Error to stdout
+        print(f"Decision support agent: Error - {error_output['error_message']}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        error_output = {"status": "error", "error_message": f"An unexpected error occurred: {str(e)}"}
+        print(json.dumps(error_output, indent=None), file=sys.stdout) # Error to stdout
+        print(f"Decision support agent: Critical error - {error_output['error_message']}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

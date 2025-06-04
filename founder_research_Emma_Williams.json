@@ -1,0 +1,72 @@
+{
+  "name": "Dr Emma Williams",
+  "linkedin_url": "https://www.linkedin.com/in/dr-emma-williams",
+  "role_in_company": "Founder",
+  "background_summary": "Dr Emma Williams is a highly experienced professional in dementia care, with over 27 years in the field and a PhD in Psychology from Bangor University. She is the founder of EmWill Care, a company focused on revolutionising dementia care by integrating behavioural science with smart technology, specifically through their \"Less Distress\" tool. She also founded PACT (Positive Ageing Consultancy & Training). Her leadership experience includes her current founder role and previous roles such as Director of Training for North Wales Regional Partnership Board and providing bespoke behavioural consultancy. Dr Williams is currently participating in accelerator programs with the Alzheimer's Society and Business Wales, indicating active development and validation of her venture.",
+  "previous_companies": [
+    {
+      "company_name": "EmWill Care",
+      "role": "Founder",
+      "duration": "10 months, since Sep 2024",
+      "description": null,
+      "was_founder": true
+    },
+    {
+      "company_name": "PACT (Positive Ageing Consultancy & Training)",
+      "role": null,
+      "duration": null,
+      "description": null,
+      "was_founder": true
+    },
+    {
+      "company_name": "North Wales Regional Partnership Board",
+      "role": "Director of Training",
+      "duration": null,
+      "description": null,
+      "was_founder": false
+    }
+  ],
+  "education": [
+    {
+      "institution": "Bangor University",
+      "degree": "PhD",
+      "field_of_study": "Psychology",
+      "graduation_year": null,
+      "notable_achievements": null
+    },
+    {
+      "institution": null,
+      "degree": "MSc",
+      "field_of_study": "Applied Behaviour Analysis",
+      "graduation_year": null,
+      "notable_achievements": null
+    }
+  ],
+  "key_skills_and_expertise": [
+    "Dementia care",
+    "Behavioural science",
+    "Smart technology",
+    "Consultancy"
+  ],
+  "public_speaking_or_content": [
+    {
+      "type": "event",
+      "title": "Showcased EmWill Care's \"Less Distress\" tool at London Tech Week",
+      "url": null
+    },
+    {
+      "type": "blog",
+      "title": "Understanding Distressed Behaviours in Dementia",
+      "url": null
+    }
+  ],
+  "investment_criteria_assessment": {
+    "focus_industry_fit": true,
+    "mission_alignment": true,
+    "exciting_solution_to_problem": true,
+    "founded_something_relevant_before": true,
+    "impressive_relevant_past_experience": true,
+    "exceptionally_smart_or_strategic": true,
+    "assessment_summary": "Based on structured output from research_prospect_tool"
+  }
+}

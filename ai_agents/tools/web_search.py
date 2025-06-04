@@ -3,6 +3,7 @@ import json
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 from langchain_community.tools.tavily_search import TavilySearchResults
+import sys
 
 # Load environment variables from .env file at the project root
 load_dotenv()
@@ -21,10 +22,10 @@ if tavily_api_key:
             include_images=False,
         )
     except Exception as e:
-        print(f"Error initializing TavilySearchResults: {e}. Tavily search will not be available.")
+        print(f"Error initializing TavilySearchResults: {e}. Tavily search will not be available.", file=sys.stderr)
         tavily_search_tool_instance = None
 else:
-    print("TAVILY_API_KEY not found in .env. Tavily search_tool will not be available.")
+    print("TAVILY_API_KEY not found in .env. Tavily search_tool will not be available.", file=sys.stderr)
 
 @tool
 def search_tool(query: str) -> str:
@@ -35,7 +36,7 @@ def search_tool(query: str) -> str:
     """
     if not tavily_search_tool_instance:
         return "Tavily search_tool is not available (API key missing or initialization failed)."
-    print(f"search_tool: Searching Tavily for: {query}")
+    print(f"search_tool: Searching Tavily for: {query}", file=sys.stderr)
     try:
         results = tavily_search_tool_instance.invoke(query)
         if isinstance(results, list):
@@ -47,11 +48,11 @@ def search_tool(query: str) -> str:
 if __name__ == '__main__':
     # Basic test
     if tavily_api_key and tavily_search_tool_instance:
-        print("Testing web_search.py (Tavily)...")
+        print("Testing web_search.py (Tavily)...", file=sys.stderr)
         test_query = "What is LangChain?"
-        print(f"Query: {test_query}")
+        print(f"Query: {test_query}", file=sys.stderr)
         result = search_tool.invoke(test_query)
-        print("Result:")
-        print(result)
+        print("Result:", file=sys.stderr)
+        print(result, file=sys.stderr)
     else:
-        print("Cannot run web_search.py test: Tavily API key not found or tool not initialized.") 
+        print("Cannot run web_search.py test: Tavily API key not found or tool not initialized.", file=sys.stderr) 

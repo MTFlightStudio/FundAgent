@@ -54,7 +54,7 @@ class PreviousCompany(BaseModel):
 
 class EducationDetail(BaseModel):
     """Details of a founder's educational background."""
-    institution: str = Field(description="Name of the educational institution.")
+    institution: Optional[str] = Field(None, description="Name of the educational institution.")
     degree: Optional[str] = Field(None, description="Degree obtained (e.g., 'BSc Computer Science', 'MBA').")
     field_of_study: Optional[str] = Field(None, description="Field of study.")
     graduation_year: Optional[int] = Field(None, description="Year of graduation.")

@@ -3,6 +3,10 @@ import json
 import re
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
+import argparse
+import sys
+
+from urllib.parse import urlparse
 
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -71,20 +75,26 @@ FOUNDER_RESEARCH_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 ).partial(format_instructions=founder_profile_parser.get_format_instructions())
 
 
+def _ensure_url_scheme(url: Optional[str]) -> Optional[str]:
+    """Prepends https:// to a URL if it's missing a scheme."""
+    if url and not urlparse(url).scheme and (url.startswith("www.") or "." in url.split("/")[0]):
+        return f"https://{url}"
+    return url
+
 def get_llm():
     """Initializes and returns the appropriate LLM based on available API keys."""
     if os.getenv("ANTHROPIC_API_KEY"):
-        print("Using Anthropic Claude model for founder research.")
+        print("Using Anthropic Claude model for founder research.", file=sys.stderr)
         return ChatAnthropic(
             model="claude-3-haiku-20240307", 
             temperature=0.2, 
             max_tokens=4000  # Increased max tokens
         )
     elif os.getenv("OPENAI_API_KEY"):
-        print("Using OpenAI GPT model for founder research.")
+        print("Using OpenAI GPT model for founder research.", file=sys.stderr)
         return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1)
     else:
-        print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.")
+        print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.", file=sys.stderr)
         return None
 
 def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = None) -> Optional[FounderProfile]:
@@ -92,17 +102,20 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
     Researches a founder comprehensively and returns a FounderProfile object.
     Saves the result to a JSON file.
     """
-    print(f"Starting comprehensive research for founder: \"{founder_name}\"")
-    if linkedin_url:
-        print(f"Provided LinkedIn URL: {linkedin_url}")
+    print(f"Starting comprehensive research for founder: \"{founder_name}\"", file=sys.stderr)
+    
+    processed_linkedin_url = _ensure_url_scheme(linkedin_url) # Ensure scheme for tool usage
+
+    if processed_linkedin_url:
+        print(f"Provided LinkedIn URL (processed): {processed_linkedin_url}", file=sys.stderr)
 
     # --- API Key and Tool Availability Checks ---
     if not tavily_search_tool_instance:
-        print("Warning: Tavily search_tool is not available (check TAVILY_API_KEY). Web search capabilities will be limited.")
+        print("Warning: Tavily search_tool is not available (check TAVILY_API_KEY). Web search capabilities will be limited.", file=sys.stderr)
     
-    can_use_prospect_tool = bool(linkedin_url and relevance_ai_tool_configured)
-    if linkedin_url and not relevance_ai_tool_configured:
-        print("Warning: LinkedIn URL provided, but Relevance AI 'Research Prospect' tool is not configured. Will rely on general web search.")
+    can_use_prospect_tool = bool(processed_linkedin_url and relevance_ai_tool_configured) # Use processed URL
+    if processed_linkedin_url and not relevance_ai_tool_configured: # Use processed URL
+        print("Warning: LinkedIn URL provided, but Relevance AI 'Research Prospect' tool is not configured. Will rely on general web search.", file=sys.stderr)
     
     llm = get_llm()
     if not llm:
@@ -113,7 +126,7 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
         available_tools.append(research_prospect_tool)
     
     if not available_tools:
-        print("FATAL: No research tools are available. Cannot proceed.")
+        print("FATAL: No research tools are available. Cannot proceed.", file=sys.stderr)
         return None
 
     # --- Agent and Executor Setup ---
@@ -125,17 +138,18 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
     agent_executor = AgentExecutor(
         agent=founder_research_agent,
         tools=available_tools,
-        verbose=True,
+        verbose=False,
         handle_parsing_errors=True,
         max_iterations=10 # Allow for a few steps of tool use and synthesis
     )
 
     agent_input = {
         "founder_name": founder_name,
-        "linkedin_url_input": linkedin_url if linkedin_url else "Not provided"
+        "linkedin_url_input": processed_linkedin_url if processed_linkedin_url else "Not provided" # Pass processed URL to agent
     }
     
     raw_agent_output_container = None
+    json_to_parse = "" # Initialize to ensure it's defined for error messages
     try:
         raw_agent_output_container = agent_executor.invoke(agent_input)
         
@@ -150,33 +164,33 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
                 first_block = output_payload[0]
                 if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
                     llm_response_content_str = first_block["text"]
-                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...")
+                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...", file=sys.stderr)
                 else:
                     # Fallback if the list structure is not as expected
-                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}")
+                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}", file=sys.stderr)
                     llm_response_content_str = str(output_payload) 
             else:
                 # Fallback for other unexpected structures within output['output']
-                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}")
+                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}", file=sys.stderr)
                 llm_response_content_str = str(output_payload)
         elif isinstance(raw_agent_output_container, str): # If the agent directly returns a string
              llm_response_content_str = raw_agent_output_container
         else:
             # Fallback for other unexpected overall output structures
-            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}")
+            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}", file=sys.stderr)
             llm_response_content_str = str(raw_agent_output_container)
 
         if not llm_response_content_str:
-            print("Agent did not produce a parsable output string for FounderProfile.")
+            print("Agent did not produce a parsable output string for FounderProfile.", file=sys.stderr)
             return None
 
-        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...")
+        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...", file=sys.stderr)
 
         # Attempt to extract the JSON block from the content string
         json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str) # Use [\s\S]* for robust multiline match
         if json_match:
             json_to_parse = json_match.group(0).strip()
-            print(f"Extracted JSON block for FounderProfile parsing (stripped): {json_to_parse[:300]}...")
+            print(f"Extracted JSON block for FounderProfile parsing (stripped): {json_to_parse[:300]}...", file=sys.stderr)
         else:
             # Fallback if regex doesn't find a clear JSON object.
             temp_str = llm_response_content_str.strip()
@@ -187,18 +201,24 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
             
             if temp_str.startswith("{") and temp_str.endswith("}"):
                 json_to_parse = temp_str
-                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...")
+                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...", file=sys.stderr)
             else:
-                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...")
-                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...", file=sys.stderr)
+                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
                 return None
         
         # Parse the JSON string into FounderProfile object
         parsed_dict = json.loads(json_to_parse, strict=False) # strict=False for leniency with newlines in strings
+        
+        # Ensure linkedin_url in the parsed_dict has a scheme before validation
+        if "linkedin_url" in parsed_dict and isinstance(parsed_dict["linkedin_url"], str):
+            parsed_dict["linkedin_url"] = _ensure_url_scheme(parsed_dict["linkedin_url"])
+            print(f"Ensured scheme for linkedin_url from LLM output: {parsed_dict['linkedin_url']}", file=sys.stderr)
+
         founder_profile_obj = FounderProfile.model_validate(parsed_dict)
 
-        print("\n--- Founder Profile Research Output ---")
-        print(founder_profile_obj.model_dump_json(indent=2))
+        print("\n--- Founder Profile Research Output (to be saved to file) ---", file=sys.stderr)
+        print(founder_profile_obj.model_dump_json(indent=2), file=sys.stderr)
 
         safe_founder_name = "".join(c if c.isalnum() else "_" for c in founder_name)[:50].rstrip("_")
         output_filename = f"founder_research_{safe_founder_name}.json"
@@ -208,38 +228,59 @@ def run_founder_research_cli(founder_name: str, linkedin_url: Optional[str] = No
                 "filename": output_filename,
                 "text": founder_profile_obj.model_dump_json(indent=2)
             })
-            print(f"Founder profile research saved to {output_filename}")
+            print(f"Founder profile research saved to {output_filename}", file=sys.stderr)
         except Exception as e_save:
-            print(f"Error saving founder profile research to file: {e_save}")
+            print(f"Error saving founder profile research to file: {e_save}", file=sys.stderr)
 
         return founder_profile_obj
 
     except json.JSONDecodeError as json_err:
-        print(f"JSONDecodeError: Failed to parse JSON string for FounderProfile. Error: {json_err}")
-        print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000] if 'json_to_parse' in locals() else 'N/A'}")
-        if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+        print(f"JSONDecodeError: Failed to parse JSON string for FounderProfile. Error: {json_err}", file=sys.stderr)
+        print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000]}", file=sys.stderr)
+        if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
         return None
     except Exception as e:
-        print(f"An error occurred during founder research agent execution or response parsing: {e}")
-        if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+        print(f"An error occurred during founder research agent execution or response parsing: {e}", file=sys.stderr)
+        if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
         return None
 
 if __name__ == "__main__":
-    print("Testing founder_research_agent.py...")
+    # All prints in __main__ should go to stderr except the final JSON output
+    print("Founder research agent CLI starting...", file=sys.stderr)
     
-    test_founder_name = input("Enter founder's name for research (e.g., 'Elon Musk'): ")
-    test_linkedin_url = input("Enter founder's LinkedIn URL (optional, press Enter to skip): ")
+    parser = argparse.ArgumentParser(description="Founder Research Agent CLI - Processes founder name and LinkedIn URL.")
+    parser.add_argument("--name", type=str, required=True, help="Full name of the founder.")
+    parser.add_argument("--linkedin_url", type=str, required=False, default=None, help="LinkedIn URL of the founder (optional).")
     
-    if not test_linkedin_url.strip():
-        test_linkedin_url = None
+    args = parser.parse_args()
 
-    if test_founder_name:
-        profile = run_founder_research_cli(test_founder_name, linkedin_url=test_linkedin_url)
-        if profile:
-            print(f"\nSuccessfully retrieved profile for {profile.name}")
-            # if profile.investment_criteria_assessment:
-            #     print(f"Mission Alignment: {profile.investment_criteria_assessment.mission_alignment}")
+    try:
+        profile_object = run_founder_research_cli(args.name, linkedin_url=args.linkedin_url)
+        
+        if profile_object:
+            # Print the final FounderProfile JSON to stdout for the orchestrator
+            print(profile_object.model_dump_json(indent=None)) # indent=None for cleaner capture
+            print(f"Founder research agent: Successfully generated JSON output for {args.name}", file=sys.stderr)
         else:
-            print(f"Failed to retrieve profile for {test_founder_name}")
-    else:
-        print("No founder name provided for test.") 
+            # If research failed, print an error JSON to stdout and exit with error code
+            error_output = {
+                "status": "error",
+                "founder_name": args.name,
+                "linkedin_url": args.linkedin_url,
+                "error_message": f"Failed to retrieve or generate profile for {args.name}."
+            }
+            print(json.dumps(error_output, indent=None))
+            print(f"Founder research agent: Failed to generate profile for {args.name}.", file=sys.stderr)
+            sys.exit(1)
+            
+    except Exception as e_main:
+        # Catch any other unexpected errors during the main execution
+        error_output = {
+            "status": "error",
+            "founder_name": args.name,
+            "linkedin_url": args.linkedin_url,
+            "error_message": f"Critical error in founder_research_agent CLI for {args.name}: {str(e_main)}"
+        }
+        print(json.dumps(error_output, indent=None)) # Print error JSON to stdout
+        print(f"Critical error in founder_research_agent CLI for {args.name}: {e_main}", file=sys.stderr)
+        sys.exit(1) 

@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, List
+import sys
 
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
@@ -25,15 +26,15 @@ class EmailClassification(BaseModel):
     recent_survey_responses: Optional[List[dict]] = Field(None, description="Recent survey responses related to the sender or company, if available.")
 
 # --- LLM and Parser Setup ---
-llm = None
+classification_llm = None
 if os.getenv("ANTHROPIC_API_KEY"):
-    llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-    print("classify_email_tool: Using Anthropic Claude model.")
+    print("classify_email_tool: Using Anthropic Claude model.", file=sys.stderr)
+    classification_llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0.1)
 elif os.getenv("OPENAI_API_KEY"):
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-    print("classify_email_tool: Using OpenAI GPT model.")
+    print("classify_email_tool: Using OpenAI GPT model.", file=sys.stderr)
+    classification_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 else:
-    print("Warning: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set for classify_email_tool. Tool will not function.")
+    print("classify_email_tool: Warning - No LLM API key found for classification tool.", file=sys.stderr)
 
 classification_parser = PydanticOutputParser(pydantic_object=EmailClassification)
 
@@ -58,35 +59,36 @@ def classify_email_tool(subject: str, body: str) -> dict:
     Classifies an email based on its subject and body content.
     Returns a structured dictionary with category, urgency, summary, and extracted entities.
     """
-    if not llm:
+    if not classification_llm:
         return {"error": "LLM for classification not available. Check API keys."}
 
-    chain = classification_prompt_template | llm | classification_parser
+    chain = classification_prompt_template | classification_llm | classification_parser
     print(f"classify_email_tool: Classifying email - Subject: '{subject[:50]}...'")
     try:
         result = chain.invoke({"subject": subject, "body": body})
         return result.model_dump()
     except Exception as e:
-        print(f"Error during email classification: {e}")
+        print(f"Error during email classification: {e}", file=sys.stderr)
         return {"error": f"Failed to classify email: {str(e)}"}
 
 if __name__ == "__main__":
-    if not llm:
-        print("Cannot run test for classify_email_tool: LLM not configured.")
+    print("Testing classify_email_tool...", file=sys.stderr)
+    if not classification_llm:
+        print("Cannot run test for classify_email_tool: LLM not configured.", file=sys.stderr)
     else:
-        print("Testing classify_email_tool...")
+        print("Testing classify_email_tool...", file=sys.stderr)
         test_subject = "Investment Opportunity: AI Startup Synergix"
         test_body = (
             "Dear Investor,\n\nWe are Synergix, a cutting-edge AI startup seeking $500,000 in seed funding "
             "to revolutionize the logistics industry. Our CEO is Jane Doe.\n\nBest,\nJohn Smith"
         )
         classification = classify_email_tool.invoke({"subject": test_subject, "body": test_body})
-        print("\nClassification Result:")
+        print("\nClassification Result:", file=sys.stderr)
         import json
-        print(json.dumps(classification, indent=2))
+        print(json.dumps(classification, indent=2), file=sys.stderr)
 
         test_subject_job = "Application for Software Engineer Position - John Applicant"
         test_body_job = "Dear Hiring Manager, I am writing to apply for the Software Engineer role advertised on your website. My resume is attached. I previously worked at Tech Solutions Inc."
         classification_job = classify_email_tool.invoke({"subject": test_subject_job, "body": test_body_job})
-        print("\nJob Application Classification Result:")
-        print(json.dumps(classification_job, indent=2)) 
+        print("\nJob Application Classification Result:", file=sys.stderr)
+        print(json.dumps(classification_job, indent=2), file=sys.stderr) 

@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from langchain_core.tools import tool
+import sys
 
 # Load environment variables (though save_tool doesn't strictly need them from .env)
 load_dotenv()
@@ -25,19 +26,19 @@ def save_tool(filename: str, text: str) -> str:
 
 if __name__ == '__main__':
     # Basic test
-    print("Testing save.py...")
+    print("Testing save.py...", file=sys.stderr)
     test_filename = "test_save_output.txt"
     test_content = "This is content saved by save.py test."
-    print(f"Saving to: {test_filename}")
+    print(f"Saving to: {test_filename}", file=sys.stderr)
     result = save_tool.invoke({"filename": test_filename, "text": test_content})
-    print(result)
+    print(result, file=sys.stderr)
     if os.path.exists(test_filename):
-        print(f"File '{test_filename}' created. Verifying content...")
+        print(f"File '{test_filename}' created. Verifying content...", file=sys.stderr)
         with open(test_filename, "r") as f:
             content = f.read()
         assert content == test_content
-        print("Content verified.")
+        print("Content verified.", file=sys.stderr)
         os.remove(test_filename)
-        print(f"File '{test_filename}' removed.")
+        print(f"File '{test_filename}' removed.", file=sys.stderr)
     else:
-        print(f"File '{test_filename}' NOT created.") 
+        print(f"File '{test_filename}' NOT created.", file=sys.stderr) 

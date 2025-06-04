@@ -3,12 +3,11 @@ langchain-community
 langchain-openai
 langchain-anthropic
 langchain-tavily # For Tavily Search tool
+langchain-core # Added for pdf_extractor
 wikipedia
 python-dotenv
 pydantic
 requests # For Relevance AI API and other HTTP requests
-
-# Added from the other requirements list
 beautifulsoup4
 lxml
 httpx
@@ -16,6 +15,8 @@ imaplib2 ; sys_platform != "win32"
 tenacity
 structlog
 python-dateutil
+PyPDF2
+pdfplumber
 
 # Ensure specific versions if needed, e.g.:
 # langchain==0.1.16

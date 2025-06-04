@@ -3,6 +3,8 @@ import json
 import re
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
+import argparse
+import sys
 
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -71,20 +73,17 @@ MARKET_INTELLIGENCE_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 def get_llm():
     """Initializes and returns the appropriate LLM based on available API keys."""
     if os.getenv("ANTHROPIC_API_KEY"):
-        print("Using Anthropic Claude model for market intelligence.")
+        print("Using Anthropic Claude model for market intelligence.", file=sys.stderr)
         return ChatAnthropic(
             model="claude-3-haiku-20240307", 
-            temperature=0.2,
-            max_tokens=4000  # Increased max tokens
+            temperature=0.3,
+            max_tokens=4000
         )
     elif os.getenv("OPENAI_API_KEY"):
-        print("Using OpenAI GPT model for market intelligence.")
-        # OpenAI models in Langchain usually handle max tokens differently or have higher defaults
-        # For GPT-3.5-turbo, the max output is typically around 4096 tokens.
-        # If using GPT-4-turbo, it's much higher.
+        print("Using OpenAI GPT model for market intelligence.", file=sys.stderr)
         return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.2)
     else:
-        print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.")
+        print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.", file=sys.stderr)
         return None
 
 
@@ -99,15 +98,15 @@ def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnaly
     Returns:
         MarketAnalysis object if successful, None otherwise
     """
-    print(f"Starting comprehensive market intelligence for: \"{market_or_industry}\"")
+    print(f"Starting comprehensive market intelligence for: \"{market_or_industry}\"", file=sys.stderr)
 
     # --- API Key and Tool Availability Checks ---
     if not tavily_search_tool_instance:
-        print("FATAL: Tavily search_tool is not available (check TAVILY_API_KEY in .env). Cannot proceed with market research.")
+        print("FATAL: Tavily search_tool is not available (check TAVILY_API_KEY in .env). Cannot proceed with market research.", file=sys.stderr)
         return None
 
     if not wiki_tool_instance:
-        print("Warning: Wikipedia tool is not available. Market research will rely solely on web search.")
+        print("Warning: Wikipedia tool is not available. Market research will rely solely on web search.", file=sys.stderr)
 
     llm = get_llm()
     if not llm:
@@ -128,86 +127,70 @@ def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnaly
     agent_executor = AgentExecutor(
         agent=market_intelligence_agent,
         tools=available_tools,
-        verbose=True,
+        verbose=False,
         handle_parsing_errors=True,
         max_iterations=15  # Allow more iterations for comprehensive market research
     )
 
     raw_agent_output_container = None
+    json_to_parse = ""
     try:
         raw_agent_output_container = agent_executor.invoke({"input": market_or_industry})
         
         # Robustly extract the string content from the agent's output
-        llm_response_content_str = None # This will hold the string that potentially contains the JSON
+        llm_response_content_str = None
         if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
             output_payload = raw_agent_output_container["output"]
             if isinstance(output_payload, str):
                 llm_response_content_str = output_payload
             elif isinstance(output_payload, list) and output_payload:
-                # Handle cases where output is a list of content blocks (e.g., from Anthropic)
                 first_block = output_payload[0]
                 if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
                     llm_response_content_str = first_block["text"]
-                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...")
+                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...", file=sys.stderr)
                 else:
-                    # Fallback if the list structure is not as expected
-                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}")
+                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}", file=sys.stderr)
                     llm_response_content_str = str(output_payload) 
             else:
-                # Fallback for other unexpected structures within output['output']
-                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}")
+                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}", file=sys.stderr)
                 llm_response_content_str = str(output_payload)
-        elif isinstance(raw_agent_output_container, str): # If the agent directly returns a string
+        elif isinstance(raw_agent_output_container, str):
              llm_response_content_str = raw_agent_output_container
         else:
-            # Fallback for other unexpected overall output structures
-            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}")
+            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}", file=sys.stderr)
             llm_response_content_str = str(raw_agent_output_container)
 
         if not llm_response_content_str:
-            print("Agent did not produce a parsable output string for MarketAnalysis.")
+            print("Agent did not produce a parsable output string for MarketAnalysis.", file=sys.stderr)
             return None
 
-        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...")
+        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...", file=sys.stderr)
 
-        # Attempt to extract the JSON block from the content string
-        # The LLM is expected to return JSON, possibly wrapped in some text (e.g. <result> or ```json)
-        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str) # Use [\s\S]* for robust multiline match
+        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str)
         if json_match:
             json_to_parse = json_match.group(0).strip()
-            print(f"Extracted JSON block for MarketAnalysis parsing (stripped): {json_to_parse[:300]}...")
+            print(f"Extracted JSON block for MarketAnalysis parsing (stripped): {json_to_parse[:300]}...", file=sys.stderr)
         else:
-            # Fallback if regex doesn't find a clear JSON object.
-            # This might happen if the LLM fails to produce JSON or if the wrapping is unusual.
-            # Attempt to clean common markdown/XML-like wrappers.
             temp_str = llm_response_content_str.strip()
-            # Remove ```json ... ``` markdown
             if temp_str.startswith("```json"):
                 temp_str = temp_str[len("```json"):].strip()
             if temp_str.endswith("```"):
                 temp_str = temp_str[:-len("```")].strip()
             
-            # Remove <result> ... </result> or similar XML-like tags if they are the outermost layer
-            # A more robust way for XML/HTML like tags might involve a library if it gets complex,
-            # but for simple cases, string methods or simpler regex might work.
-            # For now, we rely on the primary regex or a simple check if the cleaned string is JSON.
-
             if temp_str.startswith("{") and temp_str.endswith("}"):
                 json_to_parse = temp_str
-                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...")
+                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...", file=sys.stderr)
             else:
-                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...")
-                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container)
+                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...", file=sys.stderr)
+                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
                 return None
         
-        # Parse the JSON string into MarketAnalysis object
-        parsed_dict = json.loads(json_to_parse, strict=False) # strict=False for leniency with newlines in strings
+        parsed_dict = json.loads(json_to_parse, strict=False)
         market_analysis_obj = MarketAnalysis.model_validate(parsed_dict)
 
-        print("\n--- Market Intelligence Output ---")
-        print(market_analysis_obj.model_dump_json(indent=2))
+        print("\n--- Market Intelligence Output (to be saved to file) ---", file=sys.stderr)
+        print(market_analysis_obj.model_dump_json(indent=2), file=sys.stderr)
 
-        # Save the structured data
         safe_market_name = "".join(c if c.isalnum() else "_" for c in market_or_industry)[:50].rstrip("_")
         output_filename = f"market_analysis_{safe_market_name}.json"
         
@@ -216,69 +199,70 @@ def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnaly
                 "filename": output_filename,
                 "text": market_analysis_obj.model_dump_json(indent=2)
             })
-            print(f"\nMarket analysis saved to {output_filename}")
+            print(f"\nMarket analysis saved to {output_filename}", file=sys.stderr)
         except Exception as e_save:
-            print(f"Error saving market analysis to file: {e_save}")
+            print(f"Error saving market analysis to file: {e_save}", file=sys.stderr)
 
-        # Print summary of key findings
-        print("\n--- Market Intelligence Summary ---")
+        # Print summary of key findings to stderr
+        print("\n--- Market Intelligence Summary (for logs) ---", file=sys.stderr)
         if market_analysis_obj.industry_overview:
-            print(f"Industry Overview: {market_analysis_obj.industry_overview[:200]}...")
+            print(f"Industry Overview: {market_analysis_obj.industry_overview[:200]}...", file=sys.stderr)
         if market_analysis_obj.market_size_tam:
-            print(f"Total Addressable Market (TAM): {market_analysis_obj.market_size_tam}")
+            print(f"Total Addressable Market (TAM): {market_analysis_obj.market_size_tam}", file=sys.stderr)
         if market_analysis_obj.market_growth_rate_cagr:
-            print(f"Market Growth Rate (CAGR): {market_analysis_obj.market_growth_rate_cagr}")
+            print(f"Market Growth Rate (CAGR): {market_analysis_obj.market_growth_rate_cagr}", file=sys.stderr)
         if market_analysis_obj.market_timing_assessment:
-            print(f"Market Timing: {market_analysis_obj.market_timing_assessment}")
+            print(f"Market Timing: {market_analysis_obj.market_timing_assessment}", file=sys.stderr)
         if market_analysis_obj.competitors:
-            print(f"Key Competitors Identified: {len(market_analysis_obj.competitors)}")
-            for comp in market_analysis_obj.competitors[:3]:  # Show first 3
-                print(f"  - {comp.name}: {comp.funding_raised or 'Funding unknown'}")
+            print(f"Key Competitors Identified: {len(market_analysis_obj.competitors)}", file=sys.stderr)
+            for comp in market_analysis_obj.competitors[:3]:
+                print(f"  - {comp.name}: {comp.funding_raised or 'Funding unknown'}", file=sys.stderr)
 
         return market_analysis_obj
 
     except json.JSONDecodeError as json_err:
-        print(f"JSONDecodeError: Failed to parse JSON string for MarketAnalysis. Error: {json_err}")
-        print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000] if 'json_to_parse' in locals() else 'N/A'}")
+        print(f"JSONDecodeError: Failed to parse JSON string for MarketAnalysis. Error: {json_err}", file=sys.stderr)
+        print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000]}", file=sys.stderr)
         if raw_agent_output_container:
-            print("Raw agent output at time of error:", raw_agent_output_container)
+            print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
         return None
     except Exception as e:
-        print(f"An error occurred during market intelligence agent execution or response parsing: {e}")
+        print(f"An error occurred during market intelligence agent execution or response parsing: {e}", file=sys.stderr)
         if raw_agent_output_container:
-            print("Raw agent output at time of error:", raw_agent_output_container)
+            print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
         return None
 
 
 if __name__ == "__main__":
-    print("Testing market_intelligence_agent.py...")
+    print("Market intelligence agent CLI starting...", file=sys.stderr)
     
-    # Example test markets
-    test_markets = [
-        "AI-powered fintech",
-        "Creator economy tools",
-        "Sustainable food tech",
-        "Mental health apps",
-        "Electric vehicle charging infrastructure"
-    ]
+    parser = argparse.ArgumentParser(description="Market Intelligence Agent CLI - Researches a market/industry sector.")
+    parser.add_argument("--sector", type=str, required=True, help="The market or industry sector to research.")
     
-    print("\nExample markets to research:")
-    for i, market in enumerate(test_markets, 1):
-        print(f"{i}. {market}")
-    
-    market_to_research = input("\nEnter a market/industry name for research (or press Enter for default): ").strip()
-    
-    if not market_to_research:
-        market_to_research = "AI-powered fintech"  # Default
-        print(f"Using default market: {market_to_research}")
+    args = parser.parse_args()
 
-    if market_to_research:
-        analysis = run_market_intelligence_cli(market_to_research)
+    try:
+        analysis = run_market_intelligence_cli(args.sector)
+        
         if analysis:
-            print(f"\nSuccessfully completed market intelligence for: {market_to_research}")
-            if analysis.market_timing_assessment:
-                print(f"Market Timing Assessment: {analysis.market_timing_assessment}")
+            print(analysis.model_dump_json(indent=None))
+            print(f"Market intelligence agent: Successfully generated JSON output for sector: {args.sector}", file=sys.stderr)
         else:
-            print(f"Failed to complete market intelligence for: {market_to_research}")
-    else:
-        print("No market name provided for test.")
+            error_output = {
+                "status": "error",
+                "sector": args.sector,
+                "error_message": f"Failed to retrieve or generate market analysis for sector: {args.sector}."
+            }
+            print(json.dumps(error_output, indent=None))
+            print(f"Market intelligence agent: Failed to generate analysis for sector: {args.sector}.", file=sys.stderr)
+            sys.exit(1)
+            
+    except Exception as e_main:
+        error_output = {
+            "status": "error",
+            "sector": args.sector,
+            "error_message": f"Critical error in market_intelligence_agent CLI for sector {args.sector}: {str(e_main)}"
+        }
+        print(json.dumps(error_output, indent=None))
+        print(f"Critical error in market_intelligence_agent CLI for sector {args.sector}: {e_main}", file=sys.stderr)
+        sys.exit(1)

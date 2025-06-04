@@ -1,0 +1,255 @@
+{
+  "deal_id": "227710582988",
+  "orchestration_start_time": "2025-06-04T15:49:03.124309",
+  "hubspot_deal_data": {
+    "deal": {
+      "amount": "370000",
+      "closedate": "2025-06-03T11:39:47.109Z",
+      "createdate": "2025-06-02T18:24:00.495Z",
+      "dealname": "emwillcare - Pitch for investment",
+      "dealstage": "closedlost",
+      "hs_lastmodifieddate": "2025-06-03T11:39:55.740Z",
+      "hs_object_id": "227710582988",
+      "hubspot_owner_id": null,
+      "pipeline": "default",
+      "request": "15",
+      "deal_stage_label": "Rejected"
+    },
+    "associated_contacts": [
+      {
+        "id": "317541415110",
+        "properties": {
+          "attach_link_to_all_founders_linkedin_profiles": null,
+          "company": null,
+          "createdate": "2025-06-02T18:23:56.153Z",
+          "do_you_and_the_founders_have_the_right_to_work_in_the_uk_": "Yes",
+          "email": "emma.williams@positiveageingconsultancy.co.uk",
+          "firstname": "Emma",
+          "hs_createdate": null,
+          "hs_linkedin_url": "www.linkedin.com/in/dr-emma-williams",
+          "hs_object_id": "317541415110",
+          "jobtitle": null,
+          "lastmodifieddate": "2025-06-03T11:39:52.752Z",
+          "lastname": "Williams",
+          "lifecyclestage": "1095221483",
+          "list_name_of_all_founders": null,
+          "phone": null,
+          "website": null
+        },
+        "createdAt": "2025-06-02T18:23:56.153Z",
+        "updatedAt": "2025-06-03T11:39:52.752Z",
+        "archived": false
+      }
+    ],
+    "associated_companies": [
+      {
+        "id": "165919123677",
+        "properties": {
+          "city": null,
+          "country": null,
+          "createdate": "2025-06-02T18:23:56.683Z",
+          "describe_the_business_product_in_one_sentence": null,
+          "description": "Up to 90% of people living with dementia will experience distressed behaviour as a result of unmet needs, but the majority of it is preventable. We\u2019ve built the first AI tool that predicts distressed behaviour in dementia care, before it happens, giving carers real-time & evidence-based support to prevent distress, prevent crises, reduce medication, and meet people's needs effectively.",
+          "does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Yes",
+          "domain": "emwillcare.com",
+          "how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__": "We\u2019re combining behavioural science with machine learning to do something that hasn\u2019t been done before in dementia care: predict distressed behaviour before it happens.\r\n\r\nInstead of waiting for things to go wrong and reacting in crisis, Less Distress is an app that uses real-world care data to spot early warning signs and guide carers in real time. It\u2019s personalised, preventative, and based on the science of why behaviour happens in the first place, something most systems completely ignore.\r\n\r\nOur innovation isn\u2019t just in the tech, it\u2019s in the model. We\u2019re giving frontline carers access to the kind of behavioural insight that\u2019s usually locked away in specialist services, and doing it in a way that\u2019s fast, affordable, easy to use on the job, and a globally scalable solution.",
+          "how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Less Distress is about making things better for everyone involved in dementia care: The person, the carer, and the family.\r\n\r\nAll behaviour happens for a reason. In dementia, that reason is often an unmet need, but it\u2019s very hard for carers to understand what the need is without proper training (which they very rarely receive). We help carers see what the behaviour is trying to say, so they can respond in a way that meets the need, not just manages the reaction.\r\n\r\nWhen carers can predict distress before it happens, they can step in early and calmly, rather than reacting in crisis. Right now, when distressed behaviour is difficult for carers to support with, people are given unlicensed antipsychotics just to keep them sedated even though the side effects can be devastating: sedation, stroke, and death. It\u2019s not person-centred care, it\u2019s damage control.\r\n\r\nLess Distress helps change that. We give carers real tools, grounded in behavioural science, so they can reduce medication, prevent placement breakdowns, and support the person effectively. That means more dignity, more calm, and more moments where people feel understood, not lost.\r\n\r\nWhen it feels like no one cares...emwillcare",
+          "how_much_are_you_raising_at_this_stage_": "\u00a3250-500k",
+          "how_much_have_you_raised_prior_to_this_round_": "0",
+          "how_much_of_the_equity_do_you_your_team_have_": "100",
+          "hs_createdate": null,
+          "hs_lastmodifieddate": "2025-06-03T11:39:51.516Z",
+          "hs_object_id": "165919123677",
+          "industry": null,
+          "lifecyclestage": "1095221483",
+          "name": "emwillcare",
+          "number_of_employees": "0-10",
+          "numberofemployees": null,
+          "phone": null,
+          "please_attach_your_pitch_deck": "https://api-eu1.hubspot.com/form-integrations/v1/uploaded-files/signed-url-redirect/241972526310?portalId=145458831&sign=8xy8NABPw0AeW8Z1BM2T9PB9sPQ%3D&conversionId=0470020b-17a8-48e5-ae87-0d56ea730f9c&filename=0470020b-17a8-48e5-ae87-0d56ea730f9c-0-2/please_attach_your_pitch_deck-LessDistress-PitchDeck.pdf",
+          "please_expand": "I\u2019m not just looking for money, I\u2019m looking for real partnership that brings not just funding, but support, mentorship, and guidance from people who\u2019ve done this before and can help me take what I\u2019ve started and turn it into something huge.\r\n\r\nThe AI company we\u2019re working with built our prototype for free, and they\u2019re still developing with us at no cost, because they believe in what we\u2019re doing. It's the same with our marketing support. People are giving their time and skills because they\u2019ve seen the impact that I have as a behaviour analyst, and they believe in me to make it happen.\r\n\r\nIn July, I\u2019ll be pitching to investors for the first time at an Alzheimer\u2019s Society event. I know my field, I\u2019m one of only 80 behavioural analysts in the world who specialise in dementia. What I need now is someone who can help me build this into a service that\u2019s available to everyone who needs it at a devastating time in their life.\r\n\r\nI\u2019m here to deliver and I\u2019m the right person for this job. I\u2019ll be the best entrepreneur you\u2019ve ever worked with. I care for the people I help and want to make their lives better on a wider scale than I can do in-person. I make change happen, I\u2019ve done it all my life (I started my other business 4 years ago, the first behavioural consultancy business in the UK for dementia care). And now I\u2019m ready to do it on a much bigger scale to help millions of people.",
+          "website": "https://www.emwillcare.com",
+          "what_best_describes_your_customer_base_": "B2B",
+          "what_best_describes_your_stage_of_business_": "I have a business that I want to scale",
+          "what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_": "Advice and support",
+          "what_is_your_current_monthly_revenue_": "0",
+          "what_is_your_ltm__last_12_months__revenue_": "0",
+          "what_is_your_usp__what_makes_you_different_from_your_competitors_": "There are currently no competitors in the field. I\u2019m one of only 80 behaviour analysts in the whole world specialising in dementia care, and I\u2019ve spent years working directly with carers, trying to stop distress before it spirals into crisis. However, there is only so many people I can help in-person.\r\n\r\n'Less Distress', by emwillcare takes my knowledge and expertise and is the first tool that actually predicts distressed behaviour using behavioural science and AI, not just tracking what\u2019s already gone wrong, but helping carers know what to do next, in real time. This isn\u2019t just innovation, it\u2019s a lifeline for caregivers.\r\n\r\nWe are supported by the Alzheimer's Society Launchpad programme, and Business Wales Accelerator Growth Programme.",
+          "what_sector_is_your_business_product_": "Healthcare & Life Sciences/ Health-tech",
+          "what_valuation_are_you_raising_at_": "\u00a30-1m",
+          "where_is_your_business_based_": "UK but wanting to scale to US",
+          "which__if_any__of_the_un_sdg_17_goals_does_your_business_address_": "Good Health and Well-being"
+        },
+        "createdAt": "2025-06-02T18:23:56.683Z",
+        "updatedAt": "2025-06-03T11:39:51.516Z",
+        "archived": false
+      }
+    ]
+  },
+  "pitch_deck_analysis": {
+    "status": "success",
+    "raw_text": "Revolutionising Dementia Care with Behavioural Science & AI\nPredict Distress. Prevent Crisis. Support Carers.\nDr Emma Williams\n8/03/20XX PITCH DECK 1\n\nName: Jess\nTitle: Official Lifesaver\nThe dog who changed everything for dementia care\nPITCH DECK\n\nTHE PROBLEM\nINCREASED HEALTH & 30% AVERAGE STAFF UNLICENCED\nSOCIAL CARE COSTS CHURN RATE ANTIPSYCHOTIC DRUG USE\nInappropriate use of\nInability to support with Average cost of onboarding a\nunlicensed antipsychotic drugs\nbehaviours resulting from new care staff member is \u00a33642\n(with nasty side effects) for\ndementia leads to increased (and they rarely receive\nbehavioural issues\ncare costs behavioural support or training)\nDementia care costs the UK \u00a334.7 billion/year\nExpected to hit \u00a394.1 billion by 2040\n3\n\nLESS DISTRESS\nAI-POWERED BEHAVIOURAL SUPPORT FOR DEMENTIA\nCARERS\nEARLY TO AI\nUNIQUE MARKET\nThe digital healthcare Caregivers log\nplatform that automates distressed behaviours &\nthe process of assessing AI-driven behavioural\nand preventing science identifies\ndistressed behaviours for triggers & patterns\npeople with dementia\nTESTED AUTHENTIC\nBased on evidence-based Reduces distress,\nscientific principles, A improves care, and\nrecommendation engine prevents unnecessary\nprovides personalised, medication\nactionable strategies\n4\n\nS\nD\nPosition for\nN\nlarger NHS &\nAI model\nU care provider\nrefinement\ncontracts\nF\nRun pilot in\nusing real-\ncare homes\nF world data\nBuild MVP\nO\ndigital\nplatform\nE\nS\nU\nLESS DISTRESS, BY EMWILLCARE HAS ADVANCE ASSURANCE IN PLACE FOR SEIS & EIS\n6\n\nWhen it feels like no-one cares\u2026\u2026\u2026\nPredict Distress. Prevent Crisis. Support Carers.\nWe make distress the exception, not the expectation",
+    "structured_data": {
+      "executive_summary": "Revolutionising Dementia Care with Behavioural Science & AI. Predict Distress. Prevent Crisis. Support Carers.",
+      "problem_statement": "Inappropriate use of unlicensed antipsychotic drugs (with nasty side effects) for behavioural issues, Inability to support with behaviours resulting from dementia leads to increased care costs, Dementia care costs the UK \u00a334.7 billion/year, Expected to hit \u00a394.1 billion by 2040",
+      "solution": "The digital healthcare platform that automates the process of assessing and preventing distressed behaviours for people with dementia, Based on evidence-based scientific principles, A recommendation engine provides personalised, actionable strategies",
+      "product_service_description": "AI-powered behavioural support for dementia carers, Caregivers log distressed behaviours & AI-driven behavioural science identifies triggers & patterns, Reduces distress, improves care, and prevents unnecessary medication",
+      "market_size_opportunity": null,
+      "business_model": null,
+      "team": "Dr Emma Williams",
+      "traction_milestones": "Run pilot in care homes, Build MVP digital platform, Position for larger NHS & care provider contracts, AI model refinement using real-world data",
+      "financials_projections": null,
+      "funding_ask_use_of_funds": null,
+      "competition": null,
+      "go_to_market_strategy": null
+    },
+    "error_message": null
+  },
+  "founder_profiles": [
+    {
+      "name": "Dr Emma Williams",
+      "linkedin_url": "https://www.linkedin.com/in/dr-emma-williams",
+      "role_in_company": "Founder",
+      "background_summary": "Dr Emma Williams is a highly experienced professional in dementia care, with over 27 years in the field and a PhD in Psychology from Bangor University. She is the founder of EmWill Care, a company focused on revolutionising dementia care by integrating behavioural science with smart technology, specifically through their \"Less Distress\" tool. She also founded PACT (Positive Ageing Consultancy & Training). Her leadership experience includes her current founder role and previous roles such as Director of Training for North Wales Regional Partnership Board and providing bespoke behavioural consultancy. Dr Williams is currently participating in accelerator programs with the Alzheimer's Society and Business Wales, indicating active development and validation of her venture.",
+      "previous_companies": [
+        {
+          "company_name": "EmWill Care",
+          "role": "Founder",
+          "duration": "10 months, since Sep 2024",
+          "description": null,
+          "was_founder": true
+        },
+        {
+          "company_name": "PACT (Positive Ageing Consultancy & Training)",
+          "role": null,
+          "duration": null,
+          "description": null,
+          "was_founder": true
+        },
+        {
+          "company_name": "North Wales Regional Partnership Board",
+          "role": "Director of Training",
+          "duration": null,
+          "description": null,
+          "was_founder": false
+        }
+      ],
+      "education": [
+        {
+          "institution": "Bangor University",
+          "degree": "PhD",
+          "field_of_study": "Psychology",
+          "graduation_year": null,
+          "notable_achievements": null
+        },
+        {
+          "institution": null,
+          "degree": "MSc",
+          "field_of_study": "Applied Behaviour Analysis",
+          "graduation_year": null,
+          "notable_achievements": null
+        }
+      ],
+      "key_skills_and_expertise": [
+        "Dementia care",
+        "Behavioural science",
+        "Smart technology",
+        "Consultancy"
+      ],
+      "public_speaking_or_content": [
+        {
+          "type": "event",
+          "title": "Showcased EmWill Care's \"Less Distress\" tool at London Tech Week",
+          "url": null
+        },
+        {
+          "type": "blog",
+          "title": "Understanding Distressed Behaviours in Dementia",
+          "url": null
+        }
+      ],
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": true,
+        "exciting_solution_to_problem": true,
+        "founded_something_relevant_before": true,
+        "impressive_relevant_past_experience": true,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "Based on structured output from research_prospect_tool"
+      }
+    }
+  ],
+  "market_analysis": {
+    "jurisdiction": "Global",
+    "industry_overview": "The healthcare and life sciences industry encompasses a wide range of sectors and disciplines focused on human health, including biotechnology, pharmaceuticals, medical devices, diagnostics, and healthcare services. It is one of the world's largest and fastest-growing industries, consuming over 10% of GDP in most developed countries. The industry is driven by factors like technological advancements, aging populations, the rise of chronic diseases, and the expansion of personalized medicine.",
+    "target_market_segment": "The healthcare and life sciences industry serves a diverse range of customers, including patients, healthcare providers, payers, researchers, and consumers seeking health and wellness products and services.",
+    "market_size_tam": "$10.47 trillion (global life sciences market in 2024)",
+    "market_size_sam": "$11.27 trillion (global life sciences market in 2025)",
+    "market_size_som": "Not available",
+    "market_growth_rate_cagr": "10.28% CAGR from 2025 to 2034 (global life sciences market)",
+    "key_market_trends": [
+      "Technological advancements and digital transformation",
+      "Growth of personalized medicine and biotechnology",
+      "Expansion of digital health and remote monitoring",
+      "Increasing focus on emerging markets"
+    ],
+    "competitor_landscape_summary": "The healthcare and life sciences industry is highly competitive, with a mix of large multinational corporations and specialized smaller players. Key competitors include Thermo Fisher Scientific, Danaher, Roche, Merck, Pfizer, Johnson & Johnson, Agilent, Illumina, Becton Dickinson, Bio-Rad, and Abbott Laboratories.",
+    "competitors": [
+      {
+        "name": "Thermo Fisher Scientific",
+        "website": "https://www.thermofisher.com/",
+        "strengths": [
+          "Leading provider of scientific instrumentation, reagents, and software",
+          "Strong presence across life sciences, diagnostics, and applied markets"
+        ],
+        "weaknesses": null,
+        "market_share_estimate": null,
+        "funding_raised": null
+      },
+      {
+        "name": "Danaher Corporation",
+        "website": "https://www.danaher.com/",
+        "strengths": [
+          "Diversified portfolio of life sciences, diagnostics, and environmental businesses",
+          "Expertise in acquisition and integration of complementary companies"
+        ],
+        "weaknesses": null,
+        "market_share_estimate": null,
+        "funding_raised": null
+      },
+      {
+        "name": "Roche Holding AG",
+        "website": "https://www.roche.com/",
+        "strengths": [
+          "Leading position in pharmaceuticals and diagnostics",
+          "Strong pipeline of innovative drugs and diagnostic tests"
+        ],
+        "weaknesses": null,
+        "market_share_estimate": null,
+        "funding_raised": null
+      }
+    ],
+    "company_competitive_advantages": [
+      "Technological leadership and innovation",
+      "Diversified product and service portfolios",
+      "Strong brand recognition and customer loyalty",
+      "Robust R&D capabilities and pipeline of new products"
+    ],
+    "barriers_to_entry": [
+      "High capital requirements for R&D and manufacturing",
+      "Stringent regulatory environment and lengthy approval processes",
+      "Established relationships with healthcare providers and payers",
+      "Intellectual property protection and patent barriers"
+    ],
+    "market_timing_assessment": "Favorable, with continued growth driven by aging populations, chronic disease prevalence, and advancements in personalized medicine and digital health",
+    "regulatory_environment": "The healthcare and life sciences industry is heavily regulated, with requirements around product safety, efficacy, and quality. Regulations vary by geography, but typically include drug and device approvals, clinical trial protocols, data privacy, and manufacturing standards."
+  },
+  "decision_support_output": {
+    "status": "error",
+    "message": "run_decision_support_cli() got an unexpected keyword argument 'founder_profiles_results'"
+  },
+  "errors": [
+    "Exception in decision support: run_decision_support_cli() got an unexpected keyword argument 'founder_profiles_results'"
+  ],
+  "orchestration_end_time": "2025-06-04T15:50:20.806673"
+}
