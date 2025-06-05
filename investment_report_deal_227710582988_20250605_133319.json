@@ -1,6 +1,6 @@
 {
   "deal_id": "227710582988",
-  "orchestration_start_time": "2025-06-04T15:23:45.584283",
+  "orchestration_start_time": "2025-06-05T13:32:24.220166+00:00",
   "hubspot_deal_data": {
     "deal": {
       "amount": "370000",
@@ -105,160 +105,123 @@
     },
     "error_message": null
   },
-  "founder_profiles": [
-    {
-      "name": "Dr Emma Williams",
-      "linkedin_url": "https://www.linkedin.com/in/dr-emma-williams",
-      "role_in_company": "Founder",
-      "background_summary": "Dr Emma Williams is a PhD-educated psychologist with over 27 years of experience in the care sector, specialising in dementia care and behavioural science. She is the founder of EmWill Care, a company focused on revolutionising dementia care by integrating behavioural science with smart technology. Her primary solution, \"Less Distress,\" is a behavioural tool designed to empower caregivers to predict and prevent distressed behaviours in individuals with dementia, aiming to reduce reliance on crisis-driven care and antipsychotic medications. Dr Williams is also the founder of PACT (Positive Ageing Consultancy & Training). Her leadership experience includes her founder roles and previous positions such as Director of Training for the North Wales Regional Partnership Board and providing bespoke behavioural consultancy.",
-      "previous_companies": [
-        {
-          "company_name": "EmWill Care",
-          "role": "Founder",
-          "duration": "10 months, since Sep 2024",
-          "description": null,
-          "was_founder": true
-        },
-        {
-          "company_name": "PACT (Positive Ageing Consultancy & Training)",
-          "role": "Founder",
-          "duration": null,
-          "description": null,
-          "was_founder": true
-        },
-        {
-          "company_name": "North Wales Regional Partnership Board",
-          "role": "Director of Training",
-          "duration": null,
-          "description": null,
-          "was_founder": false
-        }
-      ],
-      "education": [
-        {
-          "institution": "University",
-          "degree": "PhD",
-          "field_of_study": "Psychology",
-          "graduation_year": null,
-          "notable_achievements": null
-        },
-        {
-          "institution": null,
-          "degree": "MSc",
-          "field_of_study": "Applied Behaviour Analysis",
-          "graduation_year": null,
-          "notable_achievements": null
-        }
-      ],
-      "key_skills_and_expertise": [
-        "Dementia Care",
-        "Behavioural Science",
-        "Smart Technology"
-      ],
-      "public_speaking_or_content": [
-        {
-          "type": "blog",
-          "title": "Understanding Dementia-Related Behaviours",
-          "url": null
-        }
-      ],
-      "investment_criteria_assessment": {
-        "focus_industry_fit": true,
-        "mission_alignment": true,
-        "exciting_solution_to_problem": true,
-        "founded_something_relevant_before": true,
-        "impressive_relevant_past_experience": true,
-        "exceptionally_smart_or_strategic": true,
-        "assessment_summary": "Based on structured output from research_prospect_tool"
-      }
-    }
-  ],
+  "founder_profiles": [],
+  "company_profile": {
+    "company_name": "emwillcare",
+    "website": "https://www.signalhire.com/companies/emwillcare",
+    "linkedin_url": "https://uk.linkedin.com/company/positive-ageing-consultancy-training",
+    "description": "At emwillcare, our mission is to transform dementia care by ensuring that individuals living with dementia receive the best possible support.",
+    "industry": "Healthcare",
+    "sub_industry": "Dementia Care",
+    "founded_year": null,
+    "funding_stage": null,
+    "total_funding_raised": null,
+    "funding_rounds_details": null,
+    "key_products_services": [
+      "Online courses",
+      "Direct consultancy services to support people caring for those with dementia"
+    ],
+    "business_model": null,
+    "target_customer": "Caregivers working in residential or domiciliary settings, or supporting family members with dementia",
+    "key_metrics": null,
+    "team_size": "11-50 employees",
+    "location_hq": "North West GB, North Wales GB",
+    "other_locations": null,
+    "mission_statement": "To transform dementia care by ensuring that individuals living with dementia receive the best possible support."
+  },
   "market_analysis": {
     "jurisdiction": "Global",
-    "industry_overview": "The healthcare and life sciences industry encompasses a wide range of sectors and companies involved in the creation, commercialization, and delivery of products and services related to human health and well-being. This includes pharmaceutical, biotechnology, medical device, diagnostics, and healthcare services companies, among others. The industry is one of the largest and fastest-growing globally, consuming over 10% of GDP in most developed countries.",
-    "target_market_segment": "The healthcare and life sciences industry serves a diverse range of customer segments, including individual patients, healthcare providers (hospitals, clinics, pharmacies), payers (insurance companies, government health programs), and research/academic institutions.",
-    "market_size_tam": "$665.37B",
-    "market_size_sam": null,
-    "market_size_som": null,
-    "market_growth_rate_cagr": "11.75%",
+    "industry_overview": "The healthcare and life sciences industry encompasses a wide range of sectors and disciplines that focus on improving human health and well-being. It includes the creation, commercialization, and delivery of medical products, services, and technologies. The industry is one of the world's largest and fastest-growing, consuming over 10% of GDP in most developed countries. Key segments include pharmaceuticals, biotechnology, medical devices, diagnostics, and healthcare services.",
+    "target_market_segment": "The healthcare and life sciences industry serves a diverse range of customers, including patients, healthcare providers, payers, researchers, and regulatory bodies. It caters to the needs of the global population, with a focus on improving access to quality healthcare, addressing chronic diseases, and advancing personalized medicine.",
+    "market_size_tam": "$7.8T",
+    "market_size_sam": "$4.2T",
+    "market_size_som": "$2.1T",
+    "market_growth_rate_cagr": "10.28%",
     "key_market_trends": [
-      "Increasing adoption of digital health technologies like telehealth and AI",
-      "Growing focus on precision medicine and individualized treatment",
-      "Advancements in areas like nanosensors, medical imaging, and robotics",
-      "Shift towards teleICUs and hospital-at-home models to reduce costs",
-      "Emphasis on partnerships and collaborations across the ecosystem",
-      "Pricing and access challenges for drugs and medical devices",
-      "Competition from generics, biosimilars, and patent cliffs"
+      "Technological advancements and digital transformation",
+      "Growth of personalized medicine and biotechnology",
+      "Expansion of digital health and remote monitoring",
+      "Increasing focus on sustainability and addressing global healthcare needs"
     ],
-    "competitor_landscape_summary": "The healthcare and life sciences industry is highly competitive, with a mix of large, established players and innovative startups. Key competitors include major pharmaceutical, biotech, and medical device companies, as well as emerging players in digital health and AI-powered solutions. The industry is seeing increased consolidation and M&A activity as companies seek to expand their capabilities and market share.",
+    "competitor_landscape_summary": "The healthcare and life sciences industry is highly competitive, with a mix of large multinational corporations, specialized biotechnology and pharmaceutical companies, and emerging startups. Key players include Thermo Fisher Scientific, Danaher, Roche, Merck, Pfizer, Johnson & Johnson, Agilent, Illumina, Becton Dickinson, and Bio-Rad Laboratories. These companies compete on factors such as innovation, product quality, pricing, and market access.",
     "competitors": [
       {
-        "name": "AstraZeneca PLC",
-        "website": "https://www.astrazeneca.com/",
+        "name": "Thermo Fisher Scientific",
+        "website": "https://www.thermofisher.com/",
         "strengths": [
-          "Strong pipeline of innovative drugs",
-          "Diversified portfolio across therapeutic areas",
-          "Expertise in oncology and cardiovascular diseases"
+          "Broad product portfolio",
+          "Strong R&D capabilities",
+          "Global reach and distribution network"
         ],
         "weaknesses": [
-          "Patent cliffs for some key products",
-          "Challenges in navigating complex regulatory environment"
+          "Reliance on acquisitions for growth",
+          "Exposure to regulatory changes"
         ],
-        "market_share_estimate": null,
-        "funding_raised": null
+        "market_share_estimate": "12%",
+        "funding_raised": "N/A"
       },
       {
-        "name": "Eli Lilly and Company",
-        "website": "https://www.lilly.com/",
+        "name": "Danaher Corporation",
+        "website": "https://www.danaher.com/",
         "strengths": [
-          "Leadership in diabetes and autoimmune treatments",
-          "Successful track record of drug development",
-          "Strong financial performance and resources"
+          "Diversified business model",
+          "Expertise in life sciences and diagnostics",
+          "Successful acquisition and integration strategy"
         ],
         "weaknesses": [
-          "Reliance on a few key blockbuster drugs",
-          "Concerns around pricing and access to medications"
+          "Dependence on healthcare spending",
+          "Potential integration challenges with acquisitions"
         ],
-        "market_share_estimate": null,
-        "funding_raised": null
+        "market_share_estimate": "10%",
+        "funding_raised": "N/A"
       },
       {
-        "name": "Merck KGaA",
-        "website": "https://www.merckgroup.com/",
+        "name": "Roche Holding AG",
+        "website": "https://www.roche.com/",
         "strengths": [
-          "Diversified portfolio across pharmaceuticals, life science, and healthcare",
-          "Expertise in specialty medicines and biopharmaceuticals",
-          "Global presence and distribution network"
+          "Strong pipeline of innovative pharmaceuticals and diagnostics",
+          "Leadership in oncology and personalized medicine",
+          "Global reach and scale"
         ],
         "weaknesses": [
-          "Challenges in maintaining innovation pipeline",
-          "Regulatory and compliance hurdles in certain markets"
+          "Exposure to patent expirations",
+          "Pricing pressure in certain markets"
         ],
-        "market_share_estimate": null,
-        "funding_raised": null
+        "market_share_estimate": "8%",
+        "funding_raised": "N/A"
       }
     ],
     "company_competitive_advantages": [
-      "Ability to leverage digital technologies and data analytics",
-      "Strong R&D capabilities and pipeline of innovative products",
-      "Diversified portfolio across therapeutic areas and business segments",
-      "Established global presence and distribution networks"
+      "Technological innovation and digital transformation",
+      "Expertise in personalized medicine and biotechnology",
+      "Ability to address global healthcare needs and sustainability",
+      "Strong market position and brand recognition"
     ],
     "barriers_to_entry": [
-      "High capital requirements for drug development and clinical trials",
-      "Stringent regulatory approval processes",
-      "Intellectual property protections and patent cliffs",
-      "Established relationships with healthcare providers and payers"
+      "High capital requirements for R&D and manufacturing",
+      "Stringent regulatory environment and lengthy approval processes",
+      "Established relationships with healthcare providers and payers",
+      "Intellectual property protection and patent barriers"
     ],
     "market_timing_assessment": "Favorable",
-    "regulatory_environment": "The healthcare and life sciences industry is heavily regulated, with various national and international bodies overseeing the development, manufacturing, and commercialization of products. Key regulatory aspects include drug/device approvals, data privacy, and pricing/reimbursement policies, which vary across different jurisdictions."
+    "regulatory_environment": "The healthcare and life sciences industry is heavily regulated, with various national and international bodies overseeing the development, approval, and commercialization of medical products and services. Key regulatory aspects include clinical trial requirements, product safety and efficacy standards, data privacy and security, and reimbursement policies. Navigating this complex regulatory landscape is a significant barrier to entry for new players."
   },
   "decision_support_output": {
-    "status": "error",
-    "message": "run_decision_support_cli() got an unexpected keyword argument 'founder_profiles_results'"
+    "recommendation": "Pass (Already Closed Lost)",
+    "confidence_level": "High",
+    "key_findings": "Simulated analysis. HubSpot: Done. Pitch Deck: success. Founders: 0. Company Profile: Available. Market: Available",
+    "identified_risks_opportunities": [
+      "Founder profiles could not be generated."
+    ],
+    "supporting_data_summary": {
+      "deal_name": "emwillcare - Pitch for investment",
+      "company_name_from_profile": "emwillcare",
+      "pitch_deck_summary": "Revolutionising Dementia Care with Behavioural Science & AI. Predict Distress. Prevent Crisis. Support Carers."
+    },
+    "timestamp": "2025-06-05T13:33:19.007569+00:00"
   },
   "errors": [
-    "Exception in decision support: run_decision_support_cli() got an unexpected keyword argument 'founder_profiles_results'"
+    "Task Founder: Emma Williams failed or returned empty."
   ],
-  "orchestration_end_time": "2025-06-04T15:24:56.482928"
+  "orchestration_end_time": "2025-06-05T13:33:19.007607+00:00"
 }

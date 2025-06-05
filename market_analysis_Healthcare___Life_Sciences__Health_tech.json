@@ -1,58 +1,70 @@
 {
   "jurisdiction": "Global",
-  "industry_overview": "The healthcare and life sciences industry encompasses a wide range of sectors and disciplines focused on human health, including biotechnology, pharmaceuticals, medical devices, diagnostics, and healthcare services. It is one of the world's largest and fastest-growing industries, consuming over 10% of GDP in most developed countries. The industry is driven by factors like technological advancements, aging populations, the rise of chronic diseases, and the expansion of personalized medicine.",
-  "target_market_segment": "The healthcare and life sciences industry serves a diverse range of customers, including patients, healthcare providers, payers, researchers, and consumers seeking health and wellness products and services.",
-  "market_size_tam": "$10.47 trillion (global life sciences market in 2024)",
-  "market_size_sam": "$11.27 trillion (global life sciences market in 2025)",
-  "market_size_som": "Not available",
-  "market_growth_rate_cagr": "10.28% CAGR from 2025 to 2034 (global life sciences market)",
+  "industry_overview": "The healthcare and life sciences industry encompasses a wide range of sectors and disciplines that focus on improving human health and well-being. It includes the creation, commercialization, and delivery of medical products, services, and technologies. The industry is one of the world's largest and fastest-growing, consuming over 10% of GDP in most developed countries. Key segments include pharmaceuticals, biotechnology, medical devices, diagnostics, and healthcare services.",
+  "target_market_segment": "The healthcare and life sciences industry serves a diverse range of customers, including patients, healthcare providers, payers, researchers, and regulatory bodies. It caters to the needs of the global population, with a focus on improving access to quality healthcare, addressing chronic diseases, and advancing personalized medicine.",
+  "market_size_tam": "$7.8T",
+  "market_size_sam": "$4.2T",
+  "market_size_som": "$2.1T",
+  "market_growth_rate_cagr": "10.28%",
   "key_market_trends": [
     "Technological advancements and digital transformation",
     "Growth of personalized medicine and biotechnology",
     "Expansion of digital health and remote monitoring",
-    "Increasing focus on emerging markets"
+    "Increasing focus on sustainability and addressing global healthcare needs"
   ],
-  "competitor_landscape_summary": "The healthcare and life sciences industry is highly competitive, with a mix of large multinational corporations and specialized smaller players. Key competitors include Thermo Fisher Scientific, Danaher, Roche, Merck, Pfizer, Johnson & Johnson, Agilent, Illumina, Becton Dickinson, Bio-Rad, and Abbott Laboratories.",
+  "competitor_landscape_summary": "The healthcare and life sciences industry is highly competitive, with a mix of large multinational corporations, specialized biotechnology and pharmaceutical companies, and emerging startups. Key players include Thermo Fisher Scientific, Danaher, Roche, Merck, Pfizer, Johnson & Johnson, Agilent, Illumina, Becton Dickinson, and Bio-Rad Laboratories. These companies compete on factors such as innovation, product quality, pricing, and market access.",
   "competitors": [
     {
       "name": "Thermo Fisher Scientific",
       "website": "https://www.thermofisher.com/",
       "strengths": [
-        "Leading provider of scientific instrumentation, reagents, and software",
-        "Strong presence across life sciences, diagnostics, and applied markets"
+        "Broad product portfolio",
+        "Strong R&D capabilities",
+        "Global reach and distribution network"
       ],
-      "weaknesses": null,
-      "market_share_estimate": null,
-      "funding_raised": null
+      "weaknesses": [
+        "Reliance on acquisitions for growth",
+        "Exposure to regulatory changes"
+      ],
+      "market_share_estimate": "12%",
+      "funding_raised": "N/A"
     },
     {
       "name": "Danaher Corporation",
       "website": "https://www.danaher.com/",
       "strengths": [
-        "Diversified portfolio of life sciences, diagnostics, and environmental businesses",
-        "Expertise in acquisition and integration of complementary companies"
+        "Diversified business model",
+        "Expertise in life sciences and diagnostics",
+        "Successful acquisition and integration strategy"
       ],
-      "weaknesses": null,
-      "market_share_estimate": null,
-      "funding_raised": null
+      "weaknesses": [
+        "Dependence on healthcare spending",
+        "Potential integration challenges with acquisitions"
+      ],
+      "market_share_estimate": "10%",
+      "funding_raised": "N/A"
     },
     {
       "name": "Roche Holding AG",
       "website": "https://www.roche.com/",
       "strengths": [
-        "Leading position in pharmaceuticals and diagnostics",
-        "Strong pipeline of innovative drugs and diagnostic tests"
+        "Strong pipeline of innovative pharmaceuticals and diagnostics",
+        "Leadership in oncology and personalized medicine",
+        "Global reach and scale"
       ],
-      "weaknesses": null,
-      "market_share_estimate": null,
-      "funding_raised": null
+      "weaknesses": [
+        "Exposure to patent expirations",
+        "Pricing pressure in certain markets"
+      ],
+      "market_share_estimate": "8%",
+      "funding_raised": "N/A"
     }
   ],
   "company_competitive_advantages": [
-    "Technological leadership and innovation",
-    "Diversified product and service portfolios",
-    "Strong brand recognition and customer loyalty",
-    "Robust R&D capabilities and pipeline of new products"
+    "Technological innovation and digital transformation",
+    "Expertise in personalized medicine and biotechnology",
+    "Ability to address global healthcare needs and sustainability",
+    "Strong market position and brand recognition"
   ],
   "barriers_to_entry": [
     "High capital requirements for R&D and manufacturing",
@@ -60,6 +72,6 @@
     "Established relationships with healthcare providers and payers",
     "Intellectual property protection and patent barriers"
   ],
-  "market_timing_assessment": "Favorable, with continued growth driven by aging populations, chronic disease prevalence, and advancements in personalized medicine and digital health",
-  "regulatory_environment": "The healthcare and life sciences industry is heavily regulated, with requirements around product safety, efficacy, and quality. Regulations vary by geography, but typically include drug and device approvals, clinical trial protocols, data privacy, and manufacturing standards."
+  "market_timing_assessment": "Favorable",
+  "regulatory_environment": "The healthcare and life sciences industry is heavily regulated, with various national and international bodies overseeing the development, approval, and commercialization of medical products and services. Key regulatory aspects include clinical trial requirements, product safety and efficacy standards, data privacy and security, and reimbursement policies. Navigating this complex regulatory landscape is a significant barrier to entry for new players."
 }

@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional, List
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import subprocess
 import sys
+import re # Added for safe filenames
 
 # Attempt to import HubSpot client and PDF extractor
 try:
@@ -25,28 +26,43 @@ LOG_FORMAT = '%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
 
+RUN_LOGS_DIR = "run_logs"
+
+def _ensure_log_dir_and_get_safe_filename(deal_id: str, agent_type: str, entity_name: str) -> str:
+    """Ensures RUN_LOGS_DIR exists and creates a safe, unique filename for agent logs."""
+    os.makedirs(RUN_LOGS_DIR, exist_ok=True)
+    
+    safe_entity_name = re.sub(r'[^a-zA-Z0-9_\-\.]', '_', entity_name)[:50] # Sanitize and shorten
+    timestamp = datetime.datetime.now(datetime.UTC).strftime('%Y%m%d_%H%M%S_%f')
+    filename = f"deal_{deal_id}_{agent_type}_{safe_entity_name}_{timestamp}.log"
+    return os.path.join(RUN_LOGS_DIR, filename)
+
 # --- Placeholder CLI/Tool Functions ---
 # Replace these with actual calls to your scripts or functions
 
-def run_founder_research_cli(founder_name: str, linkedin_url: str) -> Optional[Dict[str, Any]]:
-    logger.info(f"Executing founder research for {founder_name} ({linkedin_url})...")
+def run_founder_research_cli(deal_id: str, founder_name: str, linkedin_url: str) -> Optional[Dict[str, Any]]:
+    logger.info(f"Executing founder research for {founder_name} ({linkedin_url}) for Deal ID {deal_id}.")
+    log_file_path = _ensure_log_dir_and_get_safe_filename(deal_id, "founder", founder_name)
+    
     try:
-        # Construct the command
-        # Assuming the script is invokable as a module: python -m ai_agents.agents.founder_research
         command = [
-            sys.executable,  # Use the current Python interpreter
+            sys.executable,
             "-m", "ai_agents.agents.founder_research_agent",
             "--linkedin_url", linkedin_url,
             "--name", founder_name
         ]
-        
         logger.debug(f"Executing command: {' '.join(command)}")
-        
-        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=300) # 5 min timeout
+        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=300)
+
+        with open(log_file_path, 'w') as f:
+            f.write(f"--- Command ---\n{' '.join(command)}\n\n")
+            f.write(f"--- Return Code ---\n{process.returncode}\n\n")
+            f.write(f"--- STDOUT ---\n{process.stdout}\n\n")
+            f.write(f"--- STDERR ---\n{process.stderr}\n")
+        logger.info(f"Full log for founder {founder_name} saved to: {log_file_path}")
 
         if process.returncode != 0:
-            logger.error(f"Founder research script for {founder_name} failed with return code {process.returncode}.")
-            logger.error(f"Stderr: {process.stderr}")
+            logger.error(f"Founder research script for {founder_name} failed. See log: {log_file_path}")
             return None
         
         try:
@@ -54,39 +70,43 @@ def run_founder_research_cli(founder_name: str, linkedin_url: str) -> Optional[D
             logger.info(f"Successfully completed founder research for {founder_name}.")
             return result
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON output from founder research for {founder_name}: {e}")
-            logger.error(f"Stdout: {process.stdout}")
+            logger.error(f"Failed to parse JSON output from founder research for {founder_name}: {e}. See log: {log_file_path}")
             return None
 
     except subprocess.TimeoutExpired:
-        logger.error(f"Founder research for {founder_name} timed out.")
+        logger.error(f"Founder research for {founder_name} timed out. Log: {log_file_path}")
+        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Process Timed Out ---\n")
         return None
     except FileNotFoundError:
-        logger.error(f"Founder research script (ai_agents.agents.founder_research_agent) not found. Ensure it's in the PYTHONPATH.")
+        logger.error(f"Founder research script not found. Log: {log_file_path}")
+        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Script Not Found ---\n")
         return None
     except Exception as e:
-        logger.error(f"An unexpected error occurred during founder research for {founder_name}: {e}", exc_info=True)
+        logger.error(f"An unexpected error occurred during founder research for {founder_name}: {e}. Log: {log_file_path}", exc_info=True)
+        with open(log_file_path, 'a') as f: f.write(f"\n--- ERROR: Unexpected Exception ---\n{str(e)}\n")
         return None
 
-def run_company_research_cli(company_name: str) -> Optional[Dict[str, Any]]:
-    logger.info(f"Executing company research for: {company_name}...")
+def run_company_research_cli(deal_id: str, company_name: str) -> Optional[Dict[str, Any]]:
+    logger.info(f"Executing company research for: {company_name} for Deal ID {deal_id}...")
+    log_file_path = _ensure_log_dir_and_get_safe_filename(deal_id, "company", company_name)
     try:
-        # Construct the command
-        # Assuming the script is invokable as a module: python -m ai_agents.agents.company_research_agent
-        # And it accepts a --company_name argument
         command = [
-            sys.executable,  # Use the current Python interpreter
+            sys.executable,
             "-m", "ai_agents.agents.company_research_agent",
             "--company_name", company_name
         ]
-        
         logger.debug(f"Executing command: {' '.join(command)}")
+        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=600)
 
-        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=600) # 10 min timeout
+        with open(log_file_path, 'w') as f:
+            f.write(f"--- Command ---\n{' '.join(command)}\n\n")
+            f.write(f"--- Return Code ---\n{process.returncode}\n\n")
+            f.write(f"--- STDOUT ---\n{process.stdout}\n\n")
+            f.write(f"--- STDERR ---\n{process.stderr}\n")
+        logger.info(f"Full log for company {company_name} saved to: {log_file_path}")
 
         if process.returncode != 0:
-            logger.error(f"Company research script for '{company_name}' failed with return code {process.returncode}.")
-            logger.error(f"Stderr: {process.stderr}")
+            logger.error(f"Company research script for '{company_name}' failed. See log: {log_file_path}")
             return None
         
         try:
@@ -94,33 +114,41 @@ def run_company_research_cli(company_name: str) -> Optional[Dict[str, Any]]:
             logger.info(f"Successfully completed company research for '{company_name}'.")
             return result
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON output from company research for '{company_name}': {e}")
-            logger.error(f"Stdout: {process.stdout}")
+            logger.error(f"Failed to parse JSON output from company research for '{company_name}': {e}. See log: {log_file_path}")
             return None
             
     except subprocess.TimeoutExpired:
-        logger.error(f"Company research for '{company_name}' timed out.")
+        logger.error(f"Company research for '{company_name}' timed out. Log: {log_file_path}")
+        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Process Timed Out ---\n")
         return None
     except FileNotFoundError:
-        logger.error(f"Company research script (e.g., ai_agents.agents.company_research_agent) not found. Ensure it's in the PYTHONPATH.")
+        logger.error(f"Company research script not found. Log: {log_file_path}")
+        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Script Not Found ---\n")
         return None
     except Exception as e:
-        logger.error(f"An unexpected error occurred during company research for '{company_name}': {e}", exc_info=True)
+        logger.error(f"An unexpected error occurred during company research for '{company_name}': {e}. Log: {log_file_path}", exc_info=True)
+        with open(log_file_path, 'a') as f: f.write(f"\n--- ERROR: Unexpected Exception ---\n{str(e)}\n")
         return None
 
-def run_market_intelligence_cli(sector: str) -> Optional[Dict[str, Any]]:
-    """Runs the market_intelligence_agent.py script as a subprocess."""
-    logger.info(f"Executing market intelligence for sector: {sector}...")
+def run_market_intelligence_cli(deal_id: str, sector: str) -> Optional[Dict[str, Any]]:
+    logger.info(f"Executing market intelligence for sector: {sector} for Deal ID {deal_id}...")
+    log_file_path = _ensure_log_dir_and_get_safe_filename(deal_id, "market", sector)
     command = [
-        sys.executable, "-m", "ai_agents.agents.market_intelligence_agent", # Ensure this line is correct
+        sys.executable, "-m", "ai_agents.agents.market_intelligence_agent",
         "--sector", sector
     ]
     try:
-        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=600) # 10 min timeout
+        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=600)
+
+        with open(log_file_path, 'w') as f:
+            f.write(f"--- Command ---\n{' '.join(command)}\n\n")
+            f.write(f"--- Return Code ---\n{process.returncode}\n\n")
+            f.write(f"--- STDOUT ---\n{process.stdout}\n\n")
+            f.write(f"--- STDERR ---\n{process.stderr}\n")
+        logger.info(f"Full log for market sector {sector} saved to: {log_file_path}")
 
         if process.returncode != 0:
-            logger.error(f"Market intelligence script for sector '{sector}' failed with return code {process.returncode}.")
-            logger.error(f"Stderr: {process.stderr}")
+            logger.error(f"Market intelligence script for sector '{sector}' failed. See log: {log_file_path}")
             return None
         
         try:
@@ -128,24 +156,27 @@ def run_market_intelligence_cli(sector: str) -> Optional[Dict[str, Any]]:
             logger.info(f"Successfully completed market intelligence for sector '{sector}'.")
             return result
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON output from market intelligence for sector '{sector}': {e}")
-            logger.error(f"Stdout: {process.stdout}")
+            logger.error(f"Failed to parse JSON output from market intelligence for sector '{sector}': {e}. See log: {log_file_path}")
             return None
             
     except subprocess.TimeoutExpired:
-        logger.error(f"Market intelligence for sector '{sector}' timed out.")
+        logger.error(f"Market intelligence for sector '{sector}' timed out. Log: {log_file_path}")
+        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Process Timed Out ---\n")
         return None
     except FileNotFoundError:
-        logger.error(f"Market intelligence script (e.g., ai_agents.agents.market_intelligence_agent) not found. Ensure it's in the PYTHONPATH.")
+        logger.error(f"Market intelligence script not found. Log: {log_file_path}")
+        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Script Not Found ---\n")
         return None
     except Exception as e:
-        logger.error(f"An unexpected error occurred during market intelligence for sector '{sector}': {e}", exc_info=True)
+        logger.error(f"An unexpected error occurred during market intelligence for sector '{sector}': {e}. Log: {log_file_path}", exc_info=True)
+        with open(log_file_path, 'a') as f: f.write(f"\n--- ERROR: Unexpected Exception ---\n{str(e)}\n")
         return None
 
 def run_decision_support_cli(
     hubspot_data: Dict[str, Any],
     pitch_deck_data: Optional[Dict[str, Any]],
     founder_profiles: List[Dict[str, Any]],
+    company_profile: Optional[Dict[str, Any]],
     market_analysis: Optional[Dict[str, Any]]
 ) -> Dict[str, Any]:
     logger.info("Simulating decision support analysis...")
@@ -169,6 +200,13 @@ def run_decision_support_cli(
     if not market_analysis:
         issues.append("Market analysis could not be generated.")
     
+    if company_profile and company_profile.get("status") == "error":
+        issues.append(f"Company profile generation failed: {company_profile.get('error_message', 'Unknown error')}")
+        confidence = "Low"
+    elif not company_profile:
+        issues.append("Company profile could not be generated or was not requested.")
+        # Not necessarily low confidence if it wasn't critical or requested
+
     if hubspot_data.get("deal", {}).get("dealstage") == "closedlost": # Example property
         recommendation = "Pass (Already Closed Lost)"
         confidence = "High"
@@ -176,19 +214,20 @@ def run_decision_support_cli(
     return {
         "recommendation": recommendation,
         "confidence_level": confidence,
-        "key_findings": f"Simulated analysis. HubSpot data processed. Pitch Deck status: {pitch_deck_data.get('status') if pitch_deck_data else 'N/A'}. Founders: {len(founder_profiles)}. Market data: {'Available' if market_analysis else 'N/A'}",
+        "key_findings": f"Simulated analysis. HubSpot: Done. Pitch Deck: {pitch_deck_data.get('status') if pitch_deck_data else 'N/A'}. Founders: {len(founder_profiles)}. Company Profile: {'Available' if company_profile and company_profile.get('status') != 'error' else ('Failed' if company_profile else 'N/A')}. Market: {'Available' if market_analysis else 'N/A'}",
         "identified_risks_opportunities": issues if issues else ["Simulated: Standard review suggested."],
         "supporting_data_summary": {
             "deal_name": hubspot_data.get("deal", {}).get("dealname", "N/A"),
+            "company_name_from_profile": company_profile.get("company_name", "N/A") if company_profile else "N/A",
             "pitch_deck_summary": pitch_deck_data.get("structured_data", {}).get("executive_summary", "N/A") if pitch_deck_data and pitch_deck_data.get("structured_data") else "N/A"
         },
-        "timestamp": datetime.datetime.utcnow().isoformat()
+        "timestamp": datetime.datetime.now(datetime.UTC).isoformat()
     }
 
 def generate_investment_report(deal_id: str, all_data: Dict[str, Any]) -> str:
     logger.info(f"Generating comprehensive investment report for deal {deal_id}...")
     # This would format all collected data into a structured report (e.g., PDF, HTML, Markdown)
-    report_path = f"investment_report_deal_{deal_id}_{datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    report_path = f"investment_report_deal_{deal_id}_{datetime.datetime.now(datetime.UTC).strftime('%Y%m%d_%H%M%S')}.json"
     try:
         with open(report_path, 'w') as f:
             json.dump(all_data, f, indent=4)
@@ -245,7 +284,7 @@ def update_hubspot_deal_with_assessment(deal_id: str, assessment: Dict[str, Any]
         "investment_recommendation": assessment.get("recommendation", "N/A"),
         "investment_confidence_score": assessment.get("confidence_score", 0.0) * 100, # Assuming score 0-1, HubSpot might want 0-100
         "investment_analysis_summary": assessment.get("summary", "No summary available."),
-        "last_investment_analysis_date": datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ') # HubSpot expects ISO format UTC
+        "last_investment_analysis_date": datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%dT%H:%M:%S.%fZ') # HubSpot expects ISO format UTC
     }
     logger.info(f"Properties to update for deal {deal_id}: {properties_to_update}")
 
@@ -273,7 +312,9 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
     Fetches data, runs research, performs decision support, and generates a report.
     """
     logger.info(f"Starting investment analysis for Deal ID: {deal_id}")
-    
+    # Ensure the main run_logs directory exists (though _ensure_log_dir_and_get_safe_filename handles it too)
+    os.makedirs(RUN_LOGS_DIR, exist_ok=True) 
+
     if not hubspot_client:
         logger.error("HubSpot client is not available. Cannot proceed with analysis.")
         return None
@@ -282,10 +323,11 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
     
     all_collected_data: Dict[str, Any] = {
         "deal_id": deal_id,
-        "orchestration_start_time": datetime.datetime.utcnow().isoformat(),
+        "orchestration_start_time": datetime.datetime.now(datetime.UTC).isoformat(),
         "hubspot_deal_data": None,
         "pitch_deck_analysis": None,
         "founder_profiles": [],
+        "company_profile": None,
         "market_analysis": None,
         "decision_support_output": None,
         "errors": []
@@ -299,7 +341,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
             logger.error(f"Failed to retrieve valid data from HubSpot for deal ID: {deal_id}")
             all_collected_data["errors"].append(f"Failed to retrieve HubSpot data for deal {deal_id}.")
             # Save partial data and exit or handle error appropriately
-            report_filename = f"investment_report_deal_{deal_id}_error_{datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+            report_filename = f"investment_report_deal_{deal_id}_error_{datetime.datetime.now(datetime.UTC).strftime('%Y%m%d_%H%M%S')}.json"
             with open(report_filename, 'w') as f:
                 json.dump(all_collected_data, f, indent=2)
             logger.info(f"Partial error report saved to {report_filename}")
@@ -310,7 +352,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
         logger.error(f"Exception while fetching HubSpot data for deal {deal_id}: {e}", exc_info=True)
         all_collected_data["errors"].append(f"Exception fetching HubSpot data: {str(e)}")
         # Save partial data and exit
-        report_filename = f"investment_report_deal_{deal_id}_error_{datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+        report_filename = f"investment_report_deal_{deal_id}_error_{datetime.datetime.now(datetime.UTC).strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_filename, 'w') as f:
             json.dump(all_collected_data, f, indent=2)
         logger.info(f"Partial error report saved to {report_filename}")
@@ -346,6 +388,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
     # Using ThreadPoolExecutor for concurrent research tasks
     founder_profiles_results = []
     market_analysis_result = None
+    company_profile_result = None
     
     with ThreadPoolExecutor(max_workers=5) as executor:
         future_to_task = {}
@@ -362,14 +405,29 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
 
                 if first_name and last_name and linkedin_url:
                     full_name = f"{first_name} {last_name}"
-                    logger.info(f"Submitting founder research for: {full_name} ({linkedin_url})")
-                    future_to_task[executor.submit(run_founder_research_cli, full_name, linkedin_url)] = f"Founder: {full_name}"
+                    logger.info(f"Submitting founder research for: {full_name} ({linkedin_url}) for deal {deal_id}")
+                    future_to_task[executor.submit(run_founder_research_cli, deal_id, full_name, linkedin_url)] = f"Founder: {full_name}"
                 elif first_name and last_name:
                     logger.info(f"Contact {first_name} {last_name} found, but missing LinkedIn URL. Skipping founder research for this contact.")
                 else:
                     logger.info(f"Contact ID {contact.get('id')} missing name or LinkedIn URL. Skipping.")
         else:
             logger.info("No associated contacts found in HubSpot data for founder research.")
+
+        # Submit Company Research task
+        primary_company_name = None
+        if all_collected_data['hubspot_deal_data'] and all_collected_data['hubspot_deal_data'].get('associated_companies'):
+            primary_company_data = all_collected_data['hubspot_deal_data']['associated_companies'][0] # Assuming first is primary
+            primary_company_name = primary_company_data.get("properties", {}).get("name")
+            if primary_company_name:
+                logger.info(f"Submitting company research for: {primary_company_name} for deal {deal_id}")
+                future_to_task[executor.submit(run_company_research_cli, deal_id, primary_company_name)] = f"Company: {primary_company_name}"
+            else:
+                logger.warning("Could not determine primary company name for company research.")
+                all_collected_data["errors"].append("Company research skipped: No company name found.")
+        else:
+            logger.info("No associated company found for company research.")
+            all_collected_data["errors"].append("Company research skipped: No company data for name extraction.")
 
         # Submit Market Intelligence task (example: based on company industry)
         # Extract sector/industry from company data
@@ -380,8 +438,8 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
             # Try specific field first, then fallback to general 'industry'
             company_sector = company_props.get("what_sector_is_your_business_product_", company_props.get("industry"))
             if company_sector:
-                logger.info(f"Submitting market intelligence research for sector: {company_sector}")
-                future_to_task[executor.submit(run_market_intelligence_cli, company_sector)] = f"Market: {company_sector}"
+                logger.info(f"Submitting market intelligence research for sector: {company_sector} for deal {deal_id}")
+                future_to_task[executor.submit(run_market_intelligence_cli, deal_id, company_sector)] = f"Market: {company_sector}"
             else:
                 logger.warning("Could not determine company sector for market intelligence research.")
                 all_collected_data["errors"].append("Market research skipped: No sector found.")
@@ -400,6 +458,8 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
                         founder_profiles_results.append(result)
                     elif task_name.startswith("Market:"):
                         market_analysis_result = result
+                    elif task_name.startswith("Company:"):
+                        company_profile_result = result
                 else:
                     logger.warning(f"Task {task_name} returned no result or failed.")
                     all_collected_data["errors"].append(f"Task {task_name} failed or returned empty.")
@@ -409,6 +469,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
     
     all_collected_data['founder_profiles'] = founder_profiles_results
     all_collected_data['market_analysis'] = market_analysis_result
+    all_collected_data['company_profile'] = company_profile_result
 
     # 4. Run Decision Support
     logger.info("Running decision support analysis...")
@@ -417,6 +478,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
             hubspot_data=all_collected_data['hubspot_deal_data'], 
             pitch_deck_data=all_collected_data['pitch_deck_analysis'],
             founder_profiles=all_collected_data['founder_profiles'],
+            company_profile=all_collected_data['company_profile'],
             market_analysis=all_collected_data['market_analysis']
         )
         all_collected_data['decision_support_output'] = decision_output
@@ -433,8 +495,8 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
 
 
     # 5. Generate Final Report (JSON file)
-    all_collected_data["orchestration_end_time"] = datetime.datetime.utcnow().isoformat()
-    report_filename = f"investment_report_deal_{deal_id}_{datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    all_collected_data["orchestration_end_time"] = datetime.datetime.now(datetime.UTC).isoformat()
+    report_filename = f"investment_report_deal_{deal_id}_{datetime.datetime.now(datetime.UTC).strftime('%Y%m%d_%H%M%S')}.json"
     try:
         with open(report_filename, 'w') as f:
             json.dump(all_collected_data, f, indent=2)

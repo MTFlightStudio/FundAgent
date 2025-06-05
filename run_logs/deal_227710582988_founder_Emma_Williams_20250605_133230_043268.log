@@ -1,0 +1,19 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.founder_research_agent --linkedin_url www.linkedin.com/in/dr-emma-williams --name Emma Williams
+
+--- Return Code ---
+1
+
+--- STDOUT ---
+{"status": "error", "founder_name": "Emma Williams", "linkedin_url": "www.linkedin.com/in/dr-emma-williams", "error_message": "Failed to retrieve or generate profile for Emma Williams."}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+Founder research agent CLI starting...
+Starting comprehensive research for founder: "Emma Williams"
+Provided LinkedIn URL (processed): https://www.linkedin.com/in/dr-emma-williams
+Using Anthropic Claude model for founder research.
+An error occurred during founder research agent execution or response parsing: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'This request would exceed the rate limit for your organization (c1663423-3824-4ac8-ad84-2b98805e7a20) of 5 requests per minute. For details, refer to: https://docs.anthropic.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://www.anthropic.com/contact-sales to discuss your options for a rate limit increase.'}}
+Founder research agent: Failed to generate profile for Emma Williams.
+

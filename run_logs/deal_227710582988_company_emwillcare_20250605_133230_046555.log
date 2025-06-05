@@ -1,0 +1,66 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.company_research_agent --company_name emwillcare
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"company_name":"emwillcare","website":"https://www.signalhire.com/companies/emwillcare","linkedin_url":"https://uk.linkedin.com/company/positive-ageing-consultancy-training","description":"At emwillcare, our mission is to transform dementia care by ensuring that individuals living with dementia receive the best possible support.","industry":"Healthcare","sub_industry":"Dementia Care","founded_year":null,"funding_stage":null,"total_funding_raised":null,"funding_rounds_details":null,"key_products_services":["Online courses","Direct consultancy services to support people caring for those with dementia"],"business_model":null,"target_customer":"Caregivers working in residential or domiciliary settings, or supporting family members with dementia","key_metrics":null,"team_size":"11-50 employees","location_hq":"North West GB, North Wales GB","other_locations":null,"mission_statement":"To transform dementia care by ensuring that individuals living with dementia receive the best possible support."}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+Company research agent CLI starting...
+Starting comprehensive research for company: "emwillcare"
+Using Anthropic Claude model for company research.
+search_tool: Searching Tavily for: emwillcare
+search_tool: Searching Tavily for: emwillcare company
+search_tool: Searching Tavily for: emwillcare company profile
+Extracted text content from agent output list's first block: <search_quality_reflection>
+The search results now provide much more relevant information about the company "emwillcare". It appears to be a company focused on transforming dementia care, founded by D...
+
+Raw LLM content string (for JSON extraction): <search_quality_reflection>
+The search results now provide much more relevant information about the company "emwillcare". It appears to be a company focused on transforming dementia care, founded by Dr. Emma Williams. The results include details about the company's mission, services, and key personnel. This information is sufficient to provide a detailed company profile.
+</search_quality_reflection>
+
+<search_quality_score>5</search_quality_score>
+
+<result>
+{
+  "company_name": "emwillcare",
+  "we...
+Extracted JSON block for CompanyProfile parsing (stripped): {
+  "company_name": "emwillcare",
+  "website": "https://www.signalhire.com/companies/emwillcare",
+  "linkedin_url": "https://uk.linkedin.com/company/positive-ageing-consultancy-training",
+  "description": "At emwillcare, our mission is to transform dementia care by ensuring that individuals living w...
+Ensured scheme for website from LLM output: https://www.signalhire.com/companies/emwillcare
+Ensured scheme for linkedin_url from LLM output: https://uk.linkedin.com/company/positive-ageing-consultancy-training
+
+--- Company Profile Research Output (to be saved to file) ---
+{
+  "company_name": "emwillcare",
+  "website": "https://www.signalhire.com/companies/emwillcare",
+  "linkedin_url": "https://uk.linkedin.com/company/positive-ageing-consultancy-training",
+  "description": "At emwillcare, our mission is to transform dementia care by ensuring that individuals living with dementia receive the best possible support.",
+  "industry": "Healthcare",
+  "sub_industry": "Dementia Care",
+  "founded_year": null,
+  "funding_stage": null,
+  "total_funding_raised": null,
+  "funding_rounds_details": null,
+  "key_products_services": [
+    "Online courses",
+    "Direct consultancy services to support people caring for those with dementia"
+  ],
+  "business_model": null,
+  "target_customer": "Caregivers working in residential or domiciliary settings, or supporting family members with dementia",
+  "key_metrics": null,
+  "team_size": "11-50 employees",
+  "location_hq": "North West GB, North Wales GB",
+  "other_locations": null,
+  "mission_statement": "To transform dementia care by ensuring that individuals living with dementia receive the best possible support."
+}
+Company profile research saved to company_research_emwillcare.json
+Company research agent: Successfully generated JSON output for emwillcare
+
