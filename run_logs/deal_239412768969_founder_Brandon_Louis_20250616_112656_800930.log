@@ -1,0 +1,24 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.founder_research_agent --linkedin_url https://www.linkedin.com/in/brandon-h-louis/ --name Brandon Louis
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"name":"Brandon Louis","linkedin_url":"https://www.linkedin.com/in/brandon-h-louis/","role_in_company":null,"background_summary":null,"previous_companies":null,"education":null,"key_skills_and_expertise":null,"public_speaking_or_content":null,"investment_criteria_assessment":null}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+2025-06-16 12:26:57,568 - INFO - __main__ - Founder research agent CLI starting...
+2025-06-16 12:26:57,569 - INFO - ai_agents.utils.retry_handler - Initial LLM not provided for founder_research. Attempting to fetch with model_selector_func.
+Agent 'founder_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-16 12:26:57,708 - INFO - ai_agents.utils.retry_handler - Fetched initial LLM for founder_research: gpt-4.1
+2025-06-16 12:26:57,708 - INFO - __main__ - Starting research for founder: "Brandon Louis" using EnhancedFounderResearchAgent.
+2025-06-16 12:26:57,709 - INFO - __main__ - Processed LinkedIn URL for research: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 12:26:59,240 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 12:28:00,991 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-16 12:28:01,691 - INFO - __main__ - Successfully researched and validated profile for founder: Brandon Louis
+2025-06-16 12:28:01,691 - INFO - __main__ - Founder research agent: Successfully generated and printed JSON output for Brandon Louis
+

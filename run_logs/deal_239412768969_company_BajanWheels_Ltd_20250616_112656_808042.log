@@ -1,0 +1,32 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.company_research_agent --company_name BajanWheels Ltd
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"company_name":"BajanWheels Ltd","website":"https://bajanwheels.com/","linkedin_url":"https://bb.linkedin.com/company/bajanwheels?trk=similar-pages","description":"BajanWheels is shaping Barbados' future transit network by providing a public transit companion app that offers real-time updates, seamless payments, and a safer commute.","industry":"Transportation","sub_industry":"Transit Technology / Mobility-as-a-Service","founded_year":null,"funding_stage":null,"total_funding_raised":null,"funding_rounds_details":null,"key_products_services":["Public transit companion app","Real-time transit updates","Seamless payment solutions for transit","Commuter safety features"],"business_model":"Likely operates as a B2C and B2B platform, generating revenue through digital transit services, payment processing, and possibly partnerships with local transit authorities.","target_customer":"Commuters and travelers in Barbados seeking efficient, real-time public transportation solutions.","key_metrics":null,"team_size":null,"location_hq":"Bridgetown, Saint Michael, Barbados","other_locations":null,"mission_statement":"Shaping Barbados' future transit network."}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+2025-06-16 12:26:57,570 - INFO - __main__ - Company research agent CLI starting...
+2025-06-16 12:26:57,570 - INFO - __main__ - CompanyResearchAgent: Starting comprehensive research for company: "BajanWheels Ltd" via CLI entry point.
+Agent 'company_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-16 12:26:57,709 - INFO - __main__ - CompanyResearchAgent: Executing core research logic for "BajanWheels Ltd" with model gpt-4.1.
+2025-06-16 12:27:01,194 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: BajanWheels Ltd official website
+search_tool: Searching Tavily for: BajanWheels Ltd LinkedIn profile
+search_tool: Searching Tavily for: BajanWheels Ltd company overview
+search_tool: Searching Tavily for: BajanWheels Ltd funding history
+search_tool: Searching Tavily for: BajanWheels Ltd products and services
+search_tool: Searching Tavily for: BajanWheels Ltd team size and headquarters location
+search_tool: Searching Tavily for: BajanWheels Ltd recent news
+search_tool: Searching Tavily for: BajanWheels Ltd mission statement
+2025-06-16 12:27:29,825 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: BajanWheels Ltd founding year and company background
+2025-06-16 12:27:33,526 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-16 12:27:37,499 - INFO - __main__ - CompanyResearchAgent: Successfully researched and validated profile for company: BajanWheels Ltd
+2025-06-16 12:27:37,501 - INFO - __main__ - CompanyResearchAgent: Profile for "BajanWheels Ltd" saved to company_research_BajanWheels_Ltd.json
+2025-06-16 12:27:37,502 - INFO - __main__ - Company research agent: Successfully generated JSON output for BajanWheels Ltd
+

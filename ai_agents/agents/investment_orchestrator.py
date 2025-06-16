@@ -602,7 +602,7 @@ if __name__ == "__main__":
     # 2. Associated company (with 'what_sector_is_your_business_product_' or 'industry' property)
     # 3. A form submission with a pitch deck URL in a field like 'please_attach_your_pitch_deck' (optional)
     
-    TEST_DEAL_ID = "227710582988" # <<< From your deal_data_export.json example
+    TEST_DEAL_ID = "239412768969" # <<< From your deal_data_export.json example
     
     if not TEST_DEAL_ID or TEST_DEAL_ID == "YOUR_TEST_DEAL_ID_HERE": # Basic check
         logger.warning("Please set a valid TEST_DEAL_ID in the __main__ block for testing.")
