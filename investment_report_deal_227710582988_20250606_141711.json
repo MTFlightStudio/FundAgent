@@ -1,0 +1,615 @@
+{
+  "deal_id": "227710582988",
+  "orchestration_start_time": "2025-06-06T14:15:56.035747+00:00",
+  "hubspot_deal_data": {
+    "deal": {
+      "amount": "370000",
+      "closedate": "2025-06-03T11:39:47.109Z",
+      "createdate": "2025-06-02T18:24:00.495Z",
+      "dealname": "emwillcare - Pitch for investment",
+      "dealstage": "closedlost",
+      "hs_lastmodifieddate": "2025-06-03T11:39:55.740Z",
+      "hs_object_id": "227710582988",
+      "hubspot_owner_id": null,
+      "pipeline": "default",
+      "request": "15",
+      "deal_stage_label": "Rejected"
+    },
+    "associated_contacts": [
+      {
+        "id": "317541415110",
+        "properties": {
+          "attach_link_to_all_founders_linkedin_profiles": null,
+          "company": null,
+          "createdate": "2025-06-02T18:23:56.153Z",
+          "do_you_and_the_founders_have_the_right_to_work_in_the_uk_": "Yes",
+          "email": "emma.williams@positiveageingconsultancy.co.uk",
+          "firstname": "Emma",
+          "hs_createdate": null,
+          "hs_linkedin_url": "www.linkedin.com/in/dr-emma-williams",
+          "hs_object_id": "317541415110",
+          "jobtitle": null,
+          "lastmodifieddate": "2025-06-03T11:39:52.752Z",
+          "lastname": "Williams",
+          "lifecyclestage": "1095221483",
+          "list_name_of_all_founders": null,
+          "phone": null,
+          "website": null
+        },
+        "createdAt": "2025-06-02T18:23:56.153Z",
+        "updatedAt": "2025-06-03T11:39:52.752Z",
+        "archived": false
+      }
+    ],
+    "associated_companies": [
+      {
+        "id": "165919123677",
+        "properties": {
+          "city": null,
+          "country": null,
+          "createdate": "2025-06-02T18:23:56.683Z",
+          "describe_the_business_product_in_one_sentence": null,
+          "description": "Up to 90% of people living with dementia will experience distressed behaviour as a result of unmet needs, but the majority of it is preventable. We\u2019ve built the first AI tool that predicts distressed behaviour in dementia care, before it happens, giving carers real-time & evidence-based support to prevent distress, prevent crises, reduce medication, and meet people's needs effectively.",
+          "does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Yes",
+          "domain": "emwillcare.com",
+          "how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__": "We\u2019re combining behavioural science with machine learning to do something that hasn\u2019t been done before in dementia care: predict distressed behaviour before it happens.\r\n\r\nInstead of waiting for things to go wrong and reacting in crisis, Less Distress is an app that uses real-world care data to spot early warning signs and guide carers in real time. It\u2019s personalised, preventative, and based on the science of why behaviour happens in the first place, something most systems completely ignore.\r\n\r\nOur innovation isn\u2019t just in the tech, it\u2019s in the model. We\u2019re giving frontline carers access to the kind of behavioural insight that\u2019s usually locked away in specialist services, and doing it in a way that\u2019s fast, affordable, easy to use on the job, and a globally scalable solution.",
+          "how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Less Distress is about making things better for everyone involved in dementia care: The person, the carer, and the family.\r\n\r\nAll behaviour happens for a reason. In dementia, that reason is often an unmet need, but it\u2019s very hard for carers to understand what the need is without proper training (which they very rarely receive). We help carers see what the behaviour is trying to say, so they can respond in a way that meets the need, not just manages the reaction.\r\n\r\nWhen carers can predict distress before it happens, they can step in early and calmly, rather than reacting in crisis. Right now, when distressed behaviour is difficult for carers to support with, people are given unlicensed antipsychotics just to keep them sedated even though the side effects can be devastating: sedation, stroke, and death. It\u2019s not person-centred care, it\u2019s damage control.\r\n\r\nLess Distress helps change that. We give carers real tools, grounded in behavioural science, so they can reduce medication, prevent placement breakdowns, and support the person effectively. That means more dignity, more calm, and more moments where people feel understood, not lost.\r\n\r\nWhen it feels like no one cares...emwillcare",
+          "how_much_are_you_raising_at_this_stage_": "\u00a3250-500k",
+          "how_much_have_you_raised_prior_to_this_round_": "0",
+          "how_much_of_the_equity_do_you_your_team_have_": "100",
+          "hs_createdate": null,
+          "hs_lastmodifieddate": "2025-06-03T11:39:51.516Z",
+          "hs_object_id": "165919123677",
+          "industry": null,
+          "lifecyclestage": "1095221483",
+          "name": "emwillcare",
+          "number_of_employees": "0-10",
+          "numberofemployees": null,
+          "phone": null,
+          "please_attach_your_pitch_deck": "https://api-eu1.hubspot.com/form-integrations/v1/uploaded-files/signed-url-redirect/241972526310?portalId=145458831&sign=8xy8NABPw0AeW8Z1BM2T9PB9sPQ%3D&conversionId=0470020b-17a8-48e5-ae87-0d56ea730f9c&filename=0470020b-17a8-48e5-ae87-0d56ea730f9c-0-2/please_attach_your_pitch_deck-LessDistress-PitchDeck.pdf",
+          "please_expand": "I\u2019m not just looking for money, I\u2019m looking for real partnership that brings not just funding, but support, mentorship, and guidance from people who\u2019ve done this before and can help me take what I\u2019ve started and turn it into something huge.\r\n\r\nThe AI company we\u2019re working with built our prototype for free, and they\u2019re still developing with us at no cost, because they believe in what we\u2019re doing. It's the same with our marketing support. People are giving their time and skills because they\u2019ve seen the impact that I have as a behaviour analyst, and they believe in me to make it happen.\r\n\r\nIn July, I\u2019ll be pitching to investors for the first time at an Alzheimer\u2019s Society event. I know my field, I\u2019m one of only 80 behavioural analysts in the world who specialise in dementia. What I need now is someone who can help me build this into a service that\u2019s available to everyone who needs it at a devastating time in their life.\r\n\r\nI\u2019m here to deliver and I\u2019m the right person for this job. I\u2019ll be the best entrepreneur you\u2019ve ever worked with. I care for the people I help and want to make their lives better on a wider scale than I can do in-person. I make change happen, I\u2019ve done it all my life (I started my other business 4 years ago, the first behavioural consultancy business in the UK for dementia care). And now I\u2019m ready to do it on a much bigger scale to help millions of people.",
+          "website": "https://www.emwillcare.com",
+          "what_best_describes_your_customer_base_": "B2B",
+          "what_best_describes_your_stage_of_business_": "I have a business that I want to scale",
+          "what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_": "Advice and support",
+          "what_is_your_current_monthly_revenue_": "0",
+          "what_is_your_ltm__last_12_months__revenue_": "0",
+          "what_is_your_usp__what_makes_you_different_from_your_competitors_": "There are currently no competitors in the field. I\u2019m one of only 80 behaviour analysts in the whole world specialising in dementia care, and I\u2019ve spent years working directly with carers, trying to stop distress before it spirals into crisis. However, there is only so many people I can help in-person.\r\n\r\n'Less Distress', by emwillcare takes my knowledge and expertise and is the first tool that actually predicts distressed behaviour using behavioural science and AI, not just tracking what\u2019s already gone wrong, but helping carers know what to do next, in real time. This isn\u2019t just innovation, it\u2019s a lifeline for caregivers.\r\n\r\nWe are supported by the Alzheimer's Society Launchpad programme, and Business Wales Accelerator Growth Programme.",
+          "what_sector_is_your_business_product_": "Healthcare & Life Sciences/ Health-tech",
+          "what_valuation_are_you_raising_at_": "\u00a30-1m",
+          "where_is_your_business_based_": "UK but wanting to scale to US",
+          "which__if_any__of_the_un_sdg_17_goals_does_your_business_address_": "Good Health and Well-being"
+        },
+        "createdAt": "2025-06-02T18:23:56.683Z",
+        "updatedAt": "2025-06-03T11:39:51.516Z",
+        "archived": false
+      }
+    ]
+  },
+  "pitch_deck_analysis": {
+    "status": "success",
+    "raw_text": "Revolutionising Dementia Care with Behavioural Science & AI\nPredict Distress. Prevent Crisis. Support Carers.\nDr Emma Williams\n8/03/20XX PITCH DECK 1\n\nName: Jess\nTitle: Official Lifesaver\nThe dog who changed everything for dementia care\nPITCH DECK\n\nTHE PROBLEM\nINCREASED HEALTH & 30% AVERAGE STAFF UNLICENCED\nSOCIAL CARE COSTS CHURN RATE ANTIPSYCHOTIC DRUG USE\nInappropriate use of\nInability to support with Average cost of onboarding a\nunlicensed antipsychotic drugs\nbehaviours resulting from new care staff member is \u00a33642\n(with nasty side effects) for\ndementia leads to increased (and they rarely receive\nbehavioural issues\ncare costs behavioural support or training)\nDementia care costs the UK \u00a334.7 billion/year\nExpected to hit \u00a394.1 billion by 2040\n3\n\nLESS DISTRESS\nAI-POWERED BEHAVIOURAL SUPPORT FOR DEMENTIA\nCARERS\nEARLY TO AI\nUNIQUE MARKET\nThe digital healthcare Caregivers log\nplatform that automates distressed behaviours &\nthe process of assessing AI-driven behavioural\nand preventing science identifies\ndistressed behaviours for triggers & patterns\npeople with dementia\nTESTED AUTHENTIC\nBased on evidence-based Reduces distress,\nscientific principles, A improves care, and\nrecommendation engine prevents unnecessary\nprovides personalised, medication\nactionable strategies\n4\n\nS\nD\nPosition for\nN\nlarger NHS &\nAI model\nU care provider\nrefinement\ncontracts\nF\nRun pilot in\nusing real-\ncare homes\nF world data\nBuild MVP\nO\ndigital\nplatform\nE\nS\nU\nLESS DISTRESS, BY EMWILLCARE HAS ADVANCE ASSURANCE IN PLACE FOR SEIS & EIS\n6\n\nWhen it feels like no-one cares\u2026\u2026\u2026\nPredict Distress. Prevent Crisis. Support Carers.\nWe make distress the exception, not the expectation",
+    "structured_data": {
+      "executive_summary": "Revolutionising Dementia Care with Behavioural Science & AI. Predict Distress. Prevent Crisis. Support Carers. LESS DISTRESS is an AI-powered behavioural support platform for dementia carers that automates the process of assessing and preventing distressed behaviours for people with dementia.",
+      "problem_statement": "Dementia care costs the UK \u00a334.7 billion/year, expected to hit \u00a394.1 billion by 2040. The key problems include: 1) Increased health & social care costs due to inability to support behaviours resulting from dementia, 2) 30% average staff churn rate with onboarding costs of \u00a33642 per staff member who rarely receive behavioural support or training, 3) Unlicensed antipsychotic drug use with nasty side effects for behavioural issues.",
+      "solution": "An AI-powered digital healthcare platform that automates the process of assessing and preventing distressed behaviours for people with dementia. Caregivers log distressed behaviours and AI-driven behavioural science identifies triggers & patterns, providing personalised, actionable strategies.",
+      "product_service_description": "LESS DISTRESS is a digital healthcare platform where caregivers log distressed behaviours and AI-driven behavioural science identifies triggers & patterns. A recommendation engine provides personalised, actionable strategies based on evidence-based scientific principles to reduce distress, improve care, and prevent unnecessary medication.",
+      "market_size_opportunity": "Dementia care costs the UK \u00a334.7 billion/year and is expected to hit \u00a394.1 billion by 2040, representing a significant market opportunity.",
+      "business_model": null,
+      "team": "Dr Emma Williams is mentioned as part of the team. The company appears to be called EmWillCare.",
+      "traction_milestones": "The company has Advance Assurance in place for SEIS & EIS. Their roadmap includes: Build MVP digital platform, Run pilot in care homes, AI model refinement using real-world data, Position for larger NHS & care provider contracts.",
+      "financials_projections": null,
+      "funding_ask_use_of_funds": null,
+      "competition": null,
+      "go_to_market_strategy": "The company plans to build an MVP digital platform, run pilots in care homes, refine their AI model using real-world data, and then position for larger NHS & care provider contracts."
+    },
+    "error_message": null
+  },
+  "founder_profiles": [
+    {
+      "name": "Dr Emma Williams",
+      "linkedin_url": "https://www.linkedin.com/in/dr-emma-williams",
+      "role_in_company": "Founder, EmWill Care",
+      "background_summary": "Dr Emma Williams is a PhD-educated psychologist with over 27 years of experience in the care sector, specialising in dementia care and behavioural science. She is the founder of EmWill Care, a company focused on revolutionising dementia care by integrating behavioural science with smart technology. Her primary solution, 'Less Distress,' is a behavioural tool designed to empower caregivers to predict and prevent distressed behaviours in individuals with dementia, aiming to reduce reliance on crisis-driven care and antipsychotic medications. Dr Williams is also the founder of PACT (Positive Ageing Consultancy & Training). Her leadership experience includes founder roles and previous positions such as Director of Training for the North Wales Regional Partnership Board and providing bespoke behavioural consultancy. She is recognised for her mission-driven approach, innovation, and deep commitment to improving dementia care.",
+      "previous_companies": [
+        {
+          "company_name": "PACT (Positive Ageing Consultancy & Training)",
+          "role": "Founder",
+          "duration": null,
+          "description": "Founded and led a consultancy focused on positive ageing, training, and behavioural science in care settings.",
+          "was_founder": true
+        },
+        {
+          "company_name": "North Wales Regional Partnership Board",
+          "role": "Director of Training",
+          "duration": null,
+          "description": "Oversaw training initiatives for care professionals, specialising in dementia and behavioural science.",
+          "was_founder": false
+        },
+        {
+          "company_name": "Bespoke Behavioural Consultancy",
+          "role": "Consultant",
+          "duration": null,
+          "description": "Provided tailored behavioural consultancy services to care organisations.",
+          "was_founder": false
+        }
+      ],
+      "education": [
+        {
+          "institution": null,
+          "degree": "PhD",
+          "field_of_study": "Psychology",
+          "graduation_year": null,
+          "notable_achievements": null
+        },
+        {
+          "institution": null,
+          "degree": "MSc",
+          "field_of_study": "Applied Behaviour Analysis",
+          "graduation_year": null,
+          "notable_achievements": null
+        }
+      ],
+      "key_skills_and_expertise": [
+        "Dementia care",
+        "Behavioural science",
+        "Psychology",
+        "Care sector leadership",
+        "Training and consultancy",
+        "Smart technology integration",
+        "Mission-driven innovation"
+      ],
+      "public_speaking_or_content": [
+        {
+          "type": "blog post",
+          "title": "Understanding Dementia-Related Behaviours",
+          "url": null
+        },
+        {
+          "type": "event",
+          "title": "Showcase at London Tech Week 2025",
+          "url": null
+        },
+        {
+          "type": "accelerator",
+          "title": "Alzheimer's Society Accelerator Growth Programme",
+          "url": null
+        }
+      ],
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": true,
+        "exciting_solution_to_problem": true,
+        "founded_something_relevant_before": true,
+        "impressive_relevant_past_experience": true,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "From research_prospect_tool output: Dr Emma Williams and EmWill Care are a strong fit for all investment criteria. The venture is tech-enabled and mission-driven, with a compelling solution to a real problem. Dr Williams has founded relevant ventures, has impressive and relevant sector experience, and demonstrates exceptional strategic and intellectual capability."
+      }
+    }
+  ],
+  "company_profile": {
+    "company_name": "emwillcare",
+    "website": "https://www.emwillcare.com/",
+    "linkedin_url": "https://uk.linkedin.com/in/dr-emma-williams-859748121",
+    "description": "emwillcare is a healthtech company focused on transforming dementia care by providing evidence-based, innovative solutions that empower caregivers and improve the quality of life for individuals living with dementia. The company delivers digital tools and consultancy to reduce distress, minimize the use of unlicensed antipsychotic drugs, and lower health and social care costs.",
+    "industry": "Healthcare",
+    "sub_industry": "Digital Health / Dementia Care",
+    "founded_year": 2023,
+    "funding_stage": null,
+    "total_funding_raised": null,
+    "funding_rounds_details": null,
+    "key_products_services": [
+      "Less Distress (digital tool for predicting and preventing distressed behaviours in dementia care)",
+      "Behavioural science-based consultancy and training for care homes and caregivers"
+    ],
+    "business_model": "B2B and B2B2C SaaS and consultancy model, selling digital tools and training services to care homes, healthcare providers, and commissioners.",
+    "target_customer": "Care home owners, healthcare commissioners, clinical teams, and caregivers seeking cost-effective, evidence-based solutions to improve dementia care and reduce distress.",
+    "key_metrics": null,
+    "team_size": "1-10",
+    "location_hq": "United Kingdom",
+    "other_locations": null,
+    "mission_statement": "To transform dementia care by ensuring individuals living with dementia receive the best possible support, while empowering their caregivers with effective, evidence-based strategies."
+  },
+  "market_analysis": {
+    "jurisdiction": "Global",
+    "industry_overview": "Health technology (health-tech) encompasses the application of organized knowledge and skills in the form of devices, medicines, vaccines, procedures, and systems developed to solve health problems and improve quality of life. The industry includes pharmaceuticals, medical devices, digital health solutions (such as telemedicine, electronic health records, wearable devices, and health apps), and IT systems supporting healthcare delivery. Health-tech aims to enhance patient care, improve operational efficiency, and enable preventive and personalized medicine.",
+    "target_market_segment": "The health-tech market targets a broad range of segments including hospitals and healthcare providers, patients (consumers), payers (insurance companies), pharmaceutical and biotechnology companies, and government/public health agencies. Key focus areas include chronic disease management, remote patient monitoring, telehealth, digital diagnostics, and health data analytics.",
+    "market_size_tam": "$908.5B (2023), projected to reach $3,140.9B by 2033",
+    "market_size_sam": null,
+    "market_size_som": null,
+    "market_growth_rate_cagr": "13.1% (2024-2033)",
+    "key_market_trends": [
+      "Accelerated digital transformation and adoption of telehealth and virtual care",
+      "Integration of artificial intelligence (AI) and machine learning in diagnostics, imaging, and personalized medicine",
+      "Expansion of wearable health devices and remote patient monitoring",
+      "Growth in mobile health (mHealth) applications and digital therapeutics",
+      "Increased focus on interoperability and health data exchange",
+      "Rising consumerization of healthcare and patient-centric models",
+      "Adoption of cloud-based healthcare IT solutions",
+      "Expansion of 3D bioprinting and regenerative medicine technologies"
+    ],
+    "competitor_landscape_summary": "The global health-tech market is highly competitive and fragmented, with a mix of established multinational corporations, fast-growing startups, and technology giants entering the space. Key players differentiate through technological innovation, data analytics capabilities, integration with existing healthcare systems, and regulatory compliance. Market share is distributed among companies specializing in medical devices, digital health platforms, telemedicine, and health IT infrastructure.",
+    "competitors": [
+      {
+        "name": "Siemens Healthineers AG",
+        "website": "https://www.siemens-healthineers.com/",
+        "strengths": [
+          "Global leader in medical imaging and diagnostics",
+          "Strong R&D and innovation pipeline",
+          "Comprehensive digital health solutions"
+        ],
+        "weaknesses": [
+          "High dependence on capital-intensive hardware",
+          "Complex regulatory landscape"
+        ],
+        "market_share_estimate": null,
+        "funding_raised": null
+      },
+      {
+        "name": "Medtronic",
+        "website": "https://www.medtronic.com/",
+        "strengths": [
+          "Extensive portfolio in medical devices and digital health",
+          "Strong global distribution network",
+          "Focus on chronic disease management and remote monitoring"
+        ],
+        "weaknesses": [
+          "Exposure to regulatory and reimbursement risks",
+          "Competition from emerging digital-first startups"
+        ],
+        "market_share_estimate": null,
+        "funding_raised": null
+      },
+      {
+        "name": "Epic Systems Corporation",
+        "website": "https://www.epic.com/",
+        "strengths": [
+          "Market leader in electronic health records (EHR)",
+          "Large installed base among hospitals and health systems",
+          "Strong interoperability and integration capabilities"
+        ],
+        "weaknesses": [
+          "Vendor lock-in concerns",
+          "High switching costs for customers"
+        ],
+        "market_share_estimate": null,
+        "funding_raised": null
+      },
+      {
+        "name": "Apple",
+        "website": "https://www.apple.com/healthcare/",
+        "strengths": [
+          "Consumer health ecosystem via Apple Watch and HealthKit",
+          "Strong brand and user engagement",
+          "Integration with third-party health apps and devices"
+        ],
+        "weaknesses": [
+          "Limited penetration in clinical healthcare settings",
+          "Reliance on consumer adoption"
+        ],
+        "market_share_estimate": null,
+        "funding_raised": null
+      },
+      {
+        "name": "Doctolib",
+        "website": "https://www.doctolib.com/",
+        "strengths": [
+          "Leading telemedicine and appointment platform in Europe",
+          "Rapid user growth and adoption among providers",
+          "Integrated digital health services"
+        ],
+        "weaknesses": [
+          "Regional concentration (mainly Europe)",
+          "Competition from global telehealth platforms"
+        ],
+        "market_share_estimate": null,
+        "funding_raised": null
+      }
+    ],
+    "company_competitive_advantages": [
+      "Proprietary digital health platforms and data analytics",
+      "Integration with existing healthcare IT infrastructure",
+      "Strong partnerships with healthcare providers and payers",
+      "Regulatory compliance and data security expertise",
+      "Ability to scale solutions globally"
+    ],
+    "barriers_to_entry": [
+      "Complex and varying regulatory requirements across regions",
+      "High capital investment for product development and compliance",
+      "Data privacy and cybersecurity challenges",
+      "Need for clinical validation and evidence-based outcomes",
+      "Integration with legacy healthcare IT systems",
+      "Vendor lock-in and high switching costs for providers",
+      "Market power of established EHR and device vendors"
+    ],
+    "market_timing_assessment": "Favorable \u2013 The market is in a strong growth phase, driven by digital transformation, increased investment, and rising demand for remote and personalized healthcare solutions. However, regulatory complexity and competition are intensifying.",
+    "regulatory_environment": "The global health-tech industry is highly regulated, with requirements varying by country and region. Key regulatory bodies include the U.S. FDA, European Medicines Agency (EMA), and national health authorities. Regulations cover medical device approval, digital health software, data privacy (e.g., HIPAA, GDPR), and interoperability standards. The regulatory landscape is evolving to address AI/ML in healthcare, digital therapeutics, and cross-border data flows. Companies must navigate a patchwork of laws and ensure compliance with both hard-law (statutes, regulations) and soft-law (guidelines, codes of conduct) frameworks."
+  },
+  "decision_support_output": {
+    "research_id": "a5dacd84-de80-4580-9ebf-26a54d763b7f",
+    "query_or_target_entity": "emwillcare",
+    "research_date": "2025-06-06T14:17:11",
+    "status": "Complete",
+    "primary_analyst": "AI Investment Analyst (Decision Support Agent)",
+    "company_profile": {
+      "company_name": "emwillcare",
+      "website": "https://www.emwillcare.com/",
+      "linkedin_url": "https://uk.linkedin.com/in/dr-emma-williams-859748121",
+      "description": "emwillcare is a healthtech company focused on transforming dementia care by providing evidence-based, innovative solutions that empower caregivers and improve the quality of life for individuals living with dementia. The company delivers digital tools and consultancy to reduce distress, minimize the use of unlicensed antipsychotic drugs, and lower health and social care costs.",
+      "industry": "Healthcare",
+      "sub_industry": "Digital Health / Dementia Care",
+      "founded_year": 2023,
+      "funding_stage": null,
+      "total_funding_raised": null,
+      "funding_rounds_details": null,
+      "key_products_services": [
+        "Less Distress (digital tool for predicting and preventing distressed behaviours in dementia care)",
+        "Behavioural science-based consultancy and training for care homes and caregivers"
+      ],
+      "business_model": "B2B and B2B2C SaaS and consultancy model, selling digital tools and training services to care homes, healthcare providers, and commissioners.",
+      "target_customer": "Care home owners, healthcare commissioners, clinical teams, and caregivers seeking cost-effective, evidence-based solutions to improve dementia care and reduce distress.",
+      "key_metrics": null,
+      "team_size": "1-10",
+      "location_hq": "United Kingdom",
+      "other_locations": null,
+      "mission_statement": "To transform dementia care by ensuring individuals living with dementia receive the best possible support, while empowering their caregivers with effective, evidence-based strategies."
+    },
+    "founder_profiles": [
+      {
+        "name": "Dr Emma Williams",
+        "linkedin_url": "https://www.linkedin.com/in/dr-emma-williams",
+        "role_in_company": "Founder, EmWill Care",
+        "background_summary": "Dr Emma Williams is a PhD-educated psychologist with over 27 years of experience in the care sector, specialising in dementia care and behavioural science. She is the founder of EmWill Care, a company focused on revolutionising dementia care by integrating behavioural science with smart technology. Her primary solution, 'Less Distress,' is a behavioural tool designed to empower caregivers to predict and prevent distressed behaviours in individuals with dementia, aiming to reduce reliance on crisis-driven care and antipsychotic medications. Dr Williams is also the founder of PACT (Positive Ageing Consultancy & Training). Her leadership experience includes founder roles and previous positions such as Director of Training for the North Wales Regional Partnership Board and providing bespoke behavioural consultancy. She is recognised for her mission-driven approach, innovation, and deep commitment to improving dementia care.",
+        "previous_companies": [
+          {
+            "company_name": "PACT (Positive Ageing Consultancy & Training)",
+            "role": "Founder",
+            "duration": null,
+            "description": "Founded and led a consultancy focused on positive ageing, training, and behavioural science in care settings.",
+            "was_founder": true
+          },
+          {
+            "company_name": "North Wales Regional Partnership Board",
+            "role": "Director of Training",
+            "duration": null,
+            "description": "Oversaw training initiatives for care professionals, specialising in dementia and behavioural science.",
+            "was_founder": false
+          },
+          {
+            "company_name": "Bespoke Behavioural Consultancy",
+            "role": "Consultant",
+            "duration": null,
+            "description": "Provided tailored behavioural consultancy services to care organisations.",
+            "was_founder": false
+          }
+        ],
+        "education": [
+          {
+            "institution": null,
+            "degree": "PhD",
+            "field_of_study": "Psychology",
+            "graduation_year": null,
+            "notable_achievements": null
+          },
+          {
+            "institution": null,
+            "degree": "MSc",
+            "field_of_study": "Applied Behaviour Analysis",
+            "graduation_year": null,
+            "notable_achievements": null
+          }
+        ],
+        "key_skills_and_expertise": [
+          "Dementia care",
+          "Behavioural science",
+          "Psychology",
+          "Care sector leadership",
+          "Training and consultancy",
+          "Smart technology integration",
+          "Mission-driven innovation"
+        ],
+        "public_speaking_or_content": [
+          {
+            "type": "blog post",
+            "title": "Understanding Dementia-Related Behaviours",
+            "url": null
+          },
+          {
+            "type": "event",
+            "title": "Showcase at London Tech Week 2025",
+            "url": null
+          },
+          {
+            "type": "accelerator",
+            "title": "Alzheimer's Society Accelerator Growth Programme",
+            "url": null
+          }
+        ],
+        "investment_criteria_assessment": {
+          "focus_industry_fit": true,
+          "mission_alignment": true,
+          "exciting_solution_to_problem": true,
+          "founded_something_relevant_before": true,
+          "impressive_relevant_past_experience": true,
+          "exceptionally_smart_or_strategic": true,
+          "assessment_summary": "From research_prospect_tool output: Dr Emma Williams and EmWill Care are a strong fit for all investment criteria. The venture is tech-enabled and mission-driven, with a compelling solution to a real problem. Dr Williams has founded relevant ventures, has impressive and relevant sector experience, and demonstrates exceptional strategic and intellectual capability."
+        }
+      }
+    ],
+    "market_analysis": {
+      "jurisdiction": "Global",
+      "industry_overview": "Health technology (health-tech) encompasses the application of organized knowledge and skills in the form of devices, medicines, vaccines, procedures, and systems developed to solve health problems and improve quality of life. The industry includes pharmaceuticals, medical devices, digital health solutions (such as telemedicine, electronic health records, wearable devices, and health apps), and IT systems supporting healthcare delivery. Health-tech aims to enhance patient care, improve operational efficiency, and enable preventive and personalized medicine.",
+      "target_market_segment": "The health-tech market targets a broad range of segments including hospitals and healthcare providers, patients (consumers), payers (insurance companies), pharmaceutical and biotechnology companies, and government/public health agencies. Key focus areas include chronic disease management, remote patient monitoring, telehealth, digital diagnostics, and health data analytics.",
+      "market_size_tam": "$908.5B (2023), projected to reach $3,140.9B by 2033",
+      "market_size_sam": null,
+      "market_size_som": null,
+      "market_growth_rate_cagr": "13.1% (2024-2033)",
+      "key_market_trends": [
+        "Accelerated digital transformation and adoption of telehealth and virtual care",
+        "Integration of artificial intelligence (AI) and machine learning in diagnostics, imaging, and personalized medicine",
+        "Expansion of wearable health devices and remote patient monitoring",
+        "Growth in mobile health (mHealth) applications and digital therapeutics",
+        "Increased focus on interoperability and health data exchange",
+        "Rising consumerization of healthcare and patient-centric models",
+        "Adoption of cloud-based healthcare IT solutions",
+        "Expansion of 3D bioprinting and regenerative medicine technologies"
+      ],
+      "competitor_landscape_summary": "The global health-tech market is highly competitive and fragmented, with a mix of established multinational corporations, fast-growing startups, and technology giants entering the space. Key players differentiate through technological innovation, data analytics capabilities, integration with existing healthcare systems, and regulatory compliance. Market share is distributed among companies specializing in medical devices, digital health platforms, telemedicine, and health IT infrastructure.",
+      "competitors": [
+        {
+          "name": "Siemens Healthineers AG",
+          "website": "https://www.siemens-healthineers.com/",
+          "strengths": [
+            "Global leader in medical imaging and diagnostics",
+            "Strong R&D and innovation pipeline",
+            "Comprehensive digital health solutions"
+          ],
+          "weaknesses": [
+            "High dependence on capital-intensive hardware",
+            "Complex regulatory landscape"
+          ],
+          "market_share_estimate": null,
+          "funding_raised": null
+        },
+        {
+          "name": "Medtronic",
+          "website": "https://www.medtronic.com/",
+          "strengths": [
+            "Extensive portfolio in medical devices and digital health",
+            "Strong global distribution network",
+            "Focus on chronic disease management and remote monitoring"
+          ],
+          "weaknesses": [
+            "Exposure to regulatory and reimbursement risks",
+            "Competition from emerging digital-first startups"
+          ],
+          "market_share_estimate": null,
+          "funding_raised": null
+        },
+        {
+          "name": "Epic Systems Corporation",
+          "website": "https://www.epic.com/",
+          "strengths": [
+            "Market leader in electronic health records (EHR)",
+            "Large installed base among hospitals and health systems",
+            "Strong interoperability and integration capabilities"
+          ],
+          "weaknesses": [
+            "Vendor lock-in concerns",
+            "High switching costs for customers"
+          ],
+          "market_share_estimate": null,
+          "funding_raised": null
+        },
+        {
+          "name": "Apple",
+          "website": "https://www.apple.com/healthcare/",
+          "strengths": [
+            "Consumer health ecosystem via Apple Watch and HealthKit",
+            "Strong brand and user engagement",
+            "Integration with third-party health apps and devices"
+          ],
+          "weaknesses": [
+            "Limited penetration in clinical healthcare settings",
+            "Reliance on consumer adoption"
+          ],
+          "market_share_estimate": null,
+          "funding_raised": null
+        },
+        {
+          "name": "Doctolib",
+          "website": "https://www.doctolib.com/",
+          "strengths": [
+            "Leading telemedicine and appointment platform in Europe",
+            "Rapid user growth and adoption among providers",
+            "Integrated digital health services"
+          ],
+          "weaknesses": [
+            "Regional concentration (mainly Europe)",
+            "Competition from global telehealth platforms"
+          ],
+          "market_share_estimate": null,
+          "funding_raised": null
+        }
+      ],
+      "company_competitive_advantages": [
+        "Proprietary digital health platforms and data analytics",
+        "Integration with existing healthcare IT infrastructure",
+        "Strong partnerships with healthcare providers and payers",
+        "Regulatory compliance and data security expertise",
+        "Ability to scale solutions globally"
+      ],
+      "barriers_to_entry": [
+        "Complex and varying regulatory requirements across regions",
+        "High capital investment for product development and compliance",
+        "Data privacy and cybersecurity challenges",
+        "Need for clinical validation and evidence-based outcomes",
+        "Integration with legacy healthcare IT systems",
+        "Vendor lock-in and high switching costs for providers",
+        "Market power of established EHR and device vendors"
+      ],
+      "market_timing_assessment": "Favorable \u2013 The market is in a strong growth phase, driven by digital transformation, increased investment, and rising demand for remote and personalized healthcare solutions. However, regulatory complexity and competition are intensifying.",
+      "regulatory_environment": "The global health-tech industry is highly regulated, with requirements varying by country and region. Key regulatory bodies include the U.S. FDA, European Medicines Agency (EMA), and national health authorities. Regulations cover medical device approval, digital health software, data privacy (e.g., HIPAA, GDPR), and interoperability standards. The regulatory landscape is evolving to address AI/ML in healthcare, digital therapeutics, and cross-border data flows. Companies must navigate a patchwork of laws and ensure compliance with both hard-law (statutes, regulations) and soft-law (guidelines, codes of conduct) frameworks."
+    },
+    "investment_assessment": {
+      "fs_focus_industry_fit": true,
+      "fs_mission_alignment": true,
+      "fs_exciting_solution_to_problem": true,
+      "fs_founded_something_relevant_before": true,
+      "fs_impressive_relevant_past_experience": true,
+      "fs_exceptionally_smart_or_strategic": true,
+      "overall_criteria_summary": "emwillcare and founder Dr Emma Williams meet all six Flight Story investment criteria. The company operates in health-tech (focus industry), is deeply mission-aligned (transforming dementia care for a healthier, happier humanity), and offers a genuinely exciting, innovative solution (AI-powered, evidence-based tool for caregivers). Dr Williams has previously founded a highly relevant consultancy (PACT), has extensive sector experience, and demonstrates exceptional intelligence and strategic ability (PhD, sector leadership, accelerator participation).",
+      "key_risk_factors": [
+        "Early stage: No revenue or significant commercial traction yet.",
+        "Single founder risk: Small team, heavy reliance on Dr Williams.",
+        "Highly regulated market: Complex compliance and clinical validation required.",
+        "Competitive landscape: Large incumbents and emerging digital health startups.",
+        "Product-market fit and adoption: Need to prove efficacy and secure contracts with care providers/NHS."
+      ],
+      "key_opportunities": [
+        "First-mover advantage in AI-driven behavioural support for dementia care.",
+        "Strong founder credibility and sector expertise.",
+        "Large, rapidly growing market with urgent unmet needs.",
+        "Potential for significant impact on health outcomes and cost savings.",
+        "Scalable SaaS/consultancy model with global applicability.",
+        "Support from Alzheimer's Society and accelerator programs."
+      ],
+      "investment_thesis_summary": "emwillcare is a mission-driven health-tech startup with a visionary founder and a unique, AI-powered solution to a major global problem: distressed behaviours in dementia care. The founder's deep expertise, prior relevant founding experience, and sector credibility position the company for success. The solution is innovative, scalable, and highly aligned with Flight Story's thesis of supporting healthier, happier humanity through technology.",
+      "potential_return_profile": "High risk, high reward. If emwillcare achieves product-market fit and scales across care providers, the economic and social impact could be substantial given the size and growth of the dementia care market. Early-stage status means returns are speculative but could be significant with successful execution and adoption.",
+      "deal_terms_summary": "Raising \u00a3250-500k at a pre-money valuation of \u00a30-1m. 100% founder-owned. SEIS/EIS advance assurance in place. No prior funding raised.",
+      "recommended_next_steps": [
+        "Arrange a partner meeting to discuss the opportunity and founder.",
+        "Conduct deeper diligence on product development status, pilot results, and technical validation.",
+        "Assess regulatory pathway and clinical evidence requirements.",
+        "Explore potential for Flight Story value-add (brand, network, go-to-market).",
+        "Evaluate team expansion plans and risk mitigation for single-founder structure.",
+        "Review detailed financial projections and use of funds."
+      ]
+    },
+    "overall_summary_and_recommendation": "PASS",
+    "confidence_score_overall": 1.0,
+    "sources_consulted": [
+      {
+        "type": "structured_input",
+        "source": "company_profile_data_input"
+      },
+      {
+        "type": "structured_input",
+        "source": "founder_profiles_data_input"
+      },
+      {
+        "type": "structured_input",
+        "source": "market_analysis_data_input"
+      },
+      {
+        "type": "structured_input",
+        "source": "additional_context_input"
+      }
+    ],
+    "raw_tool_outputs": null,
+    "attachments": null,
+    "analyst_notes": null
+  },
+  "errors": [],
+  "orchestration_end_time": "2025-06-06T14:17:11.643834+00:00"
+}

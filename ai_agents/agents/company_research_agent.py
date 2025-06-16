@@ -1,25 +1,37 @@
 import os
 import json
 import re
+import logging # Added
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 import argparse
 import sys
 from urllib.parse import urlparse
 
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 
 # Import models and tools from your project structure
 from ai_agents.models.investment_research import CompanyProfile
-from ai_agents.tools import search_tool, save_tool # Assuming Tavily is your primary search_tool
-from ai_agents.tools import tavily_search_tool_instance # For API key check
+from ai_agents.tools import search_tool, save_tool 
+from ai_agents.tools import tavily_search_tool_instance
+
+# Import the new model selection and retry systems
+try:
+    from ai_agents.config.model_config import get_llm_for_agent, ModelConfig, ModelSelectionError
+    from ai_agents.utils.retry_handler import with_smart_retry, RetryConfig
+    MODEL_SYSTEM_AVAILABLE = True
+except ImportError:
+    MODEL_SYSTEM_AVAILABLE = False
+    logging.warning("CompanyResearchAgent: Model selection or retry system not available. Functionality may be limited or use fallbacks.")
+
 
 # Load .env file from the project root
 load_dotenv()
+
+# Setup logging
+logger = logging.getLogger(__name__)
 
 # --- Output Parser for CompanyProfile ---
 company_profile_parser = PydanticOutputParser(pydantic_object=CompanyProfile)
@@ -56,51 +68,50 @@ def _ensure_url_scheme(url: Optional[str]) -> Optional[str]:
         return f"https://{url}"
     return url
 
-def get_llm():
-    """Initializes and returns the appropriate LLM based on available API keys."""
-    if os.getenv("ANTHROPIC_API_KEY"):
-        print("Using Anthropic Claude model for company research.", file=sys.stderr)
-        return ChatAnthropic(
-            model="claude-3-haiku-20240307", 
-            temperature=0.3,
-            max_tokens=4000  # Increased max tokens
-        )
-    elif os.getenv("OPENAI_API_KEY"):
-        print("Using OpenAI GPT model for company research.", file=sys.stderr)
-        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.2) # Or gpt-4-turbo-preview
+def _get_fallback_llm():
+    """Fallback LLM selection logic (simplified)."""
+    if os.getenv("OPENAI_API_KEY"):
+        from langchain_openai import ChatOpenAI
+        logger.info("CompanyResearchAgent: Using OpenAI GPT model (fallback)")
+        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1, max_tokens=4000)
+    elif os.getenv("ANTHROPIC_API_KEY"):
+        from langchain_anthropic import ChatAnthropic
+        logger.info("CompanyResearchAgent: Using Anthropic Claude model (fallback)")
+        return ChatAnthropic(model="claude-3-haiku-20240307", temperature=0.2, max_tokens=4000)
     else:
-        print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.", file=sys.stderr)
-        return None
+        logger.error("CompanyResearchAgent: FATAL: No LLM API keys available for fallback.")
+        raise ValueError("No LLM API keys available for fallback LLM initialization for Company Research.")
 
-def run_company_research_cli(company_name: str) -> Optional[CompanyProfile]:
+# Define the core research logic that can be decorated
+def _core_company_research_logic(company_name: str, llm: Any, model_config: Optional[ModelConfig]) -> CompanyProfile:
     """
-    Researches a company comprehensively and returns a CompanyProfile object.
-    Saves the result to a JSON file.
+    The core logic for company research, designed to be wrapped by the retry decorator.
+    It expects an LLM instance to be passed in.
     """
-    print(f"Starting comprehensive research for company: \"{company_name}\"", file=sys.stderr)
+    logger.info(f"CompanyResearchAgent: Executing core research logic for \"{company_name}\" with model {model_config.model_name if model_config else 'Unknown'}.")
 
-    # --- API Key and Tool Availability Checks ---
     if not tavily_search_tool_instance:
-        print("FATAL: Tavily search_tool is not available (check TAVILY_API_KEY in .env). Cannot proceed with company research.", file=sys.stderr)
-        return None
+        logger.error("CompanyResearchAgent: FATAL: Tavily search_tool is not available. Cannot proceed.")
+        # This should ideally be caught before even calling this core logic,
+        # but as a safeguard within the core execution path.
+        raise ValueError("Tavily search_tool not available for Company Research.")
 
-    llm = get_llm()
-    if not llm:
-        return None
+    available_tools = [search_tool]
 
-    available_tools = [search_tool] # Primarily uses web search
+    company_research_agent_prompt = COMPANY_RESEARCH_PROMPT_TEMPLATE 
+    # company_profile_parser is globally defined
 
-    # --- Agent and Executor Setup ---
-    company_research_agent = create_tool_calling_agent(
-        llm=llm,
-        prompt=COMPANY_RESEARCH_PROMPT_TEMPLATE,
+    agent = create_tool_calling_agent(
+        llm=llm, 
+        prompt=company_research_agent_prompt,
         tools=available_tools
     )
     agent_executor = AgentExecutor(
-        agent=company_research_agent,
+        agent=agent,
         tools=available_tools,
-        verbose=False,
-        handle_parsing_errors=True # Handles errors if LLM output is not perfect JSON for tool calls
+        verbose=False, 
+        handle_parsing_errors=True,
+        max_iterations=8 # Sensible default
     )
 
     raw_agent_output_container = None
@@ -108,112 +119,180 @@ def run_company_research_cli(company_name: str) -> Optional[CompanyProfile]:
     try:
         raw_agent_output_container = agent_executor.invoke({"input": company_name})
 
-        # Robustly extract the string content from the agent's output
-        llm_response_content_str = None # This will hold the string that potentially contains the JSON
+        llm_response_content_str = None
         if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
             output_payload = raw_agent_output_container["output"]
             if isinstance(output_payload, str):
                 llm_response_content_str = output_payload
             elif isinstance(output_payload, list) and output_payload:
-                # Handle cases where output is a list of content blocks (e.g., from Anthropic)
                 first_block = output_payload[0]
                 if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
                     llm_response_content_str = first_block["text"]
-                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...", file=sys.stderr)
                 else:
-                    # Fallback if the list structure is not as expected
-                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}", file=sys.stderr)
-                    llm_response_content_str = str(output_payload) 
+                    llm_response_content_str = str(output_payload)
             else:
-                # Fallback for other unexpected structures within output['output']
-                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}", file=sys.stderr)
                 llm_response_content_str = str(output_payload)
-        elif isinstance(raw_agent_output_container, str): # If the agent directly returns a string
+        elif isinstance(raw_agent_output_container, str):
              llm_response_content_str = raw_agent_output_container
         else:
-            # Fallback for other unexpected overall output structures
-            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}", file=sys.stderr)
             llm_response_content_str = str(raw_agent_output_container)
 
         if not llm_response_content_str:
-            print("Agent did not produce a parsable output string for CompanyProfile.", file=sys.stderr)
-            return None
+            logger.error(f"CompanyResearchAgent: Agent for \"{company_name}\" did not produce a parsable output string.")
+            raise ValueError(f"Agent for {company_name} produced no parsable output string for CompanyProfile.")
 
-        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...", file=sys.stderr)
+        logger.debug(f"CompanyResearchAgent: Raw LLM content for \"{company_name}\": {llm_response_content_str[:500]}...")
 
-        # Attempt to extract the JSON block from the content string
-        # The LLM is expected to return JSON, possibly wrapped in some text (e.g. <result> or ```json)
-        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str) # Use [\s\S]* for robust multiline match
+        json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str)
         if json_match:
             json_to_parse = json_match.group(0).strip()
-            print(f"Extracted JSON block for CompanyProfile parsing (stripped): {json_to_parse[:300]}...", file=sys.stderr)
         else:
-            # Fallback if regex doesn't find a clear JSON object.
             temp_str = llm_response_content_str.strip()
-            # Remove ```json ... ``` markdown
             if temp_str.startswith("```json"):
                 temp_str = temp_str[len("```json"):].strip()
             if temp_str.endswith("```"):
                 temp_str = temp_str[:-len("```")].strip()
-            
             if temp_str.startswith("{") and temp_str.endswith("}"):
                 json_to_parse = temp_str
-                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...", file=sys.stderr)
+                logger.warning(f"CompanyResearchAgent: Used fallback JSON extraction for \"{company_name}\".")
             else:
-                cleaned_further = re.sub(r"<[^>]+>", "", temp_str).strip() # Remove all XML-like tags
+                cleaned_further = re.sub(r"<[^>]+>", "", temp_str).strip()
                 if cleaned_further.startswith("{") and cleaned_further.endswith("}"):
                     json_to_parse = cleaned_further
-                    print(f"Warning: Cleaned XML-like tags, attempting to parse: {json_to_parse[:300]}...", file=sys.stderr)
+                    logger.warning(f"CompanyResearchAgent: Used fallback JSON extraction (XML tag stripping) for \"{company_name}\".")
                 else:
-                    print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...", file=sys.stderr)
-                    if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
-                    return None
+                    logger.error(f"CompanyResearchAgent: Could not extract JSON from LLM response for \"{company_name}\": {llm_response_content_str[:500]}...")
+                    raise ValueError(f"Could not extract valid JSON for {company_name} from LLM response.")
         
-        # Parse the JSON string into CompanyProfile object
-        parsed_dict = json.loads(json_to_parse, strict=False) # strict=False for leniency with newlines in strings
+        logger.debug(f"CompanyResearchAgent: Extracted JSON for \"{company_name}\": {json_to_parse[:300]}...")
+        parsed_dict = json.loads(json_to_parse, strict=False)
 
-        # Ensure HttpUrl fields have a scheme before validation
-        for url_field in ["website", "linkedin_url"]: # Add other HttpUrl fields if any
+        for url_field in ["website", "linkedin_url"]:
             if url_field in parsed_dict and isinstance(parsed_dict[url_field], str):
                 parsed_dict[url_field] = _ensure_url_scheme(parsed_dict[url_field])
-                print(f"Ensured scheme for {url_field} from LLM output: {parsed_dict[url_field]}", file=sys.stderr)
         
         company_profile_obj = CompanyProfile.model_validate(parsed_dict)
-
-        print("\n--- Company Profile Research Output (to be saved to file) ---", file=sys.stderr)
-        print(company_profile_obj.model_dump_json(indent=2), file=sys.stderr)
-
-        # Save the structured data
-        safe_company_name = "".join(c if c.isalnum() else "_" for c in company_name)[:50].rstrip("_")
-        output_filename = f"company_research_{safe_company_name}.json"
-        
-        try:
-            save_tool.invoke({
-                "filename": output_filename,
-                "text": company_profile_obj.model_dump_json(indent=2)
-            })
-            print(f"Company profile research saved to {output_filename}", file=sys.stderr)
-        except Exception as e_save:
-            print(f"Error saving company profile research to file: {e_save}", file=sys.stderr)
-
+        logger.info(f"CompanyResearchAgent: Successfully researched and validated profile for company: {company_name}")
         return company_profile_obj
 
     except json.JSONDecodeError as json_err:
-        print(f"JSONDecodeError: Failed to parse JSON string for CompanyProfile. Error: {json_err}", file=sys.stderr)
-        print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000]}", file=sys.stderr)
-        if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
-        return None
+        logger.error(f"CompanyResearchAgent: JSONDecodeError for \"{company_name}\". Error: {json_err}. String: {json_to_parse[:1000]}", exc_info=True)
+        if raw_agent_output_container: logger.debug(f"Raw agent output at time of JSON error: {raw_agent_output_container}")
+        raise # Re-raise for retry handler
     except Exception as e:
-        print(f"An error occurred during company research agent execution or response parsing: {e}", file=sys.stderr)
-        if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
+        logger.error(f"CompanyResearchAgent: Error during core research for \"{company_name}\": {e}", exc_info=True)
+        if raw_agent_output_container: logger.debug(f"Raw agent output at time of error: {raw_agent_output_container}")
+        raise # Re-raise for retry handler
+
+# --- Apply Decorator ---
+_decorated_core_research_logic = _core_company_research_logic
+
+if MODEL_SYSTEM_AVAILABLE:
+    _model_selector_for_retry = None
+    try:
+        from ai_agents.config.model_config import get_llm_for_agent as get_llm_func_for_decorator
+        _model_selector_for_retry = get_llm_func_for_decorator
+    except ImportError:
+        logger.warning("CompanyResearchAgent: Could not import get_llm_for_agent for retry decorator. Model switching disabled.")
+
+    _retry_config = RetryConfig(
+        max_retries=3, 
+        base_delay=2.0, 
+        switch_model_on_rate_limit=bool(_model_selector_for_retry) # Only True if selector is available
+    )
+    
+    _decorated_core_research_logic = with_smart_retry(
+        agent_name="company_research",
+        retry_config_override=_retry_config,
+        model_selector_func=_model_selector_for_retry
+    )(_core_company_research_logic)
+else:
+    logger.warning("CompanyResearchAgent: Retry system not fully available. Research will not have advanced retry/model switching.")
+    # _decorated_core_research_logic remains the original undecorated function if no retry system
+
+def run_company_research_cli(company_name: str) -> Optional[CompanyProfile]:
+    """
+    Sets up and runs the company research, utilizing the (potentially) decorated core logic.
+    """
+    logger.info(f"CompanyResearchAgent: Starting comprehensive research for company: \"{company_name}\" via CLI entry point.")
+
+    if not tavily_search_tool_instance: # Initial check before involving LLMs or retries
+        logger.error("CompanyResearchAgent: FATAL: Tavily search_tool is not available (check TAVILY_API_KEY in .env). Cannot proceed.")
         return None
 
+    # Initial LLM selection for the first attempt (or if no retry system)
+    # The decorator will handle subsequent selections if it's active and configured for model switching.
+    llm_instance = None
+    model_config_instance = None
+
+    if MODEL_SYSTEM_AVAILABLE:
+        try:
+            llm_instance, model_config_instance = get_llm_for_agent("company_research")
+            # get_llm_for_agent already logs the selection.
+            # logger.info(f"CompanyResearchAgent: Initial model for '{company_name}': {model_config_instance.model_name}")
+        except ModelSelectionError as e_mse:
+            logger.error(f"CompanyResearchAgent: FATAL - Initial model selection failed for '{company_name}': {e_mse}. Attempting fallback.")
+            try:
+                llm_instance = _get_fallback_llm()
+                # We don't have a full ModelConfig for fallback LLMs here, but the LLM object itself is key.
+                model_config_instance = ModelConfig(provider="Unknown", model_name="fallback", temperature=0.1, max_tokens=4000, cost_per_1k_tokens=0, rate_limit_rpm=0, best_for=[]) 
+            except ValueError as e_fb: # Fallback also failed
+                 logger.error(f"CompanyResearchAgent: FATAL - Fallback LLM also failed for '{company_name}': {e_fb}")
+                 return None
+
+        except Exception as e_llm_init:
+            logger.error(f"CompanyResearchAgent: FATAL - Unexpected error during initial LLM init for '{company_name}': {e_llm_init}")
+            return None
+    else: # No model system, try direct fallback
+        try:
+            llm_instance = _get_fallback_llm()
+            model_config_instance = ModelConfig(provider="Unknown", model_name="fallback_direct", temperature=0.1, max_tokens=4000, cost_per_1k_tokens=0, rate_limit_rpm=0, best_for=[])
+        except ValueError as e_fb_direct:
+            logger.error(f"CompanyResearchAgent: FATAL - Fallback LLM failed (no model system): {e_fb_direct}")
+            return None
+
+
+    if not llm_instance:
+        logger.error(f"CompanyResearchAgent: FATAL - LLM instance is None after all selection attempts for '{company_name}'. Cannot proceed.")
+        return None
+
+    try:
+        # Call the (potentially) decorated core research logic
+        # Pass the initially selected LLM and its config. The decorator will use these for the first attempt
+        # and can switch them for subsequent attempts if `model_selector_func` is provided to it.
+        company_profile_obj = _decorated_core_research_logic(
+            company_name=company_name, 
+            llm=llm_instance, # Pass the LLM instance
+            model_config=model_config_instance # Pass its config
+        )
+
+        if company_profile_obj:
+            # Save the structured data
+            safe_company_name = "".join(c if c.isalnum() else "_" for c in company_name)[:50].rstrip("_")
+            output_filename = f"company_research_{safe_company_name}.json"
+            try:
+                save_tool.invoke({
+                    "filename": output_filename,
+                    "text": company_profile_obj.model_dump_json(indent=2)
+                })
+                logger.info(f"CompanyResearchAgent: Profile for \"{company_name}\" saved to {output_filename}")
+            except Exception as e_save:
+                logger.error(f"CompanyResearchAgent: Error saving profile for \"{company_name}\" to file: {e_save}")
+        return company_profile_obj
+
+    except Exception as e: # This will catch errors if retries are exhausted or if the error is non-retryable
+        logger.error(f"CompanyResearchAgent: Research for \"{company_name}\" ultimately failed after all attempts: {e}", exc_info=True)
+        return None
+
+
 if __name__ == "__main__":
-    print("Company research agent CLI starting...", file=sys.stderr)
+    # Ensure logging is set up for CLI execution.
+    if not logging.getLogger().hasHandlers(): # Check if handlers are already configured
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+
+    logger.info("Company research agent CLI starting...")
     
     parser = argparse.ArgumentParser(description="Company Research Agent CLI - Researches a company by name.")
-    # The orchestrator calls this with --company_name, but the agent prompt uses "input" for company_name.
-    # Let's use --company_name for the CLI argument for consistency with the orchestrator.
     parser.add_argument("--company_name", type=str, required=True, help="Name of the company to research.")
     
     args = parser.parse_args()
@@ -222,27 +301,24 @@ if __name__ == "__main__":
         profile = run_company_research_cli(args.company_name)
         
         if profile:
-            # Print the final CompanyProfile JSON to stdout for the orchestrator
-            print(profile.model_dump_json(indent=None)) # indent=None for cleaner capture
-            print(f"Company research agent: Successfully generated JSON output for {args.company_name}", file=sys.stderr)
+            print(profile.model_dump_json(indent=None)) 
+            logger.info(f"Company research agent: Successfully generated JSON output for {args.company_name}")
         else:
-            # If research failed, print an error JSON to stdout and exit with error code
             error_output = {
                 "status": "error",
                 "company_name": args.company_name,
-                "error_message": f"Failed to retrieve or generate profile for {args.company_name}."
+                "error_message": f"Failed to retrieve or generate profile for {args.company_name} after all attempts."
             }
             print(json.dumps(error_output, indent=None))
-            print(f"Company research agent: Failed to generate profile for {args.company_name}.", file=sys.stderr)
+            logger.error(f"Company research agent: Failed to generate profile for {args.company_name}.")
             sys.exit(1)
             
     except Exception as e_main:
-        # Catch any other unexpected errors during the main execution
         error_output = {
             "status": "error",
             "company_name": args.company_name,
             "error_message": f"Critical error in company_research_agent CLI for {args.company_name}: {str(e_main)}"
         }
-        print(json.dumps(error_output, indent=None)) # Print error JSON to stdout
-        print(f"Critical error in company_research_agent CLI for {args.company_name}: {e_main}", file=sys.stderr) # To stderr
+        print(json.dumps(error_output, indent=None))
+        logger.critical(f"Critical error in company_research_agent CLI for {args.company_name}: {e_main}", exc_info=True)
         sys.exit(1) 

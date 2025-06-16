@@ -11,12 +11,13 @@ from bs4 import BeautifulSoup # Added for HTML parsing
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.language_models.chat_models import BaseChatModel
 import sys # Add sys import
+
+from ai_agents.config.model_config import get_llm_for_agent
+from ai_agents.utils.retry_handler import with_smart_retry, RetryConfig
 
 # Load .env file from the project root
 load_dotenv()
@@ -45,23 +46,6 @@ class PitchDeckSections(BaseModel):
 
 
 # --- LLM Initialization ---
-def get_llm() -> Optional[BaseChatModel]:
-    """Initializes and returns the appropriate LLM based on available API keys."""
-    if os.getenv("ANTHROPIC_API_KEY"):
-        # print("Using Anthropic Claude model for PDF structuring.")
-        print("pdf_extractor: Using Anthropic Claude model for structuring.", file=sys.stderr)
-        return ChatAnthropic(
-            model="claude-3-haiku-20240307",
-            temperature=0.2,
-            max_tokens=4000
-        )
-    elif os.getenv("OPENAI_API_KEY"):
-        # print("Using OpenAI GPT model for PDF structuring.")
-        print("pdf_extractor: Using OpenAI GPT model for structuring.", file=sys.stderr)
-        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1, max_tokens=4000)
-    else:
-        print("Warning: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. LLM structuring will not be available.", file=sys.stderr)
-        return None
 
 # --- PDF Processing Functions ---
 
@@ -183,10 +167,27 @@ def extract_text_from_pdf_bytes(pdf_bytes: bytes) -> Optional[str]:
         print(f"Error extracting text from PDF: {e}", file=sys.stderr)
         return None
 
-def structure_text_with_llm(raw_text: str, llm: BaseChatModel) -> Optional[PitchDeckSections]:
-    """Uses an LLM to structure the extracted text into PitchDeckSections."""
+@with_smart_retry(
+    "pdf_extraction",
+    retry_config_override=RetryConfig(switch_model_on_rate_limit=True),
+    model_selector_func=lambda *args, **kwargs: (
+        print(f"--- DEBUG LAMBDA: Received args: {args}, kwargs: {kwargs} ---", file=sys.stderr),
+        get_llm_for_agent(args[0], prefer_fast=kwargs.get('prefer_fast', False))
+    )[1]
+)
+def structure_text_with_llm(raw_text: str, **kwargs) -> Optional[PitchDeckSections]:
+    """Uses an LLM to structure the extracted text into PitchDeckSections.
+    This function is decorated with @with_smart_retry, which handles LLM instantiation,
+    retries, and potential model switching.
+    The 'llm' and 'model_config' are injected by the decorator via **kwargs.
+    """
+    llm: Optional[BaseChatModel] = kwargs.get("llm")
+    # model_config: Optional[ModelConfig] = kwargs.get("model_config") # Available if needed
+
     if not llm:
-        print("LLM not available for structuring text.", file=sys.stderr)
+        # This case should ideally be handled by get_llm_for_agent raising an error
+        # if no model can be provided (e.g., API keys missing), which @with_smart_retry would catch.
+        print("LLM not available for structuring text (not provided by decorator).", file=sys.stderr)
         return None
 
     parser = PydanticOutputParser(pydantic_object=PitchDeckSections)
@@ -219,37 +220,17 @@ def structure_text_with_llm(raw_text: str, llm: BaseChatModel) -> Optional[Pitch
 
     chain = prompt_template | llm | parser
     
-    # Fallback parser in case the main one fails due to minor formatting issues
-    # output_fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
+    try:
+        # The retry logic is now handled by the @with_smart_retry decorator.
+        # The decorator will call this function multiple times if retries are needed.
+        structured_data = chain.invoke({"raw_text": raw_text})
+        return structured_data
+    except Exception as e:
+        # This error will be caught by @with_smart_retry if it's a retryable error.
+        # If it's not retryable, or retries are exhausted, the decorator will re-raise it or handle it.
+        print(f"Error structuring text with LLM during chain invocation (will be handled by retry decorator): {e}", file=sys.stderr)
+        raise # Re-raise for the decorator to handle
 
-    max_retries = 2
-    for attempt in range(max_retries):
-        try:
-            # Limit text length to avoid exceeding token limits, if necessary
-            # A more sophisticated chunking strategy might be needed for very long texts,
-            # but pitch decks are usually within reasonable limits for modern LLMs.
-            # For now, we assume the text fits.
-            # Consider adding a check: if len(raw_text) > SOME_THRESHOLD, truncate or summarize first.
-            
-            structured_data = chain.invoke({"raw_text": raw_text})
-            return structured_data
-        except Exception as e:
-            print(f"Error structuring text with LLM (attempt {attempt + 1}/{max_retries}): {e}", file=sys.stderr)
-            # if attempt < max_retries - 1:
-            #     print("Retrying with OutputFixingParser...")
-            #     try:
-            #         # The input to OutputFixingParser is typically the raw LLM output string that failed parsing
-            #         # This requires getting the raw string before PydanticOutputParser raises an error.
-            #         # For simplicity, we'll just retry the chain for now.
-            #         # A more robust implementation would capture the raw LLM string.
-            #         # structured_data = output_fixing_parser.parse( # Requires raw LLM output string )
-            #         # return structured_data
-            #         continue # Retry the main chain
-            #     except Exception as e_fix:
-            #         print(f"OutputFixingParser also failed: {e_fix}")
-            # else:
-            #     print("LLM structuring failed after multiple attempts.")
-    return None
 
 # --- Main Orchestration Function ---
 def process_pdf_source(source: str, attempt_llm_structuring: bool = True) -> Dict[str, Any]:
@@ -291,48 +272,66 @@ def process_pdf_source(source: str, attempt_llm_structuring: bool = True) -> Dic
     raw_text = extract_text_from_pdf_bytes(pdf_content)
 
     if raw_text is None or not raw_text.strip():
-        # Warnings about image-based PDFs are handled within extract_text_from_pdf_bytes
         result["warnings"].append("Could not extract significant text from the PDF. It might be image-based, empty, or corrupted.")
-        # We can still return a "success" if the goal was just to try, but indicate no text.
-        # Or, consider this an error if text is essential. For now, let's allow proceeding.
-        if not raw_text: # If truly nothing, then it's more of an issue.
+        if not raw_text:
              result["error_message"] = "No text could be extracted from the PDF."
              return result
 
 
     result["raw_text"] = raw_text
-    result["status"] = "success" # At least text extraction was attempted
+    result["status"] = "success" 
     print(f"Text extracted. Length: {len(raw_text)} characters.", file=sys.stderr)
 
     if attempt_llm_structuring and raw_text:
         print("Attempting to structure text with LLM...", file=sys.stderr)
-        llm = get_llm()
-        if llm:
-            structured_info = structure_text_with_llm(raw_text, llm)
+        try:
+            # Call structure_text_with_llm without llm arg, decorator handles it
+            structured_info = structure_text_with_llm(raw_text=raw_text) # Pass raw_text as keyword argument for clarity
             if structured_info:
                 result["structured_data"] = structured_info.model_dump()
                 print("Text successfully structured by LLM.", file=sys.stderr)
             else:
-                msg = "Failed to structure text using LLM, but raw text is available."
+                # This else block might be hit if structure_text_with_llm returns None
+                # after exhausting retries for non-exception-raising "soft" failures,
+                # or if the initial llm is None and not handled by an exception.
+                # The current structure_text_with_llm re-raises exceptions, so those
+                # will be caught by the outer try/except here.
+                msg = "Failed to structure text using LLM (returned None or an issue occurred that wasn't an exception from the LLM call itself), but raw text is available."
                 print(msg, file=sys.stderr)
                 result["warnings"].append(msg)
-        else:
-            msg = "LLM not configured (OpenAI or Anthropic API key missing). Skipping LLM structuring."
+        except Exception as e:
+            # This will catch errors from structure_text_with_llm if they are not handled
+            # by the retry decorator (e.g., non-retryable errors or after all retries failed).
+            # It will also catch errors if get_llm_for_agent fails to return an LLM (e.g. no API keys).
+            error_type = type(e).__name__
+            msg = f"LLM structuring failed due to an error: {error_type} - {str(e)}. Raw text is available."
             print(msg, file=sys.stderr)
             result["warnings"].append(msg)
+            
     elif not raw_text:
         msg = "Skipping LLM structuring as no raw text was extracted."
         print(msg, file=sys.stderr)
         result["warnings"].append(msg)
 
 
-    if not result["warnings"]: # Remove empty warnings list
+    if not result["warnings"]: 
         del result["warnings"]
 
     return result
 
 
 if __name__ == "__main__":
+    print("--- DIAGNOSTIC: Testing get_llm_for_agent('pdf_extraction') directly ---", file=sys.stderr)
+    try:
+        llm_instance, model_config_instance = get_llm_for_agent("pdf_extraction")
+        if llm_instance and model_config_instance:
+            print(f"--- DIAGNOSTIC: Successfully got LLM: {model_config_instance.model_name} (Provider: {model_config_instance.provider.value}) ---", file=sys.stderr)
+        else:
+            print(f"--- DIAGNOSTIC: get_llm_for_agent returned None for llm or config but no exception. LLM: {llm_instance}, Config: {model_config_instance} ---", file=sys.stderr)
+    except Exception as e_diag:
+        print(f"--- DIAGNOSTIC: Error directly calling get_llm_for_agent('pdf_extraction'): {type(e_diag).__name__} - {str(e_diag)} ---", file=sys.stderr)
+    print("--- END DIAGNOSTIC ---", file=sys.stderr)
+
     print("Testing PDF Extractor...", file=sys.stderr)
     
     # Example HubSpot URL from your provided JSON
@@ -345,6 +344,11 @@ if __name__ == "__main__":
 
     # --- Test with HubSpot URL (LLM structuring enabled) ---
     print(f"\n--- Testing HubSpot URL: {test_url_hubspot} ---", file=sys.stderr)
+    # Ensure API keys are set in .env for this test to fully work with LLM structuring
+    if not (os.getenv("ANTHROPIC_API_KEY") or os.getenv("OPENAI_API_KEY")):
+        print("WARNING: ANTHROPIC_API_KEY or OPENAI_API_KEY not set. LLM structuring will be skipped or fail.", file=sys.stderr)
+        print("Please set them in your .env file if you want to test LLM structuring.", file=sys.stderr)
+        
     hubspot_result = process_pdf_source(test_url_hubspot, attempt_llm_structuring=True)
     results_to_save["hubspot_test"] = hubspot_result
     
@@ -360,20 +364,29 @@ if __name__ == "__main__":
             print("Warnings:", hubspot_result["warnings"], file=sys.stderr)
     else:
         print(f"Status: Error - {hubspot_result.get('error_message', 'Unknown error')}", file=sys.stderr)
+        if hubspot_result.get("warnings"): # Also print warnings on error
+            print("Warnings:", hubspot_result["warnings"], file=sys.stderr)
 
-    # --- OPTIONAL: Test with a simple public PDF (LLM structuring disabled for this example) ---
-    # print(f"\n--- Testing Public PDF URL (Raw Text Only): {test_url_public_pdf} ---")
-    # public_pdf_result = process_pdf_source(test_url_public_pdf, attempt_llm_structuring=False)
-    # results_to_save["public_pdf_test_raw"] = public_pdf_result
-    # print("\n--- Public PDF URL Processing Result (Console) ---")
-    # if public_pdf_result["status"] == "success":
-    #     print("Status: Success")
-    #     if public_pdf_result["raw_text"]:
-    #         print(f"Raw Text (first 500 chars): {public_pdf_result['raw_text'][:500]}...")
-    #     if public_pdf_result.get("warnings"):
-    #         print("Warnings:", public_pdf_result["warnings"])
-    # else:
-    #     print(f"Status: Error - {public_pdf_result.get('error_message', 'Unknown error')}")
+
+    # --- OPTIONAL: Test with a simple public PDF (LLM structuring enabled to test LLM part) ---
+    print(f"\n--- Testing Public PDF URL (LLM Structuring Enabled): {test_url_public_pdf} ---", file=sys.stderr)
+    public_pdf_result = process_pdf_source(test_url_public_pdf, attempt_llm_structuring=True)
+    results_to_save["public_pdf_test_structured"] = public_pdf_result
+    print("\n--- Public PDF URL Processing Result (Console) ---", file=sys.stderr)
+    if public_pdf_result["status"] == "success":
+        print("Status: Success", file=sys.stderr)
+        if public_pdf_result["raw_text"]:
+            print(f"Raw Text (first 500 chars): {public_pdf_result['raw_text'][:500]}...", file=sys.stderr)
+        if public_pdf_result["structured_data"]:
+            print("Structured Data:", file=sys.stderr)
+            print(json.dumps(public_pdf_result["structured_data"], indent=2), file=sys.stderr)
+        if public_pdf_result.get("warnings"):
+            print("Warnings:", public_pdf_result["warnings"], file=sys.stderr)
+    else:
+        print(f"Status: Error - {public_pdf_result.get('error_message', 'Unknown error')}", file=sys.stderr)
+        if public_pdf_result.get("warnings"):
+            print("Warnings:", public_pdf_result["warnings"], file=sys.stderr)
+
 
     # --- Save all results to a JSON file ---
     output_filename = "pdf_extractor_test_results.json"

@@ -1,0 +1,69 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.company_research_agent --company_name emwillcare
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"company_name":"emwillcare","website":"https://www.emwillcare.com/","linkedin_url":"https://uk.linkedin.com/in/dr-emma-williams-859748121","description":"emwillcare is a company dedicated to transforming dementia care by ensuring individuals living with dementia receive the best possible support while empowering their caregivers with effective, evidence-based strategies. They focus on reducing placement breakdowns, minimizing the use of unlicensed antipsychotic drugs, lowering health and social care costs, and improving quality of life for those affected by dementia. Their approach includes practical behavioral tools, personalized data-driven care, and innovative digital services like Less Distress, which predicts and prevents distressed behaviors.","industry":"Healthcare","sub_industry":"Dementia Care, Behavioral Health Technology","founded_year":null,"funding_stage":null,"total_funding_raised":null,"funding_rounds_details":null,"key_products_services":["Less Distress - a digital service predicting and preventing distressed behaviors in dementia care","Behavioral tools for caregivers","Personalized, data-driven dementia care solutions"],"business_model":"emwillcare operates by providing innovative behavioral science-based tools and digital services to care home owners and commissioners, aiming to improve dementia care quality, reduce crisis situations, and lower costs associated with staffing and medication.","target_customer":"Care home owners and commissioners seeking cost-effective solutions that enhance dementia care quality.","key_metrics":null,"team_size":null,"location_hq":null,"other_locations":null,"mission_statement":"To transform dementia care by ensuring that individuals living with dementia receive the best possible support, while empowering their caregivers with effective, evidence-based strategies."}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+2025-06-05 16:14:11,801 - INFO - __main__ - Company research agent CLI starting...
+2025-06-05 16:14:11,802 - INFO - __main__ - CompanyResearchAgent: Starting comprehensive research for company: "emwillcare" via CLI entry point.
+Agent 'company_research' selected model: claude-3-7-sonnet-20250219 (Key: claude-3.7-sonnet, Type: primary_preferred, Provider: anthropic)
+2025-06-05 16:14:11,802 - INFO - __main__ - CompanyResearchAgent: Executing core research logic for "emwillcare" with model claude-3-7-sonnet-20250219.
+2025-06-05 16:14:14,962 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare company information website LinkedIn
+2025-06-05 16:14:21,369 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare healthcare company information description services
+2025-06-05 16:14:27,285 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: EMWILL LTD healthcare company UK services description founding year
+2025-06-05 16:14:33,240 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare healthcare services company description products mission statement
+2025-06-05 16:14:38,577 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2025-06-05 16:14:38,578 - INFO - anthropic._base_client - Retrying request to /v1/messages in 22.000000 seconds
+2025-06-05 16:15:02,504 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: "EmWill Care" healthcare company services description
+2025-06-05 16:15:08,472 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2025-06-05 16:15:08,473 - INFO - anthropic._base_client - Retrying request to /v1/messages in 35.000000 seconds
+2025-06-05 16:15:46,189 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: EmWill Care dementia care company funding team size founder location
+2025-06-05 16:15:52,742 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2025-06-05 16:15:52,742 - INFO - anthropic._base_client - Retrying request to /v1/messages in 38.000000 seconds
+2025-06-05 16:16:34,261 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: EmWill Care founder Emma Williams behavioral science dementia care Wales
+2025-06-05 16:16:39,882 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2025-06-05 16:16:39,882 - INFO - anthropic._base_client - Retrying request to /v1/messages in 44.000000 seconds
+2025-06-05 16:17:27,345 - INFO - httpx - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare.com website information about services products mission
+2025-06-05 16:17:33,242 - ERROR - __main__ - CompanyResearchAgent: Could not extract JSON from LLM response for "emwillcare": Agent stopped due to max iterations....
+2025-06-05 16:17:33,243 - ERROR - __main__ - CompanyResearchAgent: Error during core research for "emwillcare": Could not extract valid JSON for emwillcare from LLM response.
+Traceback (most recent call last):
+  File "/Users/matt.toland/AI-Agents/ai_agents/agents/company_research_agent.py", line 165, in _core_company_research_logic
+    raise ValueError(f"Could not extract valid JSON for {company_name} from LLM response.")
+ValueError: Could not extract valid JSON for emwillcare from LLM response.
+2025-06-05 16:17:33,245 - WARNING - ai_agents.utils.retry_handler - Attempt 1/3 failed for company_research. Reason: unknown. Retrying in 5.10s. Error: Could not extract valid JSON for emwillcare from LLM response.
+2025-06-05 16:17:38,352 - INFO - ai_agents.utils.retry_handler - Retrying for company_research (attempt 2). Attempting model switch.
+Agent 'company_research' selected model: gpt-4.1-mini (Key: gpt-4.1-mini, Type: fallback, Provider: openai)
+2025-06-05 16:17:38,456 - INFO - ai_agents.utils.retry_handler - Switched model for company_research to: gpt-4.1-mini
+2025-06-05 16:17:38,456 - INFO - __main__ - CompanyResearchAgent: Executing core research logic for "emwillcare" with model gpt-4.1-mini.
+2025-06-05 16:17:39,306 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare company overview
+2025-06-05 16:17:46,294 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare funding history
+search_tool: Searching Tavily for: emwillcare key products and services
+search_tool: Searching Tavily for: emwillcare team size and headquarters location
+search_tool: Searching Tavily for: emwillcare recent news and key metrics
+search_tool: Searching Tavily for: emwillcare mission statement
+2025-06-05 16:18:05,168 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare founding year
+2025-06-05 16:18:10,618 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: emwillcare funding rounds investors
+2025-06-05 16:18:16,525 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-05 16:18:23,430 - INFO - __main__ - CompanyResearchAgent: Successfully researched and validated profile for company: emwillcare
+2025-06-05 16:18:23,430 - INFO - ai_agents.utils.retry_handler - Successfully recovered company_research after 1 retries.
+2025-06-05 16:18:23,433 - INFO - __main__ - CompanyResearchAgent: Profile for "emwillcare" saved to company_research_emwillcare.json
+2025-06-05 16:18:23,433 - INFO - __main__ - Company research agent: Successfully generated JSON output for emwillcare
+

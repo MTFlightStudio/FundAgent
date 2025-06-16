@@ -7,6 +7,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import subprocess
 import sys
 import re # Added for safe filenames
+import tempfile # Added for decision support agent call
+from pathlib import Path # Added for decision support agent call
 
 # Attempt to import HubSpot client and PDF extractor
 try:
@@ -173,56 +175,104 @@ def run_market_intelligence_cli(deal_id: str, sector: str) -> Optional[Dict[str,
         return None
 
 def run_decision_support_cli(
+    deal_id: str, # Added deal_id for logging
     hubspot_data: Dict[str, Any],
     pitch_deck_data: Optional[Dict[str, Any]],
     founder_profiles: List[Dict[str, Any]],
     company_profile: Optional[Dict[str, Any]],
     market_analysis: Optional[Dict[str, Any]]
-) -> Dict[str, Any]:
-    logger.info("Simulating decision support analysis...")
-    # This remains a placeholder. When you have a decision support agent script:
-    # 1. Determine how it accepts complex data (e.g., via temporary JSON files, complex CLI args).
-    # 2. Implement the subprocess call similar to the research agents.
-    # For now, returning mock data based on some simple logic.
-    
-    recommendation = "Review" # Default
-    confidence = "Medium"
-    issues = []
+) -> Optional[Dict[str, Any]]:
+    """
+    Runs the decision support agent CLI by creating temporary files for complex inputs.
+    """
+    logger.info("Preparing to run decision support analysis via CLI...")
+    log_file_path = _ensure_log_dir_and_get_safe_filename(deal_id, "decision_support", "analysis")
 
-    if not pitch_deck_data or pitch_deck_data.get("status") != "success" or not pitch_deck_data.get("structured_data"):
-        issues.append("Pitch deck missing or could not be structured.")
-        confidence = "Low"
-    
-    if not founder_profiles:
-        issues.append("Founder profiles could not be generated.")
-        confidence = "Low"
+    # Use a temporary directory to stage the input files
+    with tempfile.TemporaryDirectory(prefix=f"decision_support_{deal_id}_") as temp_dir:
+        temp_path = Path(temp_dir)
         
-    if not market_analysis:
-        issues.append("Market analysis could not be generated.")
-    
-    if company_profile and company_profile.get("status") == "error":
-        issues.append(f"Company profile generation failed: {company_profile.get('error_message', 'Unknown error')}")
-        confidence = "Low"
-    elif not company_profile:
-        issues.append("Company profile could not be generated or was not requested.")
-        # Not necessarily low confidence if it wasn't critical or requested
+        # --- File Preparation ---
+        company_file = None
+        if company_profile:
+            company_file = temp_path / "company_profile.json"
+            with open(company_file, 'w') as f:
+                json.dump(company_profile, f)
 
-    if hubspot_data.get("deal", {}).get("dealstage") == "closedlost": # Example property
-        recommendation = "Pass (Already Closed Lost)"
-        confidence = "High"
+        market_file = None
+        if market_analysis:
+            market_file = temp_path / "market_analysis.json"
+            with open(market_file, 'w') as f:
+                json.dump(market_analysis, f)
 
-    return {
-        "recommendation": recommendation,
-        "confidence_level": confidence,
-        "key_findings": f"Simulated analysis. HubSpot: Done. Pitch Deck: {pitch_deck_data.get('status') if pitch_deck_data else 'N/A'}. Founders: {len(founder_profiles)}. Company Profile: {'Available' if company_profile and company_profile.get('status') != 'error' else ('Failed' if company_profile else 'N/A')}. Market: {'Available' if market_analysis else 'N/A'}",
-        "identified_risks_opportunities": issues if issues else ["Simulated: Standard review suggested."],
-        "supporting_data_summary": {
-            "deal_name": hubspot_data.get("deal", {}).get("dealname", "N/A"),
-            "company_name_from_profile": company_profile.get("company_name", "N/A") if company_profile else "N/A",
-            "pitch_deck_summary": pitch_deck_data.get("structured_data", {}).get("executive_summary", "N/A") if pitch_deck_data and pitch_deck_data.get("structured_data") else "N/A"
-        },
-        "timestamp": datetime.datetime.now(datetime.UTC).isoformat()
-    }
+        founder_files = []
+        if founder_profiles:
+            for i, profile in enumerate(founder_profiles):
+                founder_file = temp_path / f"founder_{i+1}.json"
+                with open(founder_file, 'w') as f:
+                    json.dump(profile, f)
+                founder_files.append(str(founder_file))
+        
+        # Create a single additional context file
+        additional_context_file = temp_path / "additional_context.json"
+        additional_context_data = {
+            "hubspot_deal_data": hubspot_data,
+            "pitch_deck_analysis": pitch_deck_data
+        }
+        with open(additional_context_file, 'w') as f:
+            json.dump(additional_context_data, f)
+            
+        # --- Command Construction ---
+        command = [
+            sys.executable, "-m", "ai_agents.agents.decision_support_agent",
+        ]
+        if not company_file:
+            logger.error("Decision support requires a company profile, but none was provided. Aborting.")
+            return {"status": "error", "error_message": "Company profile is a required input."}
+        
+        command.extend(["--company_file", str(company_file)])
+
+        if founder_files:
+            command.append("--founder_files")
+            command.extend(founder_files)
+
+        if market_file:
+            command.extend(["--market_file", str(market_file)])
+
+        command.extend(["--additional_context_file", str(additional_context_file)])
+
+        # --- Subprocess Execution ---
+        logger.debug(f"Executing decision support command: {' '.join(command)}")
+        try:
+            process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=600)
+
+            with open(log_file_path, 'w') as f:
+                f.write(f"--- Command ---\n{' '.join(command)}\n\n")
+                f.write(f"--- Return Code ---\n{process.returncode}\n\n")
+                f.write(f"--- STDOUT ---\n{process.stdout}\n\n")
+                f.write(f"--- STDERR ---\n{process.stderr}\n")
+            logger.info(f"Full log for decision support saved to: {log_file_path}")
+            
+            if process.returncode != 0:
+                logger.error(f"Decision support script failed. See log: {log_file_path}")
+                return None
+            
+            try:
+                result = json.loads(process.stdout)
+                logger.info("Successfully completed decision support analysis.")
+                return result
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse JSON output from decision support: {e}. See log: {log_file_path}")
+                return None
+
+        except subprocess.TimeoutExpired:
+            logger.error(f"Decision support analysis timed out. Log: {log_file_path}")
+            with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Process Timed Out ---\n")
+            return None
+        except Exception as e:
+            logger.error(f"An unexpected error occurred during decision support: {e}. Log: {log_file_path}", exc_info=True)
+            with open(log_file_path, 'a') as f: f.write(f"\n--- ERROR: Unexpected Exception ---\n{str(e)}\n")
+            return None
 
 def generate_investment_report(deal_id: str, all_data: Dict[str, Any]) -> str:
     logger.info(f"Generating comprehensive investment report for deal {deal_id}...")
@@ -475,6 +525,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
     logger.info("Running decision support analysis...")
     try:
         decision_output = run_decision_support_cli(
+            deal_id=deal_id, # Pass deal_id for logging
             hubspot_data=all_collected_data['hubspot_deal_data'], 
             pitch_deck_data=all_collected_data['pitch_deck_analysis'],
             founder_profiles=all_collected_data['founder_profiles'],
@@ -482,11 +533,16 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
             market_analysis=all_collected_data['market_analysis']
         )
         all_collected_data['decision_support_output'] = decision_output
-        if decision_output and decision_output.get("status") != "error": # Assuming decision agent returns a dict with status
+        
+        # Check based on the structure of the InvestmentResearch model
+        if decision_output and decision_output.get("status") != "Error":
              logger.info("Decision support analysis completed.")
         else:
             logger.warning(f"Decision support analysis may have failed or returned an error: {decision_output}")
-            all_collected_data["errors"].append(f"Decision support issue: {decision_output.get('message', 'Unknown') if isinstance(decision_output, dict) else 'Format error'}")
+            error_msg = "Unknown error"
+            if isinstance(decision_output, dict):
+                error_msg = decision_output.get('error_message', 'No error message provided')
+            all_collected_data["errors"].append(f"Decision support issue: {error_msg}")
 
     except Exception as e:
         logger.error(f"Exception during decision support analysis: {e}", exc_info=True)
@@ -507,16 +563,10 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
         return report_filename 
 
     # 6. (Optional) Update HubSpot Deal with Assessment Summary
-    if all_collected_data.get('decision_support_output') and isinstance(all_collected_data['decision_support_output'], dict) and all_collected_data['decision_support_output'].get("investment_assessment"):
-        # Assuming the decision_support_output is the InvestmentResearch model dict
-        # and it contains an 'investment_assessment' key which itself is a dict.
-        assessment_details_for_hubspot = all_collected_data['decision_support_output'] # Pass the whole research object
+    if all_collected_data.get('decision_support_output') and isinstance(all_collected_data['decision_support_output'], dict) and all_collected_data['decision_support_output'].get("status") == "Complete":
+        # The output is the full InvestmentResearch model as a dict.
         
-        # We need to map fields from our InvestmentResearch/InvestmentAssessment model
-        # to what update_hubspot_deal_with_assessment expects or what HubSpot properties we have.
-        # For now, let's create a simplified assessment summary for HubSpot.
-        
-        # Example: Extracting recommendation from the InvestmentResearch model structure
+        # Extracting recommendation from the InvestmentResearch model structure
         recommendation = all_collected_data['decision_support_output'].get('overall_summary_and_recommendation', "N/A")
         confidence = all_collected_data['decision_support_output'].get('confidence_score_overall', 0.0)
         
@@ -527,12 +577,11 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
         simplified_assessment_for_hs = {
             "recommendation": recommendation,
             "confidence_score": confidence, # Assuming this is 0.0-1.0
-            "summary": f"Overall Recommendation: {recommendation}. Criteria Summary: {criteria_summary}. See full report: {report_filename}",
-            # Add other key fields you want to push to HubSpot
+            "summary": f"Overall Recommendation: {recommendation}. Confidence: {confidence*100:.0f}%. Criteria Summary: {criteria_summary}. See full report: {report_filename}",
         }
         update_hubspot_deal_with_assessment(deal_id, simplified_assessment_for_hs)
     else:
-        logger.warning("Decision support output not available or not in expected format for HubSpot update.")
+        logger.warning("Decision support output not available or not in expected 'Complete' status for HubSpot update.")
 
     return report_filename
 

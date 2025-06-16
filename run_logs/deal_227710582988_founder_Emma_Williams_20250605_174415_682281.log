@@ -1,0 +1,26 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.founder_research_agent --linkedin_url www.linkedin.com/in/dr-emma-williams --name Emma Williams
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"name":"Dr Emma Williams","linkedin_url":"https://www.linkedin.com/in/dr-emma-williams","role_in_company":"Founder, EmWill Care","background_summary":"Dr Emma Williams is a highly experienced professional in dementia care, with over 27 years in the field and a PhD in Psychology from Bangor University. She is the founder of EmWill Care, a company focused on revolutionising dementia care by integrating behavioural science with smart technology, specifically through their 'Less Distress' tool. She also founded PACT (Positive Ageing Consultancy & Training). Her leadership experience includes her current founder role and previous roles such as Director of Training for North Wales Regional Partnership Board and providing bespoke behavioural consultancy. Dr Williams is currently participating in accelerator programs with the Alzheimer's Society and Business Wales, indicating active development and validation of her venture. Her public content and posts demonstrate thought leadership and a strong personal mission to improve dementia care.","previous_companies":[{"company_name":"PACT (Positive Ageing Consultancy & Training)","role":"Founder","duration":null,"description":"Founded and led a consultancy focused on positive ageing and training in dementia care.","was_founder":true},{"company_name":"North Wales Regional Partnership Board","role":"Director of Training","duration":null,"description":"Led training initiatives and provided strategic direction for dementia care programs.","was_founder":false}],"education":[{"institution":"Bangor University","degree":"PhD","field_of_study":"Psychology","graduation_year":null,"notable_achievements":null},{"institution":"Bangor University","degree":"MSc","field_of_study":"Applied Behaviour Analysis","graduation_year":null,"notable_achievements":null},{"institution":"Higher Education Academy","degree":null,"field_of_study":null,"graduation_year":null,"notable_achievements":null},{"institution":"Behavior Analyst Certification Board","degree":null,"field_of_study":null,"graduation_year":null,"notable_achievements":null}],"key_skills_and_expertise":["Dementia care","Behavioural science","Applied behaviour analysis","Training and consultancy","Leadership","Smart technology integration","Thought leadership","Public speaking"],"public_speaking_or_content":[{"type":"article","title":"Understanding Distressed Behaviours in Dementia","url":null},{"type":"event","title":"Showcasing 'Less Distress' at London Tech Week","url":null},{"type":"collaboration","title":"Collaboration with Alzheimer's Society Innovation Team","url":null}],"investment_criteria_assessment":{"focus_industry_fit":true,"mission_alignment":true,"exciting_solution_to_problem":true,"founded_something_relevant_before":true,"impressive_relevant_past_experience":true,"exceptionally_smart_or_strategic":true,"assessment_summary":"From research_prospect_tool output: Dr Emma Williams and EmWill Care are a strong fit for Flight Story's investment criteria, with clear industry relevance (tech-enabled dementia care), mission alignment (improving quality of life), a compelling and innovative solution, relevant founder experience, impressive sector background, and evidence of strategic thinking and thought leadership."}}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+2025-06-05 18:44:16,479 - INFO - __main__ - Founder research agent CLI starting...
+2025-06-05 18:44:16,480 - INFO - ai_agents.utils.retry_handler - Initial LLM not provided for founder_research. Attempting to fetch with model_selector_func.
+Agent 'founder_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-05 18:44:16,581 - INFO - ai_agents.utils.retry_handler - Fetched initial LLM for founder_research: gpt-4.1
+2025-06-05 18:44:16,581 - INFO - __main__ - Starting research for founder: "Emma Williams" using EnhancedFounderResearchAgent.
+2025-06-05 18:44:16,581 - INFO - __main__ - Processed LinkedIn URL for research: https://www.linkedin.com/in/dr-emma-williams
+2025-06-05 18:44:17,663 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/dr-emma-williams
+2025-06-05 18:45:02,280 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Dr Emma Williams EmWill Care education background details
+2025-06-05 18:45:09,114 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-05 18:45:21,415 - INFO - __main__ - Successfully researched and validated profile for founder: Emma Williams
+2025-06-05 18:45:21,417 - INFO - __main__ - Founder research agent: Successfully generated and printed JSON output for Emma Williams
+

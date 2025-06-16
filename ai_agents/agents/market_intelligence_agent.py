@@ -1,13 +1,12 @@
 import os
 import json
 import re
+import logging
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 import argparse
 import sys
 
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.agents import create_tool_calling_agent, AgentExecutor
@@ -17,8 +16,20 @@ from ai_agents.models.investment_research import MarketAnalysis, CompetitorInfo
 from ai_agents.tools import search_tool, wiki_tool, save_tool
 from ai_agents.tools import tavily_search_tool_instance, wiki_tool_instance
 
+# Import the new model selection and retry systems
+try:
+    from ai_agents.config.model_config import get_llm_for_agent, ModelConfig, ModelSelectionError
+    from ai_agents.utils.retry_handler import with_smart_retry, RetryConfig
+    MODEL_SYSTEM_AVAILABLE = True
+except ImportError:
+    MODEL_SYSTEM_AVAILABLE = False
+    logging.warning("MarketIntelligenceAgent: Model selection or retry system not available. Functionality will be limited.")
+
 # Load .env file from the project root
 load_dotenv()
+
+# Setup logging
+logger = logging.getLogger(__name__)
 
 # --- Output Parser for MarketAnalysis ---
 market_analysis_parser = PydanticOutputParser(pydantic_object=MarketAnalysis)
@@ -70,66 +81,53 @@ MARKET_INTELLIGENCE_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 ).partial(format_instructions=market_analysis_parser.get_format_instructions())
 
 
-def get_llm():
-    """Initializes and returns the appropriate LLM based on available API keys."""
-    if os.getenv("ANTHROPIC_API_KEY"):
-        print("Using Anthropic Claude model for market intelligence.", file=sys.stderr)
-        return ChatAnthropic(
-            model="claude-3-haiku-20240307", 
-            temperature=0.3,
-            max_tokens=4000
-        )
-    elif os.getenv("OPENAI_API_KEY"):
-        print("Using OpenAI GPT model for market intelligence.", file=sys.stderr)
-        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.2)
+def _get_fallback_llm():
+    """Fallback LLM selection logic (simplified)."""
+    if os.getenv("OPENAI_API_KEY"):
+        from langchain_openai import ChatOpenAI
+        logger.info("MarketIntelligenceAgent: Using OpenAI GPT model (fallback)")
+        return ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.2, max_tokens=4000)
+    elif os.getenv("ANTHROPIC_API_KEY"):
+        from langchain_anthropic import ChatAnthropic
+        logger.info("MarketIntelligenceAgent: Using Anthropic Claude model (fallback)")
+        return ChatAnthropic(model="claude-3-haiku-20240307", temperature=0.3, max_tokens=4000)
     else:
-        print("FATAL: Neither ANTHROPIC_API_KEY nor OPENAI_API_KEY is set. Cannot initialize LLM.", file=sys.stderr)
-        return None
+        logger.error("MarketIntelligenceAgent: FATAL: No LLM API keys available for fallback.")
+        raise ValueError("No LLM API keys for Market Intelligence Agent fallback.")
 
-
-def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnalysis]:
+def _core_market_intelligence_logic(market_or_industry: str, llm: Any, model_config: Optional[ModelConfig]) -> MarketAnalysis:
     """
-    Researches a market or industry comprehensively and returns a MarketAnalysis object.
-    Saves the result to a JSON file.
-    
-    Args:
-        market_or_industry: The market or industry to research (e.g., "AI-powered fintech", "Creator economy tools")
-    
-    Returns:
-        MarketAnalysis object if successful, None otherwise
+    The core logic for market intelligence research, designed to be wrapped by the retry decorator.
+    It expects an LLM instance and its config to be passed in.
     """
-    print(f"Starting comprehensive market intelligence for: \"{market_or_industry}\"", file=sys.stderr)
+    logger.info(f"MarketIntelligenceAgent: Executing core research for \"{market_or_industry}\" with model {model_config.model_name if model_config else 'Unknown'}.")
 
-    # --- API Key and Tool Availability Checks ---
     if not tavily_search_tool_instance:
-        print("FATAL: Tavily search_tool is not available (check TAVILY_API_KEY in .env). Cannot proceed with market research.", file=sys.stderr)
-        return None
+        logger.error("MarketIntelligenceAgent: FATAL: Tavily search_tool is not available. Cannot proceed.")
+        raise ValueError("Tavily search_tool not available for Market Intelligence.")
 
     if not wiki_tool_instance:
-        print("Warning: Wikipedia tool is not available. Market research will rely solely on web search.", file=sys.stderr)
+        logger.warning("MarketIntelligenceAgent: Wikipedia tool is not available. Research will rely solely on web search.")
 
-    llm = get_llm()
-    if not llm:
-        return None
-
-    # Build list of available tools
     available_tools = [search_tool]
     if wiki_tool_instance:
         available_tools.append(wiki_tool)
+    
+    agent_prompt = MARKET_INTELLIGENCE_PROMPT_TEMPLATE 
+    # market_analysis_parser is globally defined
 
-    # --- Agent and Executor Setup ---
-    market_intelligence_agent = create_tool_calling_agent(
+    agent = create_tool_calling_agent(
         llm=llm,
-        prompt=MARKET_INTELLIGENCE_PROMPT_TEMPLATE,
+        prompt=agent_prompt,
         tools=available_tools
     )
     
     agent_executor = AgentExecutor(
-        agent=market_intelligence_agent,
+        agent=agent,
         tools=available_tools,
         verbose=False,
         handle_parsing_errors=True,
-        max_iterations=15  # Allow more iterations for comprehensive market research
+        max_iterations=15
     )
 
     raw_agent_output_container = None
@@ -137,7 +135,6 @@ def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnaly
     try:
         raw_agent_output_container = agent_executor.invoke({"input": market_or_industry})
         
-        # Robustly extract the string content from the agent's output
         llm_response_content_str = None
         if isinstance(raw_agent_output_container, dict) and "output" in raw_agent_output_container:
             output_payload = raw_agent_output_container["output"]
@@ -147,94 +144,157 @@ def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnaly
                 first_block = output_payload[0]
                 if isinstance(first_block, dict) and "text" in first_block and isinstance(first_block["text"], str):
                     llm_response_content_str = first_block["text"]
-                    print(f"Extracted text content from agent output list's first block: {llm_response_content_str[:200]}...", file=sys.stderr)
                 else:
-                    print(f"Warning: Unexpected structure in first block of agent output list: {first_block}", file=sys.stderr)
                     llm_response_content_str = str(output_payload) 
             else:
-                print(f"Warning: Unexpected structure in agent output['output'] payload: {output_payload}", file=sys.stderr)
                 llm_response_content_str = str(output_payload)
         elif isinstance(raw_agent_output_container, str):
              llm_response_content_str = raw_agent_output_container
         else:
-            print(f"Warning: Unexpected overall output structure from agent: {raw_agent_output_container}", file=sys.stderr)
             llm_response_content_str = str(raw_agent_output_container)
 
         if not llm_response_content_str:
-            print("Agent did not produce a parsable output string for MarketAnalysis.", file=sys.stderr)
-            return None
+            logger.error(f"MarketIntelligenceAgent: Agent for \"{market_or_industry}\" produced no parsable output.")
+            raise ValueError(f"Agent for {market_or_industry} produced no parsable output for MarketAnalysis.")
 
-        print(f"\nRaw LLM content string (for JSON extraction): {llm_response_content_str[:500]}...", file=sys.stderr)
+        logger.debug(f"MarketIntelligenceAgent: Raw LLM content for \"{market_or_industry}\": {llm_response_content_str[:500]}...")
 
         json_match = re.search(r"\{[\s\S]*\}", llm_response_content_str)
         if json_match:
             json_to_parse = json_match.group(0).strip()
-            print(f"Extracted JSON block for MarketAnalysis parsing (stripped): {json_to_parse[:300]}...", file=sys.stderr)
         else:
             temp_str = llm_response_content_str.strip()
             if temp_str.startswith("```json"):
                 temp_str = temp_str[len("```json"):].strip()
             if temp_str.endswith("```"):
                 temp_str = temp_str[:-len("```")].strip()
-            
             if temp_str.startswith("{") and temp_str.endswith("}"):
                 json_to_parse = temp_str
-                print(f"Warning: No clear JSON block found by primary regex, attempting to parse potentially cleaned string: {json_to_parse[:300]}...", file=sys.stderr)
+                logger.warning(f"MarketIntelligenceAgent: Used fallback JSON extraction for \"{market_or_industry}\".")
             else:
-                print(f"Error: Could not extract a valid JSON object from LLM response: {llm_response_content_str[:500]}...", file=sys.stderr)
-                if raw_agent_output_container: print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
-                return None
+                logger.error(f"MarketIntelligenceAgent: Could not extract JSON from LLM response for \"{market_or_industry}\": {llm_response_content_str[:500]}...")
+                raise ValueError(f"Could not extract valid JSON for {market_or_industry} from LLM response.")
         
+        logger.debug(f"MarketIntelligenceAgent: Extracted JSON for \"{market_or_industry}\": {json_to_parse[:300]}...")
         parsed_dict = json.loads(json_to_parse, strict=False)
         market_analysis_obj = MarketAnalysis.model_validate(parsed_dict)
 
-        print("\n--- Market Intelligence Output (to be saved to file) ---", file=sys.stderr)
-        print(market_analysis_obj.model_dump_json(indent=2), file=sys.stderr)
-
-        safe_market_name = "".join(c if c.isalnum() else "_" for c in market_or_industry)[:50].rstrip("_")
-        output_filename = f"market_analysis_{safe_market_name}.json"
-        
-        try:
-            save_tool.invoke({
-                "filename": output_filename,
-                "text": market_analysis_obj.model_dump_json(indent=2)
-            })
-            print(f"\nMarket analysis saved to {output_filename}", file=sys.stderr)
-        except Exception as e_save:
-            print(f"Error saving market analysis to file: {e_save}", file=sys.stderr)
-
-        # Print summary of key findings to stderr
-        print("\n--- Market Intelligence Summary (for logs) ---", file=sys.stderr)
-        if market_analysis_obj.industry_overview:
-            print(f"Industry Overview: {market_analysis_obj.industry_overview[:200]}...", file=sys.stderr)
-        if market_analysis_obj.market_size_tam:
-            print(f"Total Addressable Market (TAM): {market_analysis_obj.market_size_tam}", file=sys.stderr)
-        if market_analysis_obj.market_growth_rate_cagr:
-            print(f"Market Growth Rate (CAGR): {market_analysis_obj.market_growth_rate_cagr}", file=sys.stderr)
-        if market_analysis_obj.market_timing_assessment:
-            print(f"Market Timing: {market_analysis_obj.market_timing_assessment}", file=sys.stderr)
-        if market_analysis_obj.competitors:
-            print(f"Key Competitors Identified: {len(market_analysis_obj.competitors)}", file=sys.stderr)
-            for comp in market_analysis_obj.competitors[:3]:
-                print(f"  - {comp.name}: {comp.funding_raised or 'Funding unknown'}", file=sys.stderr)
-
+        logger.info(f"MarketIntelligenceAgent: Successfully researched and validated market analysis for: {market_or_industry}")
         return market_analysis_obj
 
     except json.JSONDecodeError as json_err:
-        print(f"JSONDecodeError: Failed to parse JSON string for MarketAnalysis. Error: {json_err}", file=sys.stderr)
-        print(f"String that failed parsing (up to 1000 chars): {json_to_parse[:1000]}", file=sys.stderr)
-        if raw_agent_output_container:
-            print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
-        return None
+        logger.error(f"MarketIntelligenceAgent: JSONDecodeError for \"{market_or_industry}\". Error: {json_err}. String: {json_to_parse[:1000]}", exc_info=True)
+        if raw_agent_output_container: logger.debug(f"Raw agent output at time of JSON error: {raw_agent_output_container}")
+        raise # Re-raise for retry handler
     except Exception as e:
-        print(f"An error occurred during market intelligence agent execution or response parsing: {e}", file=sys.stderr)
-        if raw_agent_output_container:
-            print("Raw agent output at time of error:", raw_agent_output_container, file=sys.stderr)
+        logger.error(f"MarketIntelligenceAgent: Error during core research for \"{market_or_industry}\": {e}", exc_info=True)
+        if raw_agent_output_container: logger.debug(f"Raw agent output at time of error: {raw_agent_output_container}")
+        raise # Re-raise for retry handler
+
+# --- Apply Decorator ---
+_decorated_core_market_logic = _core_market_intelligence_logic
+
+if MODEL_SYSTEM_AVAILABLE:
+    _model_selector_for_retry = None
+    try:
+        from ai_agents.config.model_config import get_llm_for_agent as get_llm_func_for_decorator
+        _model_selector_for_retry = get_llm_func_for_decorator
+    except ImportError:
+        logger.warning("MarketIntelligenceAgent: Could not import get_llm_for_agent for retry decorator. Model switching disabled.")
+
+    _retry_config = RetryConfig(
+        max_retries=3, 
+        base_delay=2.5, # Slightly longer base for potentially more complex market queries
+        switch_model_on_rate_limit=bool(_model_selector_for_retry)
+    )
+    
+    _decorated_core_market_logic = with_smart_retry(
+        agent_name="market_intelligence",
+        retry_config_override=_retry_config,
+        model_selector_func=_model_selector_for_retry
+    )(_core_market_intelligence_logic)
+else:
+    logger.warning("MarketIntelligenceAgent: Retry system not fully available. Research will not have advanced retry/model switching.")
+
+
+def run_market_intelligence_cli(market_or_industry: str) -> Optional[MarketAnalysis]:
+    """
+    Sets up and runs the market intelligence research.
+    """
+    logger.info(f"MarketIntelligenceAgent: Starting research for sector: \"{market_or_industry}\" via CLI.")
+
+    if not tavily_search_tool_instance: # Initial check
+        logger.error("MarketIntelligenceAgent: FATAL: Tavily search_tool is not available. Cannot proceed.")
+        return None
+
+    llm_instance = None
+    model_config_instance = None
+
+    if MODEL_SYSTEM_AVAILABLE:
+        try:
+            llm_instance, model_config_instance = get_llm_for_agent("market_intelligence")
+        except ModelSelectionError as e_mse:
+            logger.error(f"MarketIntelligenceAgent: Initial model selection failed for '{market_or_industry}': {e_mse}. Attempting fallback.")
+            try:
+                llm_instance = _get_fallback_llm()
+                model_config_instance = ModelConfig(provider="Unknown", model_name="fallback", temperature=0.1, max_tokens=4000, cost_per_1k_tokens=0, rate_limit_rpm=0, best_for=[]) 
+            except ValueError as e_fb:
+                 logger.error(f"MarketIntelligenceAgent: Fallback LLM also failed for '{market_or_industry}': {e_fb}")
+                 return None
+        except Exception as e_llm_init:
+            logger.error(f"MarketIntelligenceAgent: Unexpected error during initial LLM init for '{market_or_industry}': {e_llm_init}")
+            return None
+    else: # No model system, try direct fallback
+        try:
+            llm_instance = _get_fallback_llm()
+            model_config_instance = ModelConfig(provider="Unknown", model_name="fallback_direct", temperature=0.1, max_tokens=4000, cost_per_1k_tokens=0, rate_limit_rpm=0, best_for=[])
+        except ValueError as e_fb_direct:
+            logger.error(f"MarketIntelligenceAgent: Fallback LLM failed (no model system): {e_fb_direct}")
+            return None
+
+    if not llm_instance:
+        logger.error(f"MarketIntelligenceAgent: LLM instance is None for '{market_or_industry}'. Cannot proceed.")
+        return None
+
+    try:
+        analysis_obj = _decorated_core_market_logic(
+            market_or_industry=market_or_industry,
+            llm=llm_instance,
+            model_config=model_config_instance
+        )
+
+        if analysis_obj:
+            safe_market_name = "".join(c if c.isalnum() else "_" for c in market_or_industry)[:50].rstrip("_")
+            output_filename = f"market_analysis_{safe_market_name}.json"
+            try:
+                save_tool.invoke({
+                    "filename": output_filename,
+                    "text": analysis_obj.model_dump_json(indent=2)
+                })
+                logger.info(f"MarketIntelligenceAgent: Analysis for \"{market_or_industry}\" saved to {output_filename}")
+            except Exception as e_save:
+                logger.error(f"MarketIntelligenceAgent: Error saving analysis for \"{market_or_industry}\" to file: {e_save}")
+            
+            # Print summary of key findings to stderr for orchestrator logs
+            logger.info(f"--- Market Intelligence Summary for {market_or_industry} ---")
+            if analysis_obj.industry_overview: logger.info(f"Overview: {analysis_obj.industry_overview[:200]}...")
+            if analysis_obj.market_size_tam: logger.info(f"TAM: {analysis_obj.market_size_tam}")
+            if analysis_obj.market_growth_rate_cagr: logger.info(f"CAGR: {analysis_obj.market_growth_rate_cagr}")
+            if analysis_obj.market_timing_assessment: logger.info(f"Timing: {analysis_obj.market_timing_assessment}")
+            if analysis_obj.competitors: logger.info(f"Competitors: {len(analysis_obj.competitors)}")
+
+        return analysis_obj
+
+    except Exception as e:
+        logger.error(f"MarketIntelligenceAgent: Research for \"{market_or_industry}\" ultimately failed: {e}", exc_info=True)
         return None
 
 
 if __name__ == "__main__":
-    print("Market intelligence agent CLI starting...", file=sys.stderr)
+    if not logging.getLogger().hasHandlers():
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+
+    logger.info("Market intelligence agent CLI starting...")
     
     parser = argparse.ArgumentParser(description="Market Intelligence Agent CLI - Researches a market/industry sector.")
     parser.add_argument("--sector", type=str, required=True, help="The market or industry sector to research.")
@@ -246,7 +306,7 @@ if __name__ == "__main__":
         
         if analysis:
             print(analysis.model_dump_json(indent=None))
-            print(f"Market intelligence agent: Successfully generated JSON output for sector: {args.sector}", file=sys.stderr)
+            logger.info(f"Market intelligence agent: Successfully generated JSON output for sector: {args.sector}")
         else:
             error_output = {
                 "status": "error",
@@ -254,7 +314,7 @@ if __name__ == "__main__":
                 "error_message": f"Failed to retrieve or generate market analysis for sector: {args.sector}."
             }
             print(json.dumps(error_output, indent=None))
-            print(f"Market intelligence agent: Failed to generate analysis for sector: {args.sector}.", file=sys.stderr)
+            logger.error(f"Market intelligence agent: Failed to generate analysis for sector: {args.sector}.")
             sys.exit(1)
             
     except Exception as e_main:
@@ -264,5 +324,5 @@ if __name__ == "__main__":
             "error_message": f"Critical error in market_intelligence_agent CLI for sector {args.sector}: {str(e_main)}"
         }
         print(json.dumps(error_output, indent=None))
-        print(f"Critical error in market_intelligence_agent CLI for sector {args.sector}: {e_main}", file=sys.stderr)
+        logger.critical(f"Critical error in market_intelligence_agent CLI for sector {args.sector}: {e_main}", exc_info=True)
         sys.exit(1)
