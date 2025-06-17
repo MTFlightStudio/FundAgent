@@ -1,0 +1,47 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python -m ai_agents.agents.founder_research_agent --linkedin_url https://www.linkedin.com/in/brandon-h-louis/ --name Brandon Louis
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"name":"Brandon L.","linkedin_url":"https://www.linkedin.com/in/brandon-h-louis/","role_in_company":"Founder","background_summary":"Brandon L. is an early-career founder with a background in Economics and Finance, currently enhancing his technical skills with a post-graduate program in AI/ML. He is the Founder of BajanWheels, a digital public transit companion for Barbados, and also Founder & CEO of OWL Solutions, an entity focused on solving societal problems and incubating businesses like BajanWheels. He is enthusiastic, detail-oriented, and eager to learn within the digital environment. Brandon demonstrates leadership through his founder roles and past experience as a Business Intelligence Project Lead at 59A, where he managed a global team and was awarded Employee of the Year 2021. He has won the 2020 Microsoft PowerApps Hackathon and spoken at the UN Food Summit and the World Sustainability Conference. He holds ambassador roles with Island Innovation, Digital Ambassador, and DigiLearning Ambassador, indicating community involvement and a commitment to impact. His ventures focus on societal problem-solving, safety, sustainability, and community empowerment.","previous_companies":[{"company_name":"BajanWheels","role":"Founder","duration":"6 months","description":"Founder of a digital public transit companion for Barbados.","was_founder":true},{"company_name":"OWL Solutions","role":"Founder & CEO","duration":null,"description":"Company focused on solving societal problems and incubating businesses like BajanWheels.","was_founder":true},{"company_name":"59A","role":"Business Intelligence Project Lead","duration":null,"description":"Managed a global team; awarded Employee of the Year 2021.","was_founder":false}],"education":[{"institution":null,"degree":"Post-graduate program","field_of_study":"AI/ML","graduation_year":null,"notable_achievements":null},{"institution":null,"degree":"Bachelor's degree","field_of_study":"Economics and Finance","graduation_year":null,"notable_achievements":null}],"key_skills_and_expertise":["Business Intelligence","Project Leadership","AI/ML","Digital Solutions","Public Transit Technology","Community Empowerment","Sustainability","Data Analysis","Microsoft PowerApps"],"public_speaking_or_content":[{"type":"speech","title":"Speaker at UN Food Summit","url":null},{"type":"speech","title":"Speaker at World Sustainability Conference","url":null}],"investment_criteria_assessment":{"focus_industry_fit":true,"mission_alignment":true,"exciting_solution_to_problem":true,"founded_something_relevant_before":true,"impressive_relevant_past_experience":true,"exceptionally_smart_or_strategic":true,"assessment_summary":"Brandon L. is a mission-driven founder with strong alignment to our focus industries and values. He has founded relevant ventures, demonstrated leadership and technical skills, and engaged in impactful community and sustainability initiatives. His background and achievements indicate he is smart, strategic, and well-positioned to build an exciting solution to a real problem."}}
+
+
+--- STDERR ---
+classify_email_tool: Using Anthropic Claude model.
+2025-06-16 15:11:29,568 - INFO - __main__ - Founder research agent CLI starting...
+2025-06-16 15:11:29,569 - INFO - ai_agents.utils.retry_handler - Initial LLM not provided for founder_research. Attempting to fetch with model_selector_func.
+Agent 'founder_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-16 15:11:29,669 - INFO - ai_agents.utils.retry_handler - Fetched initial LLM for founder_research: gpt-4.1
+2025-06-16 15:11:29,669 - INFO - __main__ - Starting research for founder: "Brandon Louis" using EnhancedFounderResearchAgent.
+2025-06-16 15:11:29,669 - INFO - __main__ - Processed LinkedIn URL for research: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 15:11:30,611 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 15:12:31,666 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-16 15:12:32,287 - ERROR - __main__ - Could not extract a valid JSON object from LLM response: Sorry, I was unable to retrieve the LinkedIn data for Brandon Louis at this time due to a technical issue. Please try again later....
+2025-06-16 15:12:32,288 - ERROR - __main__ - Research execution or validation failed for founder 'Brandon Louis': No valid JSON object found in agent output after attempting cleaning.
+Traceback (most recent call last):
+  File "/Users/matt.toland/AI-Agents/ai_agents/agents/founder_research_agent.py", line 194, in research_founder
+    json_to_parse = self._extract_json_from_content(content_str)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/matt.toland/AI-Agents/ai_agents/agents/founder_research_agent.py", line 262, in _extract_json_from_content
+    raise ValueError("No valid JSON object found in agent output after attempting cleaning.")
+ValueError: No valid JSON object found in agent output after attempting cleaning.
+2025-06-16 15:12:32,291 - WARNING - ai_agents.utils.retry_handler - Attempt 1/3 failed for founder_research. Reason: unknown. Retrying in 4.62s. Error: No valid JSON object found in agent output after attempting cleaning.
+2025-06-16 15:12:36,914 - INFO - ai_agents.utils.retry_handler - Retrying for founder_research (attempt 2). Attempting model switch.
+Agent 'founder_research' selected model: gpt-4.1-mini (Key: gpt-4.1-mini, Type: fallback, Provider: openai)
+2025-06-16 15:12:36,942 - INFO - ai_agents.utils.retry_handler - Switched model for founder_research to: gpt-4.1-mini
+2025-06-16 15:12:36,942 - INFO - __main__ - Starting research for founder: "Brandon Louis" using EnhancedFounderResearchAgent.
+2025-06-16 15:12:36,942 - INFO - __main__ - Processed LinkedIn URL for research: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 15:12:37,664 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 15:13:38,663 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Brandon Louis founder key skills expertise public speaking content
+2025-06-16 15:13:45,139 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/brandon-h-louis/
+2025-06-16 15:14:42,304 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-16 15:14:56,005 - INFO - __main__ - Successfully researched and validated profile for founder: Brandon Louis
+2025-06-16 15:14:56,006 - INFO - ai_agents.utils.retry_handler - Successfully recovered founder_research after 1 retries.
+2025-06-16 15:14:56,006 - INFO - __main__ - Founder research agent: Successfully generated and printed JSON output for Brandon Louis
+
