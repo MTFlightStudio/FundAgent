@@ -1,8 +1,6 @@
 import streamlit as st
-from typing import Dict, Optional, List
+from typing import Dict, Any
 from enum import Enum
-import json
-from datetime import datetime
 
 class AgentStatus(Enum):
     PENDING = "pending"
@@ -10,125 +8,137 @@ class AgentStatus(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
-class WorkflowNode:
-    def __init__(self, id: str, label: str, status: AgentStatus = AgentStatus.PENDING):
-        self.id = id
-        self.label = label
-        self.status = status
-        self.results = None
-        self.last_updated = None
-
 class WorkflowVisualizer:
+    """Visualizes the agent workflow state using Mermaid diagrams"""
+    
     def __init__(self):
-        self.nodes = {
-            "hubspot": WorkflowNode("hubspot", "HubSpot Data Fetch"),
-            "pdf_extract": WorkflowNode("pdf_extract", "PDF Extraction"),
-            "company_research": WorkflowNode("company_research", "Company Research"),
-            "founder_research": WorkflowNode("founder_research", "Founder Research"),
-            "market_research": WorkflowNode("market_research", "Market Research"),
-            "decision_support": WorkflowNode("decision_support", "Decision Support"),
-            "final_report": WorkflowNode("final_report", "Final Report")
-        }
+        self.workflow_state = {}
         
-        # Define the workflow connections
-        self.connections = [
-            ("hubspot", "pdf_extract"),
-            ("pdf_extract", "company_research"),
-            ("pdf_extract", "founder_research"),
-            ("pdf_extract", "market_research"),
-            ("company_research", "decision_support"),
-            ("founder_research", "decision_support"),
-            ("market_research", "decision_support"),
-            ("decision_support", "final_report")
-        ]
-
-    def update_node_status(self, node_id: str, status: AgentStatus, results: Optional[Dict] = None):
-        """Update the status and results of a workflow node"""
-        if node_id in self.nodes:
-            self.nodes[node_id].status = status
-            if results is not None:
-                self.nodes[node_id].results = results
-            self.nodes[node_id].last_updated = datetime.now()
-
-    def get_node_color(self, status: AgentStatus) -> str:
-        """Get the color for a node based on its status"""
-        colors = {
-            AgentStatus.PENDING: "#808080",  # Gray
-            AgentStatus.RUNNING: "#FFA500",  # Orange
-            AgentStatus.COMPLETED: "#00FF00",  # Green
-            AgentStatus.FAILED: "#FF0000"   # Red
-        }
-        return colors.get(status, "#808080")
-
     def generate_mermaid_diagram(self) -> str:
-        """Generate a Mermaid diagram representation of the workflow"""
-        diagram = ["```mermaid", "graph TD"]
+        """Generate a Mermaid diagram showing the workflow state"""
         
-        # Add nodes with styling
-        for node_id, node in self.nodes.items():
-            color = self.get_node_color(node.status)
-            diagram.append(f"    {node_id}[\"{node.label}\"]:::status_{node.status.value}")
+        # Define the workflow structure
+        mermaid_code = """
+```mermaid
+graph TD
+    Start([Start Research]) --> Company[Company Research]
+    Start --> Founders[Founder Research]
+    Start --> Market[Market Research]
+    
+    Company --> Decision{Decision Support}
+    Founders --> Decision
+    Market --> Decision
+    
+    Decision --> Result([Investment Recommendation])
+    
+    %% Styling based on state
+"""
         
-        # Add connections
-        for source, target in self.connections:
-            diagram.append(f"    {source} --> {target}")
+        # Add state-based styling
+        for agent_name, state in self.workflow_state.items():
+            status = state.get('status', 'pending')
+            
+            if agent_name == 'company_research':
+                node_name = 'Company'
+            elif agent_name == 'founder_research':
+                node_name = 'Founders'
+            elif agent_name == 'market_research':
+                node_name = 'Market'
+            elif agent_name == 'decision_support':
+                node_name = 'Decision'
+            else:
+                continue
+            
+            if status == 'completed':
+                mermaid_code += f"    class {node_name} completed\n"
+            elif status == 'running':
+                mermaid_code += f"    class {node_name} running\n"
+            elif status == 'error':
+                mermaid_code += f"    class {node_name} error\n"
         
-        # Add styling
-        diagram.append("    classDef status_pending fill:#808080,stroke:#333,stroke-width:2px")
-        diagram.append("    classDef status_running fill:#FFA500,stroke:#333,stroke-width:2px")
-        diagram.append("    classDef status_completed fill:#00FF00,stroke:#333,stroke-width:2px")
-        diagram.append("    classDef status_failed fill:#FF0000,stroke:#333,stroke-width:2px")
-        diagram.append("```")
+        # Add CSS classes
+        mermaid_code += """
+    classDef completed fill:#90EE90,stroke:#2E8B57,stroke-width:2px
+    classDef running fill:#FFD700,stroke:#FF8C00,stroke-width:2px,color:#000
+    classDef error fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
+    classDef default fill:#E6E6FA,stroke:#4B0082,stroke-width:1px
+```
+"""
         
-        return "\n".join(diagram)
+        return mermaid_code
+    
+    def get_workflow_summary(self) -> Dict[str, Any]:
+        """Get a summary of the workflow state"""
+        summary = {
+            'total_agents': 4,
+            'completed': 0,
+            'running': 0,
+            'error': 0,
+            'pending': 0
+        }
+        
+        for state in self.workflow_state.values():
+            status = state.get('status', 'pending')
+            if status in summary:
+                summary[status] += 1
+            else:
+                summary['pending'] += 1
+        
+        summary['progress'] = (summary['completed'] / summary['total_agents']) * 100
+        
+        return summary
+    
+    def display_workflow_status(self):
+        """Display workflow status metrics"""
+        summary = self.get_workflow_summary()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Completed", summary['completed'], 
+                     delta=f"{summary['completed']}/{summary['total_agents']}")
+        
+        with col2:
+            st.metric("Running", summary['running'])
+        
+        with col3:
+            st.metric("Errors", summary['error'])
+        
+        with col4:
+            st.metric("Progress", f"{summary['progress']:.0f}%")
+        
+        # Progress bar
+        st.progress(summary['progress'] / 100)
 
-    def display_workflow(self):
-        """Display the workflow diagram and handle interactions"""
-        st.markdown("### Research Workflow")
-        
-        # Generate and display the Mermaid diagram
-        diagram = self.generate_mermaid_diagram()
-        st.markdown(diagram)
-        
-        # Display node details when clicked
-        st.markdown("### Node Details")
-        selected_node = st.selectbox(
-            "Select a node to view details",
-            options=list(self.nodes.keys()),
-            format_func=lambda x: self.nodes[x].label
-        )
-        
-        if selected_node:
-            node = self.nodes[selected_node]
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.metric("Status", node.status.value.title())
-                if node.last_updated:
-                    st.metric("Last Updated", node.last_updated.strftime("%Y-%m-%d %H:%M:%S"))
-            
-            with col2:
-                if node.results:
-                    st.json(node.results)
-                else:
-                    st.info("No results available for this node")
+    def update_node_status(self, node_id: str, status: AgentStatus, results: Dict = None):
+        """Update the status of a workflow node (for compatibility)"""
+        self.workflow_state[node_id] = {
+            'status': status.value if isinstance(status, AgentStatus) else status,
+            'results': results,
+            'timestamp': st.session_state.get('current_time', 'N/A')
+        }
 
 def initialize_workflow():
     """Initialize the workflow visualizer in the session state"""
-    if 'workflow' not in st.session_state:
-        st.session_state.workflow = WorkflowVisualizer()
+    if 'workflow_visualizer' not in st.session_state:
+        st.session_state.workflow_visualizer = WorkflowVisualizer()
 
-def update_workflow_status(node_id: str, status: AgentStatus, results: Optional[Dict] = None):
+def update_workflow_status(node_id: str, status: AgentStatus, results: Dict = None):
     """Update the status of a workflow node"""
-    if 'workflow' in st.session_state:
-        st.session_state.workflow.update_node_status(node_id, status, results)
+    if 'workflow_visualizer' in st.session_state:
+        st.session_state.workflow_visualizer.update_node_status(node_id, status, results)
 
 def display_workflow():
     """Display the workflow visualization"""
-    if 'workflow' in st.session_state:
-        st.session_state.workflow.display_workflow()
+    if 'workflow_visualizer' in st.session_state:
+        # Display the Mermaid diagram
+        diagram = st.session_state.workflow_visualizer.generate_mermaid_diagram()
+        st.markdown(diagram)
+        
+        # Display workflow status metrics
+        st.session_state.workflow_visualizer.display_workflow_status()
     else:
-        st.error("Workflow not initialized")
+        st.error("Workflow visualizer not initialized")
 
 # Example usage in streamlit_app.py:
 """

@@ -1,0 +1,57 @@
+{
+  "company_name": "OpenAI",
+  "website": "https://openai.com/",
+  "linkedin_url": "https://www.linkedin.com/company/openai",
+  "description": "OpenAI is an artificial intelligence research and deployment company dedicated to ensuring that artificial general intelligence (AGI) benefits all of humanity. It develops advanced AI models and applications, including the widely known ChatGPT, and provides AI infrastructure and APIs for businesses and developers.",
+  "industry": "Artificial Intelligence",
+  "sub_industry": "AI Research, Generative AI, Machine Learning",
+  "founded_year": 2015,
+  "funding_stage": "Late Stage (Series F)",
+  "total_funding_raised": "$57.9B",
+  "funding_rounds_details": [
+    {
+      "round_name": "Series F",
+      "amount_raised": "$40B",
+      "date_announced": "2025-03-01T00:00:00Z",
+      "key_investors": [
+        "SoftBank",
+        "Microsoft",
+        "Coatue",
+        "Altimeter",
+        "Thrive Capital"
+      ]
+    },
+    {
+      "round_name": "Growth/Series Unknown",
+      "amount_raised": "$6.6B",
+      "date_announced": "2024-10-02T00:00:00Z",
+      "key_investors": [
+        "Microsoft",
+        "Nvidia",
+        "SoftBank"
+      ]
+    }
+  ],
+  "key_products_services": [
+    "ChatGPT",
+    "OpenAI API",
+    "GPT-4/4.1/5 models",
+    "DALL·E",
+    "Sora",
+    "Whisper",
+    "OpenAI for Business",
+    "Custom GPTs"
+  ],
+  "business_model": "OpenAI generates revenue through subscription services (e.g., ChatGPT Plus, ChatGPT Enterprise), API usage fees for developers and businesses, licensing agreements, and partnerships. It also offers tailored AI solutions for enterprise customers.",
+  "target_customer": "Businesses of all sizes, developers, enterprises seeking AI integration, and individual consumers interested in advanced AI tools and applications.",
+  "key_metrics": {
+    "Annualized Revenue": "$10B (2025)",
+    "Expected 2025 Revenue": "$12.7B",
+    "Weekly Active Users": "500 million",
+    "Paying Business Users": "3 million"
+  },
+  "team_size": "201-500 employees",
+  "location_hq": "San Francisco, California, United States",
+  "other_locations": null,
+  "mission_statement": "To ensure that artificial general intelligence—highly autonomous systems that outperform humans at most economically valuable work—benefits all of humanity."
+}

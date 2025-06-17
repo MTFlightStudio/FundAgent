@@ -1,0 +1,24 @@
+{
+  "company_name": "emwillcare",
+  "website": "https://www.emwillcare.com/",
+  "linkedin_url": "https://uk.linkedin.com/in/dr-emma-williams-859748121",
+  "description": "emwillcare is a healthtech company focused on transforming dementia care by providing evidence-based, digital behavioural support tools for caregivers and care organisations. Their flagship product, Less Distress, uses behavioural science and smart technology to predict and prevent distressed behaviours in people living with dementia, aiming to improve quality of life and reduce crisis-driven care.",
+  "industry": "Healthtech",
+  "sub_industry": "Dementia Care, Digital Health, Behavioural Science",
+  "founded_year": 2023,
+  "funding_stage": "Pre-seed",
+  "total_funding_raised": null,
+  "funding_rounds_details": null,
+  "key_products_services": [
+    "Less Distress (digital behavioural support tool)",
+    "Dementia care consultancy",
+    "Caregiver training and support"
+  ],
+  "business_model": "B2B SaaS and consultancy: emwillcare sells digital tools and consultancy services to care homes, healthcare providers, and commissioners seeking to improve dementia care outcomes and reduce costs.",
+  "target_customer": "Care home owners, healthcare commissioners, and organisations supporting individuals living with dementia and their caregivers.",
+  "key_metrics": null,
+  "team_size": "1-10",
+  "location_hq": "Gwynedd, Wales, United Kingdom",
+  "other_locations": null,
+  "mission_statement": "To transform dementia care by ensuring that individuals living with dementia receive the best possible support, while empowering their caregivers with effective, evidence-based strategies. emwillcare is committed to reducing placement breakdowns, minimising the use of unlicensed antipsychotic drugs, and lowering health and social care costs—all while improving the quality of life for those affected by dementia."
+}
