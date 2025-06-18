@@ -171,9 +171,9 @@ def run_agent():
             print("Raw Response at time of error:", raw_response)
 
 # Import agent functions AFTER load_dotenv
-# Assuming these files exist and are structured correctly:
-# from ai_agents.agents.email_triage import process_inbox # Placeholder
-from ai_agents.agents.research_agent import run_research_cli
+# Note: research_agent and email_triage have been removed as they're not used in the Streamlit UI
+# from ai_agents.agents.research_agent import run_research_cli # REMOVED - not used in Streamlit
+# from ai_agents.agents.email_triage import process_inbox # REMOVED - not used in Streamlit
 
 # Placeholder for process_inbox if not yet implemented
 def process_inbox(run_once=False):
@@ -196,10 +196,10 @@ def main():
     triage_parser.add_argument("--once", action="store_true", help="Run the triage process once and exit.")
     triage_parser.set_defaults(func=lambda args: process_inbox(run_once=args.once))
 
-    # Research command
-    research_parser = subparsers.add_parser("research", help="Run the research agent with a query.")
-    research_parser.add_argument("query", nargs="+", help="The research query (can be multiple words).")
-    research_parser.set_defaults(func=lambda args: run_research_cli(" ".join(args.query)))
+    # Research command - DISABLED (research_agent removed)
+    # research_parser = subparsers.add_parser("research", help="Run the research agent with a query.")
+    # research_parser.add_argument("query", nargs="+", help="The research query (can be multiple words).")
+    # research_parser.set_defaults(func=lambda args: run_research_cli(" ".join(args.query)))
 
     args = ap.parse_args()
     args.func(args) # Call the function associated with the chosen subparser
