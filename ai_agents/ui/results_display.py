@@ -220,7 +220,13 @@ def display_investment_decision(decision_data: Dict[str, Any]):
     
     # Overall Recommendation
     recommendation = research.get('overall_summary_and_recommendation', 'N/A')
-    confidence = research.get('confidence_score_overall', 0)
+    confidence = research.get('confidence_score_overall')
+    
+    # Also try other confidence field names
+    if confidence is None:
+        confidence = research.get('confidence_score')
+    if confidence is None:
+        confidence = research.get('confidence')
     
     # Color code based on recommendation
     if 'PASS' in str(recommendation).upper():
@@ -234,7 +240,16 @@ def display_investment_decision(decision_data: Dict[str, Any]):
         emoji = '❌'
     
     st.markdown(f"## {emoji} Investment Recommendation: **:{color}[{recommendation}]**")
-    st.progress(confidence, text=f"Confidence Score: {confidence * 100:.0f}%")
+    
+    # Handle confidence score properly
+    if confidence is not None and isinstance(confidence, (int, float)):
+        # If confidence is already a percentage (>1), don't multiply by 100
+        if confidence > 1:
+            st.progress(confidence/100, text=f"Confidence Score: {confidence:.0f}%")
+        else:
+            st.progress(confidence, text=f"Confidence Score: {confidence * 100:.0f}%")
+    else:
+        st.progress(0, text="Confidence Score: N/A")
     
     # Investment Assessment
     assessment = research.get('investment_assessment', {})
@@ -338,20 +353,24 @@ def display_results(results: Dict[str, Any]):
                 if tab_content:
                     tab_content()
     
-    # Export functionality
+    # Export functionality - get a unique key based on the results content
+    result_types = list(results.keys())
+    export_key = "_".join(sorted(result_types))
+    
     with st.expander("📥 Export Results"):
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("Download as JSON"):
+            if st.button("Download as JSON", key=f"download_json_{export_key}"):
                 json_str = json.dumps(results, indent=2)
                 st.download_button(
                     label="Download JSON",
                     data=json_str,
                     file_name="investment_research.json",
-                    mime="application/json"
+                    mime="application/json",
+                    key=f"download_button_{export_key}"
                 )
         with col2:
-            if st.button("Copy to Clipboard"):
+            if st.button("Copy to Clipboard", key=f"copy_clipboard_{export_key}"):
                 st.code(json.dumps(results, indent=2), language='json')
 
 # Example usage in streamlit_app.py:

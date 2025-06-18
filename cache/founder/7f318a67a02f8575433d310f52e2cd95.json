@@ -1,0 +1,97 @@
+{
+  "status": "success",
+  "founders": [
+    {
+      "name": "Emma Williams",
+      "linkedin_url": "https://www.linkedin.com/in/dr-emma-williams",
+      "role_in_company": "Founder, EmWill Care; Accelerator Growth Programme participant at Alzheimer's Society",
+      "background_summary": "Dr. Emma Williams is a seasoned professional with over 27 years of experience in care, specialising in dementia and behavioural science. She holds a PhD in Psychology and an MSc in Applied Behaviour Analysis from Bangor University. Dr. Williams is the founder of EmWill Care and PACT (Positive Ageing Consultancy & Training). Her primary venture, EmWill Care, aims to revolutionise dementia care by integrating behavioural science with smart technology, specifically through a tool called 'Less Distress' designed to help caregivers predict and prevent distressed behaviours. She is currently part of accelerator programs with both the Alzheimer's Society and Business Wales, indicating external validation and support for her venture. Her extensive experience also includes roles as a Bespoke Behavioural Consultant and Director of Training for various social care and well-being services in Wales.",
+      "previous_companies": [
+        {
+          "company_name": "EmWill Care",
+          "role": "Founder",
+          "duration": null,
+          "description": "Founded EmWill Care to integrate behavioural science and smart technology for dementia care. Developed 'Less Distress', a tool to help caregivers predict and prevent distressed behaviours.",
+          "was_founder": true
+        },
+        {
+          "company_name": "PACT (Positive Ageing Consultancy & Training)",
+          "role": "Founder",
+          "duration": null,
+          "description": "Founded consultancy and training organisation focused on positive ageing and dementia care.",
+          "was_founder": true
+        },
+        {
+          "company_name": "Alzheimer's Society",
+          "role": "Accelerator Growth Programme Participant",
+          "duration": "4 months",
+          "description": "Participating in the Accelerator Growth Programme to develop and scale EmWill Care's solutions.",
+          "was_founder": false
+        },
+        {
+          "company_name": "Various Social Care and Well-being Services (Wales)",
+          "role": "Director of Training / Bespoke Behavioural Consultant",
+          "duration": null,
+          "description": "Provided training and consultancy in behavioural science and dementia care.",
+          "was_founder": false
+        }
+      ],
+      "education": [
+        {
+          "institution": "Bangor University",
+          "degree": "PhD",
+          "field_of_study": "Psychology",
+          "graduation_year": null,
+          "notable_achievements": null
+        },
+        {
+          "institution": "Bangor University",
+          "degree": "MSc",
+          "field_of_study": "Applied Behaviour Analysis",
+          "graduation_year": null,
+          "notable_achievements": null
+        }
+      ],
+      "key_skills_and_expertise": [
+        "Behavioural Science",
+        "Dementia Care",
+        "Caregiver Training",
+        "Applied Behaviour Analysis",
+        "HealthTech Innovation",
+        "Programme Leadership",
+        "Public Speaking",
+        "Content Creation",
+        "Person-centred Care",
+        "Smart Technology Integration"
+      ],
+      "public_speaking_or_content": [
+        {
+          "type": "blog",
+          "title": "Behavioural Science & Smart Tech Will Revolutionise Dementia Care",
+          "url": "https://www.emwillcare.com/blog"
+        },
+        {
+          "type": "blog",
+          "title": "From Caregiver to Innovator: Why I Created Less Distress",
+          "url": "https://www.emwillcare.com/blog/finding-my-niche"
+        },
+        {
+          "type": "case study",
+          "title": "Empowering caregivers: EmWill Care's journey through the Business Wales Start-Up Accelerator Programme",
+          "url": "https://businesswales.gov.wales/growth/case-studies-and-news/case-studies/empowering-caregivers-emwill-cares-journey-through-business-wales-start-accelerator-programme"
+        }
+      ],
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": true,
+        "exciting_solution_to_problem": true,
+        "founded_something_relevant_before": true,
+        "impressive_relevant_past_experience": true,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "Dr. Emma Williams is an exceptionally strong fit for investment criteria. She is a domain expert with deep experience in dementia care and behavioural science, has founded multiple relevant ventures, and is currently developing an innovative HealthTech solution with strong mission alignment. Her participation in reputable accelerator programmes and her academic credentials further reinforce her strategic and intellectual capabilities. She demonstrates founder-led insight, passion, and the ability to build a brand and product that addresses a significant societal challenge."
+      }
+    }
+  ],
+  "founder_count": 1,
+  "timestamp": "2025-06-17T17:57:10.629105"
+}

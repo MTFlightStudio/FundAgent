@@ -3,8 +3,11 @@ import json
 import logging
 import sys
 import io
+import time
+import hashlib
+import os
 from typing import Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import traceback
 from contextlib import contextmanager
@@ -53,6 +56,82 @@ class AgentRunner:
             st.session_state.logs = []
         if 'errors' not in st.session_state:
             st.session_state.errors = {}
+        if 'execution_times' not in st.session_state:
+            st.session_state.execution_times = {}
+        
+        self.cache_expiry_hours = 24  # Cache expires after 24 hours
+        self._setup_cache_directories()
+
+    def _setup_cache_directories(self):
+        """Create cache directories if they don't exist"""
+        cache_dirs = ['cache', 'cache/company', 'cache/founder', 'cache/market', 'cache/decision']
+        for cache_dir in cache_dirs:
+            if not os.path.exists(cache_dir):
+                os.makedirs(cache_dir)
+
+    def _get_cache_key(self, agent_type: str, **kwargs) -> str:
+        """Generate a unique cache key based on agent type and parameters"""
+        # Create a string representation of the parameters
+        params_str = json.dumps(kwargs, sort_keys=True)
+        # Create a hash of the parameters for a clean filename
+        cache_key = hashlib.md5(f"{agent_type}_{params_str}".encode()).hexdigest()
+        return cache_key
+
+    def _get_cache_file_path(self, agent_type: str, cache_key: str) -> str:
+        """Get the cache file path for the given agent type and cache key"""
+        return f"cache/{agent_type}/{cache_key}.json"
+
+    def _is_cache_valid(self, cache_file_path: str) -> bool:
+        """Check if cache file exists and is not expired"""
+        if not os.path.exists(cache_file_path):
+            return False
+        
+        # Check if cache is expired
+        file_time = datetime.fromtimestamp(os.path.getmtime(cache_file_path))
+        expiry_time = datetime.now() - timedelta(hours=self.cache_expiry_hours)
+        
+        return file_time > expiry_time
+
+    def _load_from_cache(self, cache_file_path: str) -> Optional[Dict[str, Any]]:
+        """Load data from cache file"""
+        try:
+            with open(cache_file_path, 'r') as f:
+                cached_data = json.load(f)
+                # Add cache metadata
+                cached_data['_cache_info'] = {
+                    'cached': True,
+                    'cache_time': datetime.fromtimestamp(os.path.getmtime(cache_file_path)).isoformat(),
+                    'cache_age_hours': round((datetime.now() - datetime.fromtimestamp(os.path.getmtime(cache_file_path))).total_seconds() / 3600, 2)
+                }
+                return cached_data
+        except Exception as e:
+            logger.warning(f"Failed to load cache: {e}")
+            return None
+
+    def _save_to_cache(self, cache_file_path: str, data: Dict[str, Any]):
+        """Save data to cache file"""
+        try:
+            # Remove cache info if it exists in the data before saving
+            data_to_cache = {k: v for k, v in data.items() if k != '_cache_info'}
+            with open(cache_file_path, 'w') as f:
+                json.dump(data_to_cache, f, indent=2)
+        except Exception as e:
+            logger.warning(f"Failed to save to cache: {e}")
+
+    def clear_cache(self, agent_type: str = None):
+        """Clear cache files for specified agent type or all agents"""
+        if agent_type:
+            cache_dir = f"cache/{agent_type}"
+            if os.path.exists(cache_dir):
+                for file in os.listdir(cache_dir):
+                    if file.endswith('.json'):
+                        os.remove(os.path.join(cache_dir, file))
+                st.success(f"🗑️ Cleared {agent_type} cache")
+        else:
+            # Clear all caches
+            for agent_type in ['company', 'founder', 'market', 'decision']:
+                self.clear_cache(agent_type)
+            st.success("🗑️ Cleared all caches")
 
     def _extract_company_info_from_hubspot(self, deal_id: str) -> Dict[str, Any]:
         """Extract company information from HubSpot deal data"""
@@ -140,103 +219,214 @@ class AgentRunner:
         }
         self.update_progress(agent_name, AgentStatus.FAILED)
 
-    def run_company_research(self, company_name: str = None, deal_id: str = None) -> Dict[str, Any]:
-        """Run company research agent"""
+    @st.cache_data(ttl=3600)  # Streamlit cache for 1 hour
+    def run_company_research(_self, company_name: str = None, deal_id: str = None) -> Dict[str, Any]:
+        """Run company research agent with caching"""
+        start_time = time.time()
+        
+        if 'execution_times' not in st.session_state:
+            st.session_state.execution_times = {}
+        
+        # Generate cache key
+        cache_key = _self._get_cache_key('company', company_name=company_name, deal_id=deal_id)
+        cache_file_path = _self._get_cache_file_path('company', cache_key)
+        
+        # Check cache first
+        if _self._is_cache_valid(cache_file_path):
+            cached_result = _self._load_from_cache(cache_file_path)
+            if cached_result:
+                execution_time = time.time() - start_time
+                st.session_state.execution_times['company_research'] = execution_time
+                st.success(f"⚡ Company research loaded from cache in {execution_time:.1f} seconds (Age: {cached_result['_cache_info']['cache_age_hours']:.1f} hours)")
+                return cached_result
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
         try:
+            status_text.text("🔍 Initializing company research...")
+            progress_bar.progress(10)
+            
             # If deal_id provided, extract company info from HubSpot
             if deal_id and not company_name:
-                hubspot_info = self._extract_company_info_from_hubspot(deal_id)
-                company_name = hubspot_info.get('company_name')
-                
+                hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
+                company_name = hubspot_data.get('company_name')
                 if not company_name:
-                    raise ValueError(f"Could not extract company name from deal {deal_id}")
+                    raise ValueError("Could not extract company name from HubSpot deal")
             
             if not company_name:
                 raise ValueError("Company name is required")
             
-            # Run the company research agent
-            logger.info(f"Running company research for: {company_name}")
+            status_text.text("🌐 Searching web for company information...")
+            progress_bar.progress(30)
+            
+            _self.log_execution(f"Running company research for: {company_name}")
             result = run_company_research_cli(company_name)
             
+            status_text.text("✅ Company research completed!")
+            progress_bar.progress(100)
+            
             if result:
-                # Convert Pydantic model to dict
-                company_data = {
-                    'status': 'success',
-                    'company_profile': result.model_dump(mode='json') if hasattr(result, 'model_dump') else result
-                }
-                st.session_state.results['company_research'] = company_data
-                return company_data
+                result_dict = result.model_dump(mode='json')
+                
+                # Save to cache
+                _self._save_to_cache(cache_file_path, result_dict)
+                
+                # Track execution time
+                execution_time = time.time() - start_time
+                st.session_state.execution_times['company_research'] = execution_time
+                
+                # Clean up progress indicators
+                progress_bar.empty()
+                status_text.empty()
+                
+                st.success(f"🎉 Company research completed in {execution_time:.1f} seconds (Cached for future use)")
+                
+                return result_dict
             else:
-                error_result = {
-                    'status': 'error',
-                    'error': 'Company research returned no results'
-                }
-                st.session_state.results['company_research'] = error_result
-                return error_result
+                raise ValueError("No results returned from company research")
                 
         except Exception as e:
-            logger.error(f"Company research failed: {e}")
-            error_result = {
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['company_research'] = execution_time
+            
+            progress_bar.empty()
+            status_text.empty()
+            
+            error_msg = f"Company research failed: {str(e)}"
+            _self.log_execution(error_msg, "ERROR")
+            st.error(f"❌ {error_msg}")
+            
+            return {
                 'status': 'error',
-                'error': str(e)
+                'error': str(e),
+                'timestamp': datetime.now().isoformat()
             }
-            st.session_state.results['company_research'] = error_result
-            return error_result
-    
-    def run_founder_research(self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
+
+    @st.cache_data(ttl=3600)
+    def run_founder_research(_self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
                            deal_id: str = None) -> Dict[str, Any]:
-        """Run founder research agent"""
+        """Run founder research agent with caching"""
+        start_time = time.time()
+        
+        if 'execution_times' not in st.session_state:
+            st.session_state.execution_times = {}
+        
+        # Generate cache key
+        cache_key = _self._get_cache_key('founder', founder_names=founder_names, linkedin_urls=linkedin_urls, deal_id=deal_id)
+        cache_file_path = _self._get_cache_file_path('founder', cache_key)
+        
+        # Check cache first
+        if _self._is_cache_valid(cache_file_path):
+            cached_result = _self._load_from_cache(cache_file_path)
+            if cached_result:
+                execution_time = time.time() - start_time
+                st.session_state.execution_times['founder_research'] = execution_time
+                st.success(f"⚡ Founder research loaded from cache in {execution_time:.1f} seconds (Age: {cached_result['_cache_info']['cache_age_hours']:.1f} hours)")
+                return cached_result
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
         try:
-            # If deal_id provided, extract founder info from HubSpot
+            status_text.text("👤 Initializing founder research...")
+            progress_bar.progress(10)
+            
+            # Extract founder info from HubSpot if needed
             if deal_id and not founder_names:
-                hubspot_info = self._extract_company_info_from_hubspot(deal_id)
-                founders_data = hubspot_info.get('founders', [])
-                
-                founder_names = [f['name'] for f in founders_data if f.get('name')]
-                linkedin_urls = [f['linkedin_url'] for f in founders_data if f.get('linkedin_url')]
+                hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
+                founder_names = hubspot_data.get('founders', [])
+                if hubspot_data.get('linkedin_urls'):
+                    linkedin_urls = hubspot_data['linkedin_urls']
+                if not founder_names:
+                    raise ValueError("Could not extract founder information from HubSpot deal")
             
             if not founder_names:
-                raise ValueError("At least one founder name is required")
+                raise ValueError("Founder names are required")
             
-            # Ensure lists are same length
-            if not linkedin_urls:
-                linkedin_urls = [''] * len(founder_names)
-            elif len(linkedin_urls) < len(founder_names):
-                linkedin_urls.extend([''] * (len(founder_names) - len(linkedin_urls)))
+            status_text.text("🔗 Searching LinkedIn profiles...")
+            progress_bar.progress(25)
             
-            # Run research for each founder
             founder_profiles = []
-            for name, linkedin_url in zip(founder_names, linkedin_urls):
-                if name and name.strip():
-                    logger.info(f"Running founder research for: {name}")
-                    result = run_founder_research_cli_entrypoint(name, linkedin_url if linkedin_url else None)
-                    
-                    if result:
-                        # Convert Pydantic model to dict
-                        founder_dict = result.model_dump(mode='json') if hasattr(result, 'model_dump') else result
-                        founder_profiles.append(founder_dict)
+            total_founders = len(founder_names)
+            
+            for i, founder_name in enumerate(founder_names):
+                progress = 25 + (50 * (i + 1) / total_founders)
+                status_text.text(f"📊 Analyzing {founder_name}'s background...")
+                progress_bar.progress(int(progress))
+                
+                _self.log_execution(f"Running founder research for: {founder_name}")
+                
+                linkedin_url = None
+                if linkedin_urls and i < len(linkedin_urls):
+                    linkedin_url = linkedin_urls[i]
+                
+                if linkedin_url:
+                    founder_result = run_founder_research_cli_entrypoint(founder_name, linkedin_url)
+                else:
+                    founder_result = run_founder_research_cli_entrypoint(founder_name)
+                
+                if founder_result:
+                    founder_dict = founder_result.model_dump(mode='json')
+                    founder_profiles.append(founder_dict)
+            
+            status_text.text("✅ Founder research completed!")
+            progress_bar.progress(100)
             
             founder_data = {
                 'status': 'success',
-                'founders': founder_profiles
+                'founders': founder_profiles,
+                'founder_count': len(founder_profiles),
+                'timestamp': datetime.now().isoformat()
             }
-            st.session_state.results['founder_research'] = founder_data
+            
+            # Save to cache
+            _self._save_to_cache(cache_file_path, founder_data)
+            
+            # Track execution time
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['founder_research'] = execution_time
+            
+            # Clean up progress indicators
+            progress_bar.empty()
+            status_text.empty()
+            
+            st.success(f"🎉 Founder research completed in {execution_time:.1f} seconds (Cached for future use)")
+            
             return founder_data
                 
         except Exception as e:
-            logger.error(f"Founder research failed: {e}")
-            error_result = {
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['founder_research'] = execution_time
+            
+            progress_bar.empty()
+            status_text.empty()
+            
+            error_msg = f"Founder research failed: {str(e)}"
+            _self.log_execution(error_msg, "ERROR")
+            st.error(f"❌ {error_msg}")
+            
+            return {
                 'status': 'error',
                 'error': str(e),
-                'founders': []
+                'timestamp': datetime.now().isoformat()
             }
-            st.session_state.results['founder_research'] = error_result
-            return error_result
-    
+
     def run_market_research(self, company_name: str = None, industry: str = None, 
                           deal_id: str = None) -> Dict[str, Any]:
-        """Run market research agent"""
+        """Run market research agent with progress tracking"""
+        start_time = time.time()
+        
+        if 'execution_times' not in st.session_state:
+            st.session_state.execution_times = {}
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
         try:
+            status_text.text("📈 Initializing market research...")
+            progress_bar.progress(10)
+            
             # If deal_id provided, extract industry from HubSpot
             if deal_id and not industry:
                 hubspot_info = self._extract_company_info_from_hubspot(deal_id)
@@ -259,6 +449,22 @@ class AgentRunner:
             logger.info(f"Running market research for sector: {industry}")
             result = run_market_intelligence_cli(industry)
             
+            status_text.text("📋 Compiling market analysis...")
+            progress_bar.progress(90)
+            
+            status_text.text("✅ Market research completed!")
+            progress_bar.progress(100)
+            
+            # Track execution time
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['market_research'] = execution_time
+            
+            # Clean up progress indicators
+            progress_bar.empty()
+            status_text.empty()
+            
+            st.success(f"🎉 Market research completed in {execution_time:.1f} seconds")
+            
             if result:
                 # Convert Pydantic model to dict
                 market_data = {
@@ -276,7 +482,15 @@ class AgentRunner:
                 return error_result
                 
         except Exception as e:
-            logger.error(f"Market research failed: {e}")
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['market_research'] = execution_time
+            
+            progress_bar.empty()
+            status_text.empty()
+            
+            error_msg = f"Market research failed: {str(e)}"
+            self.log_execution(error_msg, "ERROR")
+            st.error(f"❌ {error_msg}")
             error_result = {
                 'status': 'error',
                 'error': str(e)
@@ -288,12 +502,48 @@ class AgentRunner:
                            founder_research: Dict[str, Any] = None,
                            market_research: Dict[str, Any] = None,
                            deal_id: str = None) -> Dict[str, Any]:
-        """Run decision support agent"""
+        """Run decision support agent with progress tracking"""
+        start_time = time.time()
+        
+        if 'execution_times' not in st.session_state:
+            st.session_state.execution_times = {}
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
         try:
+            status_text.text("🤔 Initializing decision analysis...")
+            progress_bar.progress(15)
+            
+            self.log_execution("Running decision support analysis...")
+            
             # Extract the actual data from the research results
             company_data = None
-            if company_research and company_research.get('status') == 'success':
-                company_data = company_research.get('company_profile')
+            if company_research:
+                # Debug: log what we actually received
+                self.log_execution(f"Company research status: {company_research.get('status')}")
+                self.log_execution(f"Company research keys: {list(company_research.keys()) if isinstance(company_research, dict) else 'Not a dict'}")
+                
+                if company_research.get('status') == 'success':
+                    # Try different possible locations for company data
+                    company_data = company_research.get('company_profile')
+                    if not company_data:
+                        # Check if it's nested under a different key or is the direct result
+                        company_data = company_research
+                        # Remove status field if present to avoid confusion
+                        if isinstance(company_data, dict) and 'status' in company_data:
+                            company_data = {k: v for k, v in company_data.items() if k != 'status'}
+                elif company_research.get('status') == 'error':
+                    self.log_execution(f"Company research failed with error: {company_research.get('error')}")
+                    raise ValueError(f"Company research failed: {company_research.get('error', 'Unknown error')}")
+                else:
+                    # Try to extract data even if status is not 'success'
+                    if isinstance(company_research, dict) and any(key in company_research for key in ['company_name', 'company_profile']):
+                        company_data = company_research
+                        if 'status' in company_data:
+                            company_data = {k: v for k, v in company_data.items() if k != 'status'}
+            else:
+                self.log_execution("No company research data provided")
             
             founder_data = []
             if founder_research and founder_research.get('status') == 'success':
@@ -301,7 +551,23 @@ class AgentRunner:
             
             market_data = None
             if market_research and market_research.get('status') == 'success':
+                # Try different possible locations for market data
                 market_data = market_research.get('market_analysis')
+                if not market_data:
+                    # Check if it's the direct result
+                    market_data = market_research
+                    # Remove status field if present
+                    if isinstance(market_data, dict) and 'status' in market_data:
+                        market_data = {k: v for k, v in market_data.items() if k != 'status'}
+            
+            # Debug logging to see what data we actually have
+            self.log_execution(f"Company data available: {company_data is not None}")
+            self.log_execution(f"Founder data count: {len(founder_data) if founder_data else 0}")
+            self.log_execution(f"Market data available: {market_data is not None}")
+            
+            # Ensure we have at least company data
+            if not company_data:
+                raise ValueError("Company research data is required but not available")
             
             # Get additional context from HubSpot if deal_id provided
             additional_context = {}
@@ -313,13 +579,28 @@ class AgentRunner:
                     logger.warning(f"Could not fetch HubSpot data for context: {e}")
             
             # Run the decision support analysis
-            logger.info("Running decision support analysis...")
             result = run_decision_support_analysis(
                 company_data_dict=company_data,
                 founder_data_list=founder_data,
                 market_data_dict=market_data,
                 additional_context=additional_context
             )
+            
+            status_text.text("🎯 Generating recommendation...")
+            progress_bar.progress(90)
+            
+            status_text.text("✅ Decision analysis completed!")
+            progress_bar.progress(100)
+            
+            # Track execution time
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['decision_support'] = execution_time
+            
+            # Clean up progress indicators
+            progress_bar.empty()
+            status_text.empty()
+            
+            st.success(f"🎉 Decision support analysis completed in {execution_time:.1f} seconds")
             
             if result:
                 # Convert Pydantic model to dict
@@ -338,7 +619,15 @@ class AgentRunner:
                 return error_result
                 
         except Exception as e:
-            logger.error(f"Decision support analysis failed: {e}")
+            execution_time = time.time() - start_time
+            st.session_state.execution_times['decision_support'] = execution_time
+            
+            progress_bar.empty()
+            status_text.empty()
+            
+            error_msg = f"Decision support analysis failed: {str(e)}"
+            self.log_execution(error_msg, "ERROR")
+            st.error(f"❌ {error_msg}")
             error_result = {
                 'status': 'error',
                 'error': str(e)
@@ -388,6 +677,50 @@ class AgentRunner:
             error_msg = f"Error in full pipeline execution: {str(e)}"
             self.log_execution(error_msg, "ERROR")
             return {"status": "error", "error": error_msg}
+
+    # Add cache management UI to sidebar
+    def display_cache_management_ui(self):
+        """Display cache management controls in the sidebar"""
+        with st.sidebar.expander("🗂️ Cache Management"):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.button("🗑️ Clear All", key="clear_all_cache", help="Clear all cached data"):
+                    self.clear_cache()
+            
+            with col2:
+                cache_types = st.selectbox("Cache Type:", ["All", "Company", "Founder", "Market", "Decision"], key="cache_type_select")
+                if st.button("🗑️ Clear", key="clear_specific_cache"):
+                    if cache_types == "All":
+                        self.clear_cache()
+                    else:
+                        self.clear_cache(cache_types.lower())
+            
+            # Show cache stats
+            cache_stats = self._get_cache_stats()
+            if cache_stats:
+                st.markdown("**Cache Statistics:**")
+                for agent_type, stats in cache_stats.items():
+                    st.text(f"{agent_type.title()}: {stats['files']} files, {stats['size_mb']:.1f} MB")
+
+    def _get_cache_stats(self) -> Dict[str, Dict[str, Any]]:
+        """Get cache statistics for each agent type"""
+        stats = {}
+        cache_types = ['company', 'founder', 'market', 'decision']
+        
+        for agent_type in cache_types:
+            cache_dir = f"cache/{agent_type}"
+            if os.path.exists(cache_dir):
+                files = [f for f in os.listdir(cache_dir) if f.endswith('.json')]
+                total_size = sum(os.path.getsize(os.path.join(cache_dir, f)) for f in files)
+                stats[agent_type] = {
+                    'files': len(files),
+                    'size_mb': total_size / (1024 * 1024)
+                }
+            else:
+                stats[agent_type] = {'files': 0, 'size_mb': 0}
+        
+        return stats
 
 # Initialize the runner
 _runner = None

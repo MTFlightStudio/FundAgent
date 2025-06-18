@@ -1,0 +1,39 @@
+{
+  "company_name": "Fermentful",
+  "website": "https://www.fermentful.com/",
+  "linkedin_url": "https://www.linkedin.com/company/fermentful",
+  "description": "Fermentful is a Latvian foodtech startup that develops and produces fermented plant-based probiotic drinks made from organic green buckwheat. Their products are designed to support gut health and overall wellbeing, offering a clean-label, dairy-free alternative to traditional kefir drinks.",
+  "industry": "Food & Beverages",
+  "sub_industry": "Plant-based Functional Foods / Foodtech",
+  "founded_year": 2020,
+  "funding_stage": "Seed",
+  "total_funding_raised": "$531K",
+  "funding_rounds_details": [
+    {
+      "round_name": "Seed",
+      "amount_raised": "$531K",
+      "date_announced": null,
+      "key_investors": [
+        "Clever Clover",
+        "MassChallenge",
+        "\u017babka Group",
+        "EIT Food"
+      ]
+    }
+  ],
+  "key_products_services": [
+    "Fermented plant-based kefir drinks (Natural, Apple-Lingonberry, Sea Buckthorn, Dark Chocolate)",
+    "Probiotic shots",
+    "Spoonable creams (in development)"
+  ],
+  "business_model": "Fermentful sells its products through retail partners, direct-to-consumer via subscriptions, and exports to international markets. The company focuses on B2C sales of packaged functional beverages and snacks.",
+  "target_customer": "Health-conscious consumers, individuals with food intolerances (gluten, dairy, soy), vegans, vegetarians, and those seeking gut health and functional nutrition solutions.",
+  "key_metrics": {
+    "Production Capacity": "8-10 tonnes per month (pilot factory, 2024)",
+    "Retail Presence": "Available in 100+ stores in Austria (Billa/REWE Group) and Baltic region"
+  },
+  "team_size": "2-10 employees",
+  "location_hq": "Riga, Latvia",
+  "other_locations": null,
+  "mission_statement": "We believe in food as medicine, where prevention and targeted nutrition approaches can contribute to better mental and physical health, as well as planetary health. Our goal is to create delicious, convenient, and science-backed fermented plant-based products that support daily gut health and overall wellbeing."
+}

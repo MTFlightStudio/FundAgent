@@ -1,0 +1,26 @@
+{
+  "company_name": "Aegis Blue GmbH",
+  "website": "https://www.aegisblue.co/",
+  "linkedin_url": "https://www.linkedin.com/company/aegisblue",
+  "description": "Aegis Blue is a specialized AI security company that focuses on identifying, managing, and eliminating vulnerabilities in AI systems, particularly large language models and generative AI. They provide comprehensive security solutions to protect businesses from legal liabilities, intellectual property theft, data leakage, reputational damage, and regulatory compliance issues associated with AI implementation.",
+  "industry": "Data Security Software",
+  "sub_industry": "AI Security",
+  "founded_year": 2023,
+  "funding_stage": null,
+  "total_funding_raised": null,
+  "funding_rounds_details": null,
+  "key_products_services": [
+    "AI Vulnerability Assessment",
+    "Custom AI Security Consulting",
+    "Continuous AI Security Monitoring",
+    "Architectural Security Assessment",
+    "Brand Protection for AI Systems"
+  ],
+  "business_model": "Aegis Blue offers tiered service plans for AI security solutions, providing vulnerability assessments, consulting services, and continuous monitoring for businesses implementing AI systems. They focus exclusively on LLM and AI security challenges, delivering actionable intelligence and risk mitigation strategies.",
+  "target_customer": "Businesses implementing generative AI and large language models in customer-facing roles, internal operations, or strategic decision-making processes.",
+  "key_metrics": null,
+  "team_size": "2-10 employees",
+  "location_hq": "Germany",
+  "other_locations": null,
+  "mission_statement": "To empower businesses to build a safe, reliable, and trustworthy AI future."
+}
