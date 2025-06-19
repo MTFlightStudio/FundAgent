@@ -1,30 +1,29 @@
 {
   "company_name": "Sylvi",
-  "website": "https://sylvi.in/",
-  "linkedin_url": "https://in.linkedin.com/company/sylvi",
-  "description": "Sylvi is an Indian luxury watch brand founded in 2015, dedicated to creating stylish, high-quality, and affordable timepieces for men and women. The company blends traditional craftsmanship with modern technology, offering a wide range of analog, chronograph, and digital watches. Sylvi is committed to making luxury accessible and celebrates Indian craftsmanship.",
-  "industry": "Retail Luxury Goods and Jewelry",
-  "sub_industry": "Watches and Accessories",
-  "founded_year": 2015,
-  "funding_stage": null,
-  "total_funding_raised": null,
+  "website": "https://www.sylvi.ai/",
+  "linkedin_url": null,
+  "description": "Sylvi is an ed-tech company based in the UK that combines social learning with AI, creating a unique platform that leverages a strong community of early adopters and validation from prestigious institutions such as Epsom College. The company is focused on scaling its business and opening up B2B channels.",
+  "industry": "Education/ Ed-tech",
+  "sub_industry": "AI-powered social learning",
+  "founded_year": null,
+  "funding_stage": "I have a business that I want to scale",
+  "total_funding_raised": "£35,000",
   "funding_rounds_details": null,
   "key_products_services": [
-    "Chronograph Watches",
-    "Multi-Function Sports Watches",
-    "Dual Time Analog Watches",
-    "Casual Digital Watches",
-    "Slim and Sleek Watches",
-    "Watch Straps"
+    "AI-powered social learning platform"
   ],
-  "business_model": "Direct-to-consumer e-commerce model, selling watches and accessories online via its website and digital platforms. The company focuses on affordable luxury, targeting value-conscious consumers with premium designs at accessible prices.",
-  "target_customer": "Fashion-forward men and women in India, particularly Millennials and Gen Z, seeking affordable luxury and unique, stylish timepieces. The brand appeals to customers who value Indian craftsmanship and responsible manufacturing.",
+  "business_model": "B2B and B2C SaaS, leveraging partnerships with educational institutions and a community-driven product roadmap.. USP: Sylvi is different as it combines social learning with AI in ways competitors haven't achieved. Our defensibility stems from a strong community of early adopters providing invaluable feedback for our product roadmap, plus validation from prestigious institutions such as Epsom College opening up the B2B channel.",
+  "target_customer": "B2C",
   "key_metrics": {
-    "Customer Base": "360,000+ satisfied patrons",
-    "Team Size": "11-50 employees"
+    "LTM Revenue": "£30,500",
+    "Monthly Revenue": "£7,500",
+    "Current Raise Amount": "£250-500k",
+    "Valuation": "£2-5m",
+    "Team Equity": "100%",
+    "Business Stage": "I have a business that I want to scale"
   },
-  "team_size": "11-50 employees",
-  "location_hq": "Surat, Gujarat, India",
+  "team_size": null,
+  "location_hq": "UK",
   "other_locations": null,
-  "mission_statement": "By 2040, Sylvi aims to establish itself as a globally recognized brand while proudly manufacturing in India. The mission is to ensure that every individual, regardless of their background, can own a Sylvi product—a symbol of luxury at exceptional value for money. Sylvi celebrates Indian craftsmanship and strives to capture 10% of the Indian population as loyal customers."
+  "mission_statement": null
 }

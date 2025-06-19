@@ -247,21 +247,36 @@ class AgentRunner:
             status_text.text("🔍 Initializing company research...")
             progress_bar.progress(10)
             
-            # If deal_id provided, extract company info from HubSpot
+            hubspot_data = None
+            # If deal_id provided, extract company info and full HubSpot data
             if deal_id and not company_name:
-                hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
-                company_name = hubspot_data.get('company_name')
+                status_text.text("📊 Extracting HubSpot data...")
+                progress_bar.progress(20)
+                
+                hubspot_info = _self._extract_company_info_from_hubspot(deal_id)
+                company_name = hubspot_info.get('company_name')
+                hubspot_data = hubspot_info.get('deal_data')  # Pass the full HubSpot data
+                
                 if not company_name:
                     raise ValueError("Could not extract company name from HubSpot deal")
+                
+                _self.log_execution(f"Extracted company '{company_name}' from HubSpot deal {deal_id}")
             
             if not company_name:
                 raise ValueError("Company name is required")
             
-            status_text.text("🌐 Searching web for company information...")
-            progress_bar.progress(30)
+            status_text.text("🌐 Researching company with enhanced data...")
+            progress_bar.progress(40)
             
             _self.log_execution(f"Running company research for: {company_name}")
-            result = run_company_research_cli(company_name)
+            
+            # Use enhanced company research with HubSpot data if available
+            if hubspot_data:
+                _self.log_execution(f"Using HubSpot financial and business data for enhanced research")
+                result = run_company_research_cli(company_name, hubspot_data=hubspot_data)
+            else:
+                _self.log_execution(f"Running standard web-only research (no HubSpot data)")
+                result = run_company_research_cli(company_name)
             
             status_text.text("✅ Company research completed!")
             progress_bar.progress(100)
@@ -280,7 +295,10 @@ class AgentRunner:
                 progress_bar.empty()
                 status_text.empty()
                 
-                st.success(f"🎉 Company research completed in {execution_time:.1f} seconds (Cached for future use)")
+                if hubspot_data:
+                    st.success(f"🎉 Enhanced company research completed in {execution_time:.1f} seconds (with HubSpot financial data)")
+                else:
+                    st.success(f"🎉 Company research completed in {execution_time:.1f} seconds (web search only)")
                 
                 return result_dict
             else:

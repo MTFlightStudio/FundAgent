@@ -1,112 +1,79 @@
 {
   "jurisdiction": "Global",
-  "industry_overview": "The Ed-tech (education technology) industry encompasses digital platforms, tools, and services designed to enhance teaching, learning, and educational administration. It includes online learning platforms, virtual classrooms, digital content, adaptive learning, gamification, and AI-driven personalized education. The sector serves K-12, higher education, corporate training, and lifelong learning markets, leveraging technology to improve accessibility, engagement, and outcomes.",
-  "target_market_segment": "K-12 students and schools, higher education institutions and students, corporate learners and enterprises, adult and lifelong learners, and educators seeking digital teaching tools.",
-  "market_size_tam": "$163.5B (2024, Grand View Research); other estimates range from $144.6B to $348.4B depending on methodology. Projected to reach $348.4B by 2030 (Grand View Research), $598.8B by 2032 (Straits Research), and $911.9B by 2030 (PS Market Research).",
+  "industry_overview": "The Ed-tech (Education Technology) industry encompasses the use of digital technology to facilitate learning, teaching, and educational administration. It includes online learning platforms, digital content, virtual classrooms, learning management systems (LMS), and tools for personalized and adaptive learning. The sector serves K-12, higher education, corporate training, and lifelong learning markets.",
+  "target_market_segment": "K-12 students and schools, higher education institutions, adult learners, corporate training departments, and lifelong learners globally.",
+  "market_size_tam": null,
   "market_size_sam": null,
   "market_size_som": null,
-  "market_growth_rate_cagr": "13.3% (2025-2030, Grand View Research); 17.1% (2024-2032, Straits Research); 17.4% (2024-2030, PS Market Research); estimates vary by source.",
+  "market_growth_rate_cagr": null,
   "key_market_trends": [
-    "Rapid integration of AI and machine learning for personalized learning and adaptive content.",
-    "Increased adoption of AR/VR for immersive and experiential learning.",
-    "Growth in mobile and microlearning platforms for flexible, on-the-go education.",
-    "Focus on cybersecurity and data privacy as digital learning expands.",
-    "Expansion of gamification and edutainment, especially in professional and higher education.",
-    "Emphasis on equitable access and closing the digital divide.",
-    "Rise of all-in-one cloud-native platforms for educational administration and collaboration."
+    "Increased adoption of online and hybrid learning models",
+    "Growth in personalized and adaptive learning technologies",
+    "Expansion of mobile learning and microlearning",
+    "Integration of artificial intelligence and data analytics in education",
+    "Rising demand for upskilling and reskilling in the workforce"
   ],
-  "competitor_landscape_summary": "The global Ed-tech market is highly fragmented, with leading players from the US, China, India, and Europe. The competitive landscape features a mix of established technology giants, specialized Ed-tech firms, and fast-growing startups. Market share is distributed among a few large platforms and numerous niche providers. M&A activity is robust, and new entrants continue to emerge, especially in AI-driven and mobile-first segments.",
+  "competitor_landscape_summary": "The global Ed-tech market is highly competitive, with both established technology companies and specialized Ed-tech startups. Key players offer a range of solutions from K-12 to corporate learning, and the market is characterized by rapid innovation and frequent new entrants.",
   "competitors": [
-    {
-      "name": "BYJU'S",
-      "website": "https://byjus.com/",
-      "strengths": [
-        "Strong brand in K-12 and test prep, especially in India and emerging markets",
-        "Large user base and extensive content library",
-        "Significant funding and global expansion"
-      ],
-      "weaknesses": [
-        "Recent financial and regulatory scrutiny",
-        "Heavy reliance on aggressive sales tactics"
-      ],
-      "market_share_estimate": null,
-      "funding_raised": "$5.8B+ (as of 2024)"
-    },
     {
       "name": "Coursera",
       "website": "https://www.coursera.org/",
       "strengths": [
-        "Partnerships with top universities and institutions",
-        "Global reach and diverse course catalog",
-        "Strong brand in higher education and professional upskilling"
+        "Large course catalog",
+        "Partnerships with top universities",
+        "Global reach"
       ],
       "weaknesses": [
-        "Intense competition from other MOOC providers",
-        "Profitability challenges"
+        "Competition from other MOOC providers",
+        "Dependence on university partners"
       ],
       "market_share_estimate": null,
-      "funding_raised": "$464M+ (pre-IPO); public company"
+      "funding_raised": "$443M (as of IPO in 2021)"
     },
     {
-      "name": "Duolingo",
-      "website": "https://www.duolingo.com/",
+      "name": "Byju's",
+      "website": "https://www.byjus.com/",
       "strengths": [
-        "Market leader in language learning apps",
-        "Highly engaging, gamified user experience",
-        "Strong brand recognition and global user base"
+        "Strong presence in India",
+        "Personalized learning",
+        "Aggressive marketing"
       ],
       "weaknesses": [
-        "Limited monetization compared to user base",
-        "Competition from other language platforms"
+        "Profitability concerns",
+        "Regulatory scrutiny in India"
       ],
       "market_share_estimate": null,
-      "funding_raised": "$183M+ (pre-IPO); public company"
+      "funding_raised": "$5.8B (as of 2023)"
     },
     {
       "name": "Khan Academy",
       "website": "https://www.khanacademy.org/",
       "strengths": [
-        "Free, high-quality educational content",
-        "Strong reputation and nonprofit status",
-        "Wide adoption in K-12 and supplemental learning"
+        "Free content",
+        "Global accessibility",
+        "Strong brand in K-12"
       ],
       "weaknesses": [
-        "Reliance on donations and grants",
-        "Limited monetization options"
+        "Non-profit funding model",
+        "Limited monetization"
       ],
       "market_share_estimate": null,
-      "funding_raised": "Nonprofit; major donors include Gates Foundation, Google"
-    },
-    {
-      "name": "Google for Education",
-      "website": "https://edu.google.com/",
-      "strengths": [
-        "Global reach and integration with Google Workspace",
-        "Trusted brand and robust cloud infrastructure",
-        "Adoption by schools and universities worldwide"
-      ],
-      "weaknesses": [
-        "Privacy and data security concerns",
-        "Dependence on broader Google ecosystem"
-      ],
-      "market_share_estimate": null,
-      "funding_raised": null
+      "funding_raised": "Non-profit, supported by donations"
     }
   ],
   "company_competitive_advantages": [
-    "Scalable digital delivery and global reach",
-    "Ability to personalize learning through AI and data analytics",
-    "Strong partnerships with educational institutions and content providers",
-    "Brand recognition and user trust",
-    "Robust technology infrastructure and integration capabilities"
+    "Scalability of digital platforms",
+    "Ability to personalize learning experiences",
+    "Global accessibility and reach",
+    "Data-driven insights for educators and learners"
   ],
   "barriers_to_entry": [
-    "High competition and low differentiation in content creation",
-    "Significant capital required for technology development and user acquisition",
-    "Complex regulatory and compliance requirements (data privacy, accessibility, content standards)",
-    "Need for partnerships with educational institutions and governments",
-    "Network effects and brand loyalty among established platforms"
+    "High initial development costs for technology platforms",
+    "Need for educational content and curriculum alignment",
+    "Regulatory compliance and data privacy requirements",
+    "Brand trust and credibility in education",
+    "Network effects in user and content acquisition"
   ],
-  "market_timing_assessment": "Growth phase; the market is expanding rapidly with strong investment, innovation, and adoption across all segments. M&A activity is high, and new entrants continue to emerge, but competition is intensifying.",
-  "regulatory_environment": "Ed-tech companies must comply with a patchwork of global regulations, including data privacy laws (GDPR in Europe, COPPA in the US), accessibility standards, and content guidelines. Regulatory scrutiny is increasing, especially regarding student data protection and online safety. Compliance with local curricula and language requirements is also necessary for market entry in many regions. North America and Europe have the strictest frameworks, while Asia-Pacific is rapidly evolving its regulatory landscape."
+  "market_timing_assessment": "Growth phase globally, with accelerated adoption post-pandemic and ongoing innovation.",
+  "regulatory_environment": "The Ed-tech industry faces varying regulations globally, including data privacy laws (such as GDPR in Europe), content standards, and, in some regions, government approval for educational materials. Compliance with child protection and accessibility standards is also critical."
 }
