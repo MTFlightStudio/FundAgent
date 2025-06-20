@@ -370,12 +370,9 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
 ])
 
 with tab1:
-    st.header("Research Workflow")
-    diagram = st.session_state.workflow_visualizer.generate_mermaid_diagram()
-    st.markdown(diagram)
-    
-    # Display workflow status metrics
-    st.session_state.workflow_visualizer.display_workflow_status()
+    # Use the enhanced workflow display function
+    from ai_agents.ui.workflow_visualizer import display_workflow
+    display_workflow()
     
     # Comprehensive export section
     st.subheader("📦 Complete Research Package")

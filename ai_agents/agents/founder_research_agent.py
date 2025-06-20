@@ -93,7 +93,7 @@ class EnhancedFounderResearchAgent:
     # Note: The @with_smart_retry decorator will manage retries.
     # If MODEL_SYSTEM_AVAILABLE is False, the retry_handler itself might not be available.
     # The decorator is applied below the class definition to correctly pass the model_selector_func.
-    def research_founder(self, founder_name: str, linkedin_url: Optional[str] = None, llm_override: Optional[Any] = None, model_config_override: Optional[Any] = None, **kwargs) -> Optional[FounderProfile]:
+    def research_founder(self, founder_name: str, linkedin_url: Optional[str] = None, current_company: Optional[str] = None, llm_override: Optional[Any] = None, model_config_override: Optional[Any] = None, **kwargs) -> Optional[FounderProfile]:
         """
         Enhanced founder research with retry logic and model switching.
         `llm_override` and `model_config_override` can be passed by the retry decorator.
@@ -154,11 +154,15 @@ class EnhancedFounderResearchAgent:
                 "    -   `public_speaking_or_content`\n"
                 "    -   Any other relevant facts to help with the assessment.\n"
                 "    **Do NOT re-search for work experience or education that is already provided by the primary tool.**\n\n"
-                "4.  **Perform Investment Criteria Assessment**: Based on ALL the compiled data, assess the founder against the 6 investment criteria and populate the `investment_criteria_assessment` object.\n\n"
+                "4.  **Investment Criteria Assessment - CRITICAL RULES**: When assessing the founder against the 6 investment criteria:\n"
+                "    -   **EXCLUDE CURRENT COMPANY**: For 'founded_something_relevant_before', do NOT count their current company (the one seeking investment). Only count PREVIOUS founding experiences.\n"
+                "    -   **Current Company Context**: If provided, the current company name will be specified. Exclude any roles at this company when evaluating prior founding experience.\n"
+                "    -   **Founding Role Identification**: Look for titles like 'Founder', 'Co-founder', 'CEO & Founder', or similar founding roles, but ONLY for companies OTHER than their current venture.\n"
+                "    -   **Timeline Analysis**: Consider the chronology - the most recent role is likely their current company. Prior roles where they were a founder should be counted.\n\n"
                 "5.  **Synthesize and Output Final JSON**: Combine all the information into a single, valid `FounderProfile` JSON object.\n\n"
                 "Your FINAL output MUST be a single, valid JSON object that strictly conforms to the FounderProfile schema below. Do NOT include any other text, explanations, or markdown outside of this JSON object.\n{format_instructions}"
             ),
-            ("human", "Please research the founder: {founder_name}. LinkedIn URL (if provided): {linkedin_url_input}"),
+            ("human", "Please research the founder: {founder_name}. LinkedIn URL (if provided): {linkedin_url_input}. Current company (exclude from prior founding experience): {current_company_input}"),
             MessagesPlaceholder(variable_name="agent_scratchpad"),
         ]).partial(format_instructions=founder_profile_parser.get_format_instructions())
 
@@ -175,7 +179,8 @@ class EnhancedFounderResearchAgent:
 
         agent_input = {
             "founder_name": founder_name,
-            "linkedin_url_input": processed_linkedin_url if processed_linkedin_url else "Not provided"
+            "linkedin_url_input": processed_linkedin_url if processed_linkedin_url else "Not provided",
+            "current_company_input": current_company if current_company else "Not specified - use timeline analysis to identify current vs. previous companies"
         }
         
         raw_agent_output_container = None
@@ -311,7 +316,7 @@ else:
         # The method remains undecorated in this case.
 
 # --- CLI Execution ---
-def run_founder_research_cli_entrypoint(founder_name: str, linkedin_url: Optional[str] = None) -> Optional[FounderProfile]:
+def run_founder_research_cli_entrypoint(founder_name: str, linkedin_url: Optional[str] = None, current_company: Optional[str] = None) -> Optional[FounderProfile]:
     """CLI wrapper for the enhanced founder research agent."""
     # This function is what the orchestrator or __main__ will call.
     agent_instance = EnhancedFounderResearchAgent()
@@ -319,7 +324,7 @@ def run_founder_research_cli_entrypoint(founder_name: str, linkedin_url: Optiona
     try:
         # The research_founder method is now potentially decorated.
         # It accepts llm_override and model_config_override for the decorator.
-        profile = agent_instance.research_founder(founder_name, linkedin_url) # Initial call won't pass these overrides.
+        profile = agent_instance.research_founder(founder_name, linkedin_url, current_company) # Initial call won't pass these overrides.
         # The save_results call is removed from the main CLI path to avoid duplicated output
         # when using stdout redirection. The __main__ block handles printing the output.
         # if profile:
@@ -341,12 +346,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Enhanced Founder Research Agent CLI")
     parser.add_argument("--name", type=str, required=True, help="Full name of the founder.")
     parser.add_argument("--linkedin_url", type=str, required=False, default=None, help="LinkedIn URL of the founder (optional).")
+    parser.add_argument("--current_company", type=str, required=False, default=None, help="Name of the current company seeking investment (to exclude from prior founding experience).")
     
     args = parser.parse_args()
     
     try:
         # Call the refactored entry point
-        profile_object = run_founder_research_cli_entrypoint(args.name, linkedin_url=args.linkedin_url)
+        profile_object = run_founder_research_cli_entrypoint(args.name, linkedin_url=args.linkedin_url, current_company=args.current_company)
         
         if profile_object:
             # Print the final FounderProfile JSON to stdout for the orchestrator
@@ -358,6 +364,7 @@ if __name__ == "__main__":
                 "status": "error",
                 "founder_name": args.name,
                 "linkedin_url": args.linkedin_url,
+                "current_company": args.current_company,
                 "error_message": f"Failed to retrieve or generate profile for {args.name} after all attempts."
             }
             print(json.dumps(error_output, indent=None))
@@ -370,6 +377,7 @@ if __name__ == "__main__":
             "status": "error",
             "founder_name": args.name,
             "linkedin_url": args.linkedin_url,
+            "current_company": args.current_company,
             "error_message": f"Critical unhandled error in founder_research_agent CLI for {args.name}: {str(e_main)}"
         }
         print(json.dumps(error_output, indent=None)) # Print error JSON to stdout

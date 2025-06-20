@@ -1,0 +1,63 @@
+{
+  "status": "success",
+  "founders": [
+    {
+      "name": "Kevin Groarke",
+      "linkedin_url": "https://www.linkedin.com/in/kevin-groarke-1118318a/",
+      "role_in_company": "CRO & Co-Founder",
+      "background_summary": "Kevin Groarke has over 20 years of experience in B2B and B2C sales, with a significant focus on the fintech and payments sectors across the UK and Europe. His career highlights include senior sales leadership roles at major financial technology companies. Notably, he was UK Sales Director at PayPal and played a pivotal role as one of three people to help launch and grow Braintree Payments in Europe, where he was European Sales Director (GTM). Prior to his current venture, he was Senior Sales Director EMEA at Juni, a Swedish fintech startup. His professional approach emphasizes establishing and leading high performing sales teams built on culture, passion and integrity. His background indicates a deep understanding of sales, team management, and the fintech landscape.",
+      "previous_companies": [
+        {
+          "company_name": "Juni",
+          "role": "Senior Sales Director EMEA",
+          "duration": null,
+          "description": "Led sales for EMEA at a Swedish fintech startup.",
+          "was_founder": false
+        },
+        {
+          "company_name": "Braintree Payments",
+          "role": "European Sales Director (GTM)",
+          "duration": null,
+          "description": "One of three people to launch and grow Braintree Payments in Europe.",
+          "was_founder": false
+        },
+        {
+          "company_name": "PayPal",
+          "role": "UK Sales Director",
+          "duration": null,
+          "description": "Senior sales leadership role at PayPal.",
+          "was_founder": false
+        },
+        {
+          "company_name": "City Associates International Ltd",
+          "role": "Managing Director",
+          "duration": "5+ years",
+          "description": "Leadership/founding-like experience at City Associates International Ltd.",
+          "was_founder": true
+        }
+      ],
+      "education": [
+        {
+          "institution": "Bournemouth University",
+          "degree": null,
+          "field_of_study": "Media and Journalism",
+          "graduation_year": null,
+          "notable_achievements": null
+        }
+      ],
+      "key_skills_and_expertise": null,
+      "public_speaking_or_content": null,
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": null,
+        "exciting_solution_to_problem": null,
+        "founded_something_relevant_before": true,
+        "impressive_relevant_past_experience": true,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "Kevin Groarke has a strong track record in fintech and payments, with senior roles at PayPal, Braintree, and Juni. He has prior founding/leadership experience at City Associates International Ltd and is currently co-founder of Shopthru. His experience demonstrates impressive, relevant past experience and strategic capability. Industry fit is strong, though more information is needed on Shopthru's mission and solution for a full assessment."
+      }
+    }
+  ],
+  "founder_count": 1,
+  "timestamp": "2025-06-20T10:23:51.836712"
+}

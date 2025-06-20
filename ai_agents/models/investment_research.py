@@ -37,7 +37,7 @@ class CompanyProfile(BaseModel):
 class FounderCriteriaAssessment(BaseModel):
     """Assessment of a founder against specific investment criteria."""
     focus_industry_fit: Optional[bool] = Field(None, description="Is the founder's venture in our focus industry (Media, Brand, Tech, Creator Economy)?")
-    mission_alignment: Optional[bool] = Field(None, description="Is the founder's venture aligned to our mission of a healthier, happier humanity; impact-driven?")
+    mission_alignment: Optional[bool] = Field(None, description="Does the founder's venture avoid harm to humanity and brand reputational risk? (NOT about requiring positive impact, but avoiding harmful industries)")
     exciting_solution_to_problem: Optional[bool] = Field(None, description="Is the founder's idea a good solution to a real and meaningful problem that would excite S. Stephen Bartlett?")
     founded_something_relevant_before: Optional[bool] = Field(None, description="Has the founder founded something impressive and relevant to their current venture before?")
     impressive_relevant_past_experience: Optional[bool] = Field(None, description="Has the founder worked somewhere impressive and relevant in a position that'll make them more likely to be a good Founder?")
@@ -102,7 +102,7 @@ class InvestmentAssessment(BaseModel):
     """Assessment of the investment opportunity based on Flight Story criteria."""
     # Flight Story Criteria - Must-Haves: Industry, Mission, Idea
     fs_focus_industry_fit: Optional[bool] = Field(None, description="Is the company in our focus industry (Media, Brand, Tech, Creator Economy)?")
-    fs_mission_alignment: Optional[bool] = Field(None, description="Is the business aligned to our mission of a healthier, happier humanity; impact-driven?")
+    fs_mission_alignment: Optional[bool] = Field(None, description="Does the business avoid harm to humanity and brand reputational risk? (NOT about requiring positive impact, but avoiding tobacco, harmful drugs, gambling, predatory financial products, etc.)")
     fs_exciting_solution_to_problem: Optional[bool] = Field(None, description="Do we believe, understand, and would S. Stephen Bartlett be excited that the business idea is a good solution to a real and meaningful problem?")
     
     # Flight Story Criteria - Must-Haves: Founder Potential (can be an aggregation or specific to the primary founder if multiple)

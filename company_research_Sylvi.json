@@ -1,10 +1,10 @@
 {
   "company_name": "Sylvi",
   "website": "https://www.sylvi.ai/",
-  "linkedin_url": null,
-  "description": "Sylvi is an ed-tech company based in the UK that combines social learning with AI, creating a unique platform that leverages a strong community of early adopters and validation from prestigious institutions such as Epsom College. The company is focused on scaling its business and opening up B2B channels.",
+  "linkedin_url": "https://www.linkedin.com/in/tom-standen-sylvi/",
+  "description": "Sylvi is an ed-tech company based in the UK that combines social learning with AI, creating a unique educational experience. Its defensibility is rooted in a strong community of early adopters and validation from prestigious institutions such as Epsom College, which also opens up B2B opportunities.",
   "industry": "Education/ Ed-tech",
-  "sub_industry": "AI-powered social learning",
+  "sub_industry": "Ed-tech",
   "founded_year": null,
   "funding_stage": "I have a business that I want to scale",
   "total_funding_raised": "£35,000",
@@ -12,7 +12,7 @@
   "key_products_services": [
     "AI-powered social learning platform"
   ],
-  "business_model": "B2B and B2C SaaS, leveraging partnerships with educational institutions and a community-driven product roadmap.. USP: Sylvi is different as it combines social learning with AI in ways competitors haven't achieved. Our defensibility stems from a strong community of early adopters providing invaluable feedback for our product roadmap, plus validation from prestigious institutions such as Epsom College opening up the B2B channel.",
+  "business_model": "B2B and B2C SaaS, offering AI-driven social learning solutions to educational institutions and individual learners.. USP: Sylvi is different as it combines social learning with AI in ways competitors haven't achieved. Our defensibility stems from a strong community of early adopters providing invaluable feedback for our product roadmap, plus validation from prestigious institutions such as Epsom College opening up the B2B channel.",
   "target_customer": "B2C",
   "key_metrics": {
     "LTM Revenue": "£30,500",
@@ -20,6 +20,7 @@
     "Current Raise Amount": "£250-500k",
     "Valuation": "£2-5m",
     "Team Equity": "100%",
+    "Founders": "Thomas Standen (tom@sylvi.ai)",
     "Business Stage": "I have a business that I want to scale"
   },
   "team_size": null,

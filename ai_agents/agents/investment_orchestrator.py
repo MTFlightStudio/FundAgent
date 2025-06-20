@@ -132,46 +132,45 @@ def run_company_research_cli(deal_id: str, company_name: str) -> Optional[Dict[s
         with open(log_file_path, 'a') as f: f.write(f"\n--- ERROR: Unexpected Exception ---\n{str(e)}\n")
         return None
 
-def run_market_intelligence_cli(deal_id: str, sector: str) -> Optional[Dict[str, Any]]:
-    logger.info(f"Executing market intelligence for sector: {sector} for Deal ID {deal_id}...")
-    log_file_path = _ensure_log_dir_and_get_safe_filename(deal_id, "market", sector)
-    command = [
-        sys.executable, "-m", "ai_agents.agents.market_intelligence_agent",
-        "--sector", sector
-    ]
+def run_market_intelligence_cli(deal_id: str, sector: str, hubspot_data: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+    """
+    Run market intelligence analysis for a specific sector with optional HubSpot data for enhanced targeting.
+    
+    Args:
+        deal_id: The deal ID for logging and tracking
+        sector: The market or industry sector (can be generic if HubSpot data provides specificity)
+        hubspot_data: Optional HubSpot deal data for targeted market definition
+    
+    Returns:
+        Dictionary containing market analysis results or None if failed
+    """
+    safe_filename = _ensure_log_dir_and_get_safe_filename(deal_id, "market_research", sector)
+    log_file_path = safe_filename  # This is the full path including directory
+
     try:
-        process = subprocess.run(command, capture_output=True, text=True, check=False, timeout=600)
-
-        with open(log_file_path, 'w') as f:
-            f.write(f"--- Command ---\n{' '.join(command)}\n\n")
-            f.write(f"--- Return Code ---\n{process.returncode}\n\n")
-            f.write(f"--- STDOUT ---\n{process.stdout}\n\n")
-            f.write(f"--- STDERR ---\n{process.stderr}\n")
-        logger.info(f"Full log for market sector {sector} saved to: {log_file_path}")
-
-        if process.returncode != 0:
-            logger.error(f"Market intelligence script for sector '{sector}' failed. See log: {log_file_path}")
-            return None
+        # Import here to avoid circular import
+        from ai_agents.agents.market_intelligence_agent import run_market_intelligence_cli as market_agent_cli
         
-        try:
-            result = json.loads(process.stdout)
-            logger.info(f"Successfully completed market intelligence for sector '{sector}'.")
+        if hubspot_data:
+            logger.info(f"InvestmentOrchestrator: Running ENHANCED market intelligence for deal {deal_id} with HubSpot context")
+            result = market_agent_cli(sector, hubspot_data=hubspot_data)
+        else:
+            logger.info(f"InvestmentOrchestrator: Running standard market intelligence for deal {deal_id}, sector: {sector}")
+            result = market_agent_cli(sector)
+        
+        if result and hasattr(result, 'model_dump'):
+            result_dict = result.model_dump()
+            logger.info(f"InvestmentOrchestrator: Market intelligence completed successfully for deal {deal_id}")
+            return result_dict
+        elif result:
+            logger.info(f"InvestmentOrchestrator: Market intelligence completed for deal {deal_id}")
             return result
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON output from market intelligence for sector '{sector}': {e}. See log: {log_file_path}")
+        else:
+            logger.warning(f"InvestmentOrchestrator: Market intelligence returned no results for deal {deal_id}, sector: {sector}")
             return None
             
-    except subprocess.TimeoutExpired:
-        logger.error(f"Market intelligence for sector '{sector}' timed out. Log: {log_file_path}")
-        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Process Timed Out ---\n")
-        return None
-    except FileNotFoundError:
-        logger.error(f"Market intelligence script not found. Log: {log_file_path}")
-        with open(log_file_path, 'a') as f: f.write("\n--- ERROR: Script Not Found ---\n")
-        return None
     except Exception as e:
-        logger.error(f"An unexpected error occurred during market intelligence for sector '{sector}': {e}. Log: {log_file_path}", exc_info=True)
-        with open(log_file_path, 'a') as f: f.write(f"\n--- ERROR: Unexpected Exception ---\n{str(e)}\n")
+        logger.error(f"InvestmentOrchestrator: Market intelligence failed for deal {deal_id}, sector: {sector}. Error: {e}", exc_info=True)
         return None
 
 def run_decision_support_cli(
@@ -489,7 +488,7 @@ def analyze_investment_opportunity(deal_id: str) -> Optional[str]:
             company_sector = company_props.get("what_sector_is_your_business_product_", company_props.get("industry"))
             if company_sector:
                 logger.info(f"Submitting market intelligence research for sector: {company_sector} for deal {deal_id}")
-                future_to_task[executor.submit(run_market_intelligence_cli, deal_id, company_sector)] = f"Market: {company_sector}"
+                future_to_task[executor.submit(run_market_intelligence_cli, deal_id, company_sector, all_collected_data['hubspot_deal_data'])] = f"Market: {company_sector}"
             else:
                 logger.warning("Could not determine company sector for market intelligence research.")
                 all_collected_data["errors"].append("Market research skipped: No sector found.")

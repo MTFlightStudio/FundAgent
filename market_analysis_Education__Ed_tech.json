@@ -1,79 +1,16 @@
 {
   "jurisdiction": "Global",
-  "industry_overview": "The Ed-tech (Education Technology) industry encompasses the use of digital technology to facilitate learning, teaching, and educational administration. It includes online learning platforms, digital content, virtual classrooms, learning management systems (LMS), and tools for personalized and adaptive learning. The sector serves K-12, higher education, corporate training, and lifelong learning markets.",
-  "target_market_segment": "K-12 students and schools, higher education institutions, adult learners, corporate training departments, and lifelong learners globally.",
+  "industry_overview": "Educational technology (Ed-tech) refers to the use of computer hardware, software, and educational theory to facilitate learning and teaching. The Ed-tech industry encompasses companies that create and distribute commercial hardware, software, services, and platforms for the educational market, aiming for profit. The sector draws on knowledge from education, psychology, AI, and computer science, and includes online learning, mobile learning, and computer-based training.",
+  "target_market_segment": "K-12 students, higher education students, adult learners, corporate training, and lifelong learners globally.",
   "market_size_tam": null,
   "market_size_sam": null,
   "market_size_som": null,
   "market_growth_rate_cagr": null,
-  "key_market_trends": [
-    "Increased adoption of online and hybrid learning models",
-    "Growth in personalized and adaptive learning technologies",
-    "Expansion of mobile learning and microlearning",
-    "Integration of artificial intelligence and data analytics in education",
-    "Rising demand for upskilling and reskilling in the workforce"
-  ],
-  "competitor_landscape_summary": "The global Ed-tech market is highly competitive, with both established technology companies and specialized Ed-tech startups. Key players offer a range of solutions from K-12 to corporate learning, and the market is characterized by rapid innovation and frequent new entrants.",
-  "competitors": [
-    {
-      "name": "Coursera",
-      "website": "https://www.coursera.org/",
-      "strengths": [
-        "Large course catalog",
-        "Partnerships with top universities",
-        "Global reach"
-      ],
-      "weaknesses": [
-        "Competition from other MOOC providers",
-        "Dependence on university partners"
-      ],
-      "market_share_estimate": null,
-      "funding_raised": "$443M (as of IPO in 2021)"
-    },
-    {
-      "name": "Byju's",
-      "website": "https://www.byjus.com/",
-      "strengths": [
-        "Strong presence in India",
-        "Personalized learning",
-        "Aggressive marketing"
-      ],
-      "weaknesses": [
-        "Profitability concerns",
-        "Regulatory scrutiny in India"
-      ],
-      "market_share_estimate": null,
-      "funding_raised": "$5.8B (as of 2023)"
-    },
-    {
-      "name": "Khan Academy",
-      "website": "https://www.khanacademy.org/",
-      "strengths": [
-        "Free content",
-        "Global accessibility",
-        "Strong brand in K-12"
-      ],
-      "weaknesses": [
-        "Non-profit funding model",
-        "Limited monetization"
-      ],
-      "market_share_estimate": null,
-      "funding_raised": "Non-profit, supported by donations"
-    }
-  ],
-  "company_competitive_advantages": [
-    "Scalability of digital platforms",
-    "Ability to personalize learning experiences",
-    "Global accessibility and reach",
-    "Data-driven insights for educators and learners"
-  ],
-  "barriers_to_entry": [
-    "High initial development costs for technology platforms",
-    "Need for educational content and curriculum alignment",
-    "Regulatory compliance and data privacy requirements",
-    "Brand trust and credibility in education",
-    "Network effects in user and content acquisition"
-  ],
-  "market_timing_assessment": "Growth phase globally, with accelerated adoption post-pandemic and ongoing innovation.",
-  "regulatory_environment": "The Ed-tech industry faces varying regulations globally, including data privacy laws (such as GDPR in Europe), content standards, and, in some regions, government approval for educational materials. Compliance with child protection and accessibility standards is also critical."
+  "key_market_trends": null,
+  "competitor_landscape_summary": null,
+  "competitors": null,
+  "company_competitive_advantages": null,
+  "barriers_to_entry": null,
+  "market_timing_assessment": null,
+  "regulatory_environment": null
 }

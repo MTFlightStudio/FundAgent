@@ -1,6 +1,7 @@
 import streamlit as st
 from typing import Dict, Any
 from enum import Enum
+from streamlit_mermaid import st_mermaid
 
 class AgentStatus(Enum):
     PENDING = "pending"
@@ -23,32 +24,25 @@ class WorkflowVisualizer:
         market_status = self.workflow_state.get('market_research', {}).get('status', 'pending')
         decision_status = self.workflow_state.get('decision_support', {}).get('status', 'pending')
         
-        # Define the enhanced workflow structure
-        mermaid_code = f"""```mermaid
-graph TD
-    Start([🚀 Investment Research Pipeline]) --> Input{{📋 Deal Input}}
+        # Build the basic diagram structure
+        mermaid_code = """graph TD
+    Start["🚀 Investment Research Pipeline"] --> Input["📋 Deal Input"]
     
-    Input --> CompanyAgent[🏢 Company Research Agent]
-    Input --> FounderAgent[👤 Founder Research Agent]  
-    Input --> MarketAgent[🌍 Market Intelligence Agent]
+    Input --> CompanyAgent["🏢 Company Research Agent"]
+    Input --> FounderAgent["👤 Founder Research Agent"]  
+    Input --> MarketAgent["🌍 Market Intelligence Agent"]
     
-    CompanyAgent --> CompanyData[📊 Company Profile<br/>• Business Model<br/>• Funding History<br/>• Key Metrics]
-    FounderAgent --> FounderData[👥 Founder Profiles<br/>• Experience<br/>• Background<br/>• LinkedIn Analysis]
-    MarketAgent --> MarketData[📈 Market Analysis<br/>• Market Size<br/>• Competition<br/>• Trends]
+    CompanyAgent --> CompanyData["📊 Company Profile"]
+    FounderAgent --> FounderData["👥 Founder Profiles"]
+    MarketAgent --> MarketData["📈 Market Analysis"]
     
-    CompanyData --> DecisionAgent[🎯 Decision Support Agent]
+    CompanyData --> DecisionAgent["🎯 Decision Support Agent"]
     FounderData --> DecisionAgent
     MarketData --> DecisionAgent
     
-    DecisionAgent --> Analysis[⚖️ Flight Story Criteria Analysis<br/>• Focus Industry Fit<br/>• Mission Alignment<br/>• Exciting Solution<br/>• Founder Excellence<br/>• Market Timing<br/>• Scalable Business Model]
+    DecisionAgent --> Analysis["⚖️ Flight Story Criteria Analysis"]
     
-    Analysis --> Result{{📋 Investment Recommendation<br/>PASS / NO PASS}}
-    
-    %% Apply status-based styling
-    class CompanyAgent {company_status}
-    class FounderAgent {founder_status}
-    class MarketAgent {market_status}
-    class DecisionAgent {decision_status}
+    Analysis --> Result["📋 Investment Recommendation"]
     
     classDef completed fill:#90EE90,stroke:#2E8B57,stroke-width:3px
     classDef running fill:#FFD700,stroke:#FF8C00,stroke-width:3px,color:#000
@@ -59,8 +53,17 @@ graph TD
     classDef process fill:#FFF3E0,stroke:#E65100,stroke-width:2px
     
     class CompanyData,FounderData,MarketData data
-    class Analysis process
-```"""
+    class Analysis process"""
+    
+        # Add status-based styling for agents
+        if company_status != 'pending':
+            mermaid_code += f"\n    class CompanyAgent {company_status}"
+        if founder_status != 'pending':
+            mermaid_code += f"\n    class FounderAgent {founder_status}"
+        if market_status != 'pending':
+            mermaid_code += f"\n    class MarketAgent {market_status}"
+        if decision_status != 'pending':
+            mermaid_code += f"\n    class DecisionAgent {decision_status}"
         
         return mermaid_code
     
@@ -72,19 +75,16 @@ graph TD
         completed = sum(1 for agent in agents if self.workflow_state.get(agent, {}).get('status') == 'completed')
         total = len(agents)
         
-        mermaid_code = f"""```mermaid
-graph LR
-    A[📋 Input] --> B[🏢 Company]
-    B --> C[👤 Founders]
-    C --> D[🌍 Market]
-    D --> E[🎯 Decision]
-    E --> F[📊 Result]
+        mermaid_code = """graph LR
+    A["📋 Input"] --> B["🏢 Company"]
+    B --> C["👤 Founders"]
+    C --> D["🌍 Market"]
+    D --> E["🎯 Decision"]
+    E --> F["📊 Result"]
     
-    %% Progress: {completed}/{total} Complete
     classDef completed fill:#90EE90,stroke:#2E8B57,stroke-width:3px
     classDef running fill:#FFD700,stroke:#FF8C00,stroke-width:3px
-    classDef pending fill:#E6E6FA,stroke:#4B0082,stroke-width:2px
-```"""
+    classDef pending fill:#E6E6FA,stroke:#4B0082,stroke-width:2px"""
         
         return mermaid_code
     
@@ -197,17 +197,88 @@ def update_workflow_status(node_id: str, status: AgentStatus, results: Dict = No
     if 'workflow_visualizer' in st.session_state:
         st.session_state.workflow_visualizer.update_node_status(node_id, status, results)
 
-def display_workflow():
-    """Display the workflow visualization"""
-    if 'workflow_visualizer' in st.session_state:
-        # Display the Mermaid diagram
-        diagram = st.session_state.workflow_visualizer.generate_mermaid_diagram()
-        st.markdown(diagram)
+def display_workflow(view_mode="detailed"):
+    """Display the workflow visualization
+    
+    Args:
+        view_mode: "detailed" for full workflow diagram, "simple" for progress-only view
+    """
+    try:
+        if 'workflow_visualizer' not in st.session_state:
+            st.warning("⚠️ Workflow visualizer not initialized. Initializing now...")
+            st.session_state.workflow_visualizer = WorkflowVisualizer()
+            st.info("✅ Workflow visualizer initialized")
         
-        # Display workflow status metrics
+        # Add view mode selector
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.subheader("🔄 Investment Research Workflow")
+        
+        with col2:
+            view_option = st.selectbox(
+                "View Mode:",
+                ["Detailed", "Simple Progress"],
+                index=0 if view_mode == "detailed" else 1,
+                key="workflow_view_mode"
+            )
+        
+        # Generate appropriate diagram based on view mode
+        try:
+            if view_option == "Simple Progress":
+                diagram = st.session_state.workflow_visualizer.generate_simple_progress_diagram()
+                diagram_height = "300px"
+            else:
+                diagram = st.session_state.workflow_visualizer.generate_mermaid_diagram()
+                diagram_height = "600px"
+            
+            # Check if diagram is empty or invalid
+            if not diagram or len(diagram.strip()) < 10:
+                st.error("❌ Generated diagram is empty or too short")
+                return
+            
+            # Add debug option in an expander to keep interface clean
+            with st.expander("🔧 Debug Options (click to expand)", expanded=False):
+                st.write(f"Diagram length: {len(diagram)} characters")
+                
+                if st.checkbox("🧪 Test with simple diagram", key="test_simple_diagram"):
+                    test_diagram = """graph TD
+    A[Start] --> B[Process]
+    B --> C[End]
+    classDef default fill:#f9f9f9"""
+                    st_mermaid(test_diagram, height="200px")
+                    st.write("✅ Simple diagram test completed")
+                    return
+                
+                if st.checkbox("🔍 Show diagram source", key="show_diagram_source"):
+                    st.code(diagram[:500] + "..." if len(diagram) > 500 else diagram)
+            
+            # Render the Mermaid diagram
+            st_mermaid(diagram, height=diagram_height)
+            
+        except Exception as diagram_error:
+            st.error(f"❌ Error generating/rendering diagram: {diagram_error}")
+            st.write("**Falling back to text display:**")
+            st.code(diagram if 'diagram' in locals() else "No diagram generated")
+            st.write("**Debug - Workflow State:**")
+            st.json(st.session_state.workflow_visualizer.workflow_state)
+        
+        # Display workflow status metrics  
         st.session_state.workflow_visualizer.display_workflow_status()
-    else:
-        st.error("Workflow visualizer not initialized")
+        
+    except Exception as e:
+        st.error(f"❌ Critical error in display_workflow: {e}")
+        st.write("**Debug Information:**")
+        st.write(f"- Session state keys: {list(st.session_state.keys())}")
+        st.write(f"- Error type: {type(e).__name__}")
+        st.write(f"- Error details: {str(e)}")
+        
+        # Try to provide a fallback
+        st.write("**Attempting fallback display...**")
+        try:
+            st.text("Basic workflow: Input → Company Research → Founder Research → Market Research → Decision Support → Output")
+        except:
+            st.text("Unable to display any workflow visualization")
 
 # Example usage in streamlit_app.py:
 """

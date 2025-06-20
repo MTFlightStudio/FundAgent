@@ -141,39 +141,99 @@ class AgentRunner:
         try:
             deal_data = hubspot_client.get_deal_with_associated_data(deal_id)
             
-            # Extract company name
+            # Extract company data
             company_name = None
+            company_info = {}
             if deal_data.get('associated_companies'):
                 company_props = deal_data['associated_companies'][0].get('properties', {})
                 company_name = company_props.get('name')
+                
+                # Extract comprehensive company information including ALL HubSpot fields
+                company_info = {
+                    'company_name': company_name,
+                    'website': company_props.get('website') or company_props.get('domain'),
+                    'description': company_props.get('description'),
+                    'industry': company_props.get('what_sector_is_your_business_product_') or company_props.get('industry'),
+                    'sub_industry': company_props.get('what_sector_is_your_business_product_'),
+                    'location_hq': company_props.get('where_is_your_business_based_'),
+                    'business_model': company_props.get('what_is_your_usp__what_makes_you_different_from_your_competitors_'),
+                    'target_customer': company_props.get('what_best_describes_your_customer_base_'),
+                    'funding_stage': company_props.get('what_best_describes_your_stage_of_business_'),
+                    'total_funding_raised': company_props.get('how_much_have_you_raised_prior_to_this_round_'),
+                    
+                    # Employee count
+                    'team_size': company_props.get('how_many_employees_do_you_have__full_time_equivalents_'),
+                    'number_of_employees': company_props.get('number_of_employees'),
+                    
+                    # Impact & Innovation fields
+                    'which__if_any__of_the_un_sdg_17_goals_does_your_business_address_': company_props.get('which__if_any__of_the_un_sdg_17_goals_does_your_business_address_'),
+                    'does_your_product_contribute_to_a_healthier__happier_whole_human_experience_': company_props.get('does_your_product_contribute_to_a_healthier__happier_whole_human_experience_'),
+                    'how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_': company_props.get('how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_'),
+                    'how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__': company_props.get('how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__'),
+                    
+                    # Investment & Strategy fields
+                    'please_expand': company_props.get('please_expand'),  # Investment use & expansion plans
+                    'what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_': company_props.get('what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_'),
+                    
+                    # Documents & Resources
+                    'please_attach_your_pitch_deck': company_props.get('please_attach_your_pitch_deck'),
+                    
+                    # Key metrics for display
+                    'key_metrics': {
+                        'LTM Revenue': company_props.get('what_is_your_ltm__last_12_months__revenue_'),
+                        'Monthly Revenue': company_props.get('what_is_your_current_monthly_revenue_'),
+                        'Current Raise Amount': company_props.get('how_much_are_you_raising_at_this_stage_'),
+                        'Valuation': company_props.get('what_valuation_are_you_raising_at_'),
+                        'Prior Funding': company_props.get('how_much_have_you_raised_prior_to_this_round_'),
+                        'Team Equity': company_props.get('how_much_of_the_equity_do_you_your_team_have_'),
+                        'Business Stage': company_props.get('what_best_describes_your_stage_of_business_'),
+                    }
+                }
+                
+                # Extract additional details
+                if company_props.get('describe_the_business_product_in_one_sentence'):
+                    company_info['one_sentence_description'] = company_props.get('describe_the_business_product_in_one_sentence')
             
-            # Extract industry/sector
+            # Extract industry/sector for fallback
             industry = None
             if deal_data.get('associated_companies'):
                 company_props = deal_data['associated_companies'][0].get('properties', {})
                 industry = company_props.get('what_sector_is_your_business_product_', 
                                             company_props.get('industry'))
             
-            # Extract founder information
+            # Extract founder information with LinkedIn URLs
             founders = []
+            linkedin_urls = []
             if deal_data.get('associated_contacts'):
                 for contact in deal_data['associated_contacts']:
                     props = contact.get('properties', {})
                     first_name = props.get('firstname', '')
                     last_name = props.get('lastname', '')
+                    email = props.get('email', '')
                     linkedin_url = props.get('hs_linkedin_url', '')
                     
-                    if first_name and last_name:
-                        founders.append({
-                            'name': f"{first_name} {last_name}",
-                            'linkedin_url': linkedin_url
-                        })
+                    if first_name or last_name:
+                        full_name = f"{first_name} {last_name}".strip()
+                        if email:
+                            founders.append(f"{full_name} ({email})")
+                        else:
+                            founders.append(full_name)
+                        
+                        if linkedin_url:
+                            linkedin_urls.append(linkedin_url)
+                
+                # Update key_metrics with founder info
+                if company_info.get('key_metrics'):
+                    if founders:
+                        company_info['key_metrics']['Founders'] = founders[0] if len(founders) == 1 else ', '.join(founders)
             
             return {
                 'company_name': company_name,
                 'industry': industry,
-                'founders': founders,
-                'deal_data': deal_data
+                'founders': [f.split(' (')[0] for f in founders] if founders else [],  # Names only for processing
+                'linkedin_urls': linkedin_urls,
+                'deal_data': deal_data,
+                'company_info': company_info  # Full structured company info for display
             }
             
         except Exception as e:
@@ -274,6 +334,33 @@ class AgentRunner:
             if hubspot_data:
                 _self.log_execution(f"Using HubSpot financial and business data for enhanced research")
                 result = run_company_research_cli(company_name, hubspot_data=hubspot_data)
+                
+                # If we have company_info from HubSpot, use it directly for better data consistency
+                if hubspot_info.get('company_info'):
+                    _self.log_execution(f"Enhancing result with structured HubSpot company data")
+                    # Convert company_info to match the expected structure
+                    enhanced_result = {
+                        'status': 'success',
+                        'company_profile': hubspot_info['company_info'],
+                        'timestamp': datetime.now().isoformat()
+                    }
+                    # Merge with research result if available
+                    if result and hasattr(result, 'model_dump'):
+                        research_data = result.model_dump(mode='json')
+                        # Keep research insights but prioritize HubSpot financial data
+                        if research_data.get('company_profile'):
+                            for key, value in research_data['company_profile'].items():
+                                if key not in enhanced_result['company_profile'] or not enhanced_result['company_profile'].get(key):
+                                    enhanced_result['company_profile'][key] = value
+                    
+                    # Cache and return the enhanced result
+                    _self._save_to_cache(cache_file_path, enhanced_result)
+                    execution_time = time.time() - start_time
+                    st.session_state.execution_times['company_research'] = execution_time
+                    progress_bar.empty()
+                    status_text.empty()
+                    st.success(f"🎉 Enhanced company research completed in {execution_time:.1f} seconds (with HubSpot financial data)")
+                    return enhanced_result
             else:
                 _self.log_execution(f"Running standard web-only research (no HubSpot data)")
                 result = run_company_research_cli(company_name)
@@ -323,7 +410,7 @@ class AgentRunner:
 
     @st.cache_data(ttl=3600)
     def run_founder_research(_self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
-                           deal_id: str = None) -> Dict[str, Any]:
+                           deal_id: str = None, company_name: str = None) -> Dict[str, Any]:
         """Run founder research agent with caching"""
         start_time = time.time()
         
@@ -331,7 +418,7 @@ class AgentRunner:
             st.session_state.execution_times = {}
         
         # Generate cache key
-        cache_key = _self._get_cache_key('founder', founder_names=founder_names, linkedin_urls=linkedin_urls, deal_id=deal_id)
+        cache_key = _self._get_cache_key('founder', founder_names=founder_names, linkedin_urls=linkedin_urls, deal_id=deal_id, company_name=company_name)
         cache_file_path = _self._get_cache_file_path('founder', cache_key)
         
         # Check cache first
@@ -351,13 +438,20 @@ class AgentRunner:
             progress_bar.progress(10)
             
             # Extract founder info from HubSpot if needed
+            current_company = company_name  # Use provided company_name parameter first
             if deal_id and not founder_names:
                 hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
                 founder_names = hubspot_data.get('founders', [])
+                if not current_company:  # Only set from HubSpot if not provided as parameter
+                    current_company = hubspot_data.get('company_name')
                 if hubspot_data.get('linkedin_urls'):
                     linkedin_urls = hubspot_data['linkedin_urls']
                 if not founder_names:
                     raise ValueError("Could not extract founder information from HubSpot deal")
+            elif deal_id and not current_company:
+                # Even if founder_names provided, we should get company name for context
+                hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
+                current_company = hubspot_data.get('company_name')
             
             if not founder_names:
                 raise ValueError("Founder names are required")
@@ -380,9 +474,9 @@ class AgentRunner:
                     linkedin_url = linkedin_urls[i]
                 
                 if linkedin_url:
-                    founder_result = run_founder_research_cli_entrypoint(founder_name, linkedin_url)
+                    founder_result = run_founder_research_cli_entrypoint(founder_name, linkedin_url, current_company)
                 else:
-                    founder_result = run_founder_research_cli_entrypoint(founder_name)
+                    founder_result = run_founder_research_cli_entrypoint(founder_name, current_company=current_company)
                 
                 if founder_result:
                     founder_dict = founder_result.model_dump(mode='json')
@@ -430,13 +524,27 @@ class AgentRunner:
                 'timestamp': datetime.now().isoformat()
             }
 
-    def run_market_research(self, company_name: str = None, industry: str = None, 
+    @st.cache_data(ttl=3600)  # Cache for 1 hour
+    def run_market_research(_self, company_name: str = None, industry: str = None, 
                           deal_id: str = None) -> Dict[str, Any]:
-        """Run market research agent with progress tracking"""
+        """Run market research agent with caching"""
         start_time = time.time()
         
         if 'execution_times' not in st.session_state:
             st.session_state.execution_times = {}
+        
+        # Generate cache key
+        cache_key = _self._get_cache_key('market', company_name=company_name, industry=industry, deal_id=deal_id)
+        cache_file_path = _self._get_cache_file_path('market', cache_key)
+        
+        # Check cache first
+        if _self._is_cache_valid(cache_file_path):
+            cached_result = _self._load_from_cache(cache_file_path)
+            if cached_result:
+                execution_time = time.time() - start_time
+                st.session_state.execution_times['market_research'] = execution_time
+                st.success(f"⚡ Market research loaded from cache in {execution_time:.1f} seconds (Age: {cached_result['_cache_info']['cache_age_hours']:.1f} hours)")
+                return cached_result
         
         progress_bar = st.progress(0)
         status_text = st.empty()
@@ -447,7 +555,10 @@ class AgentRunner:
             
             # If deal_id provided, extract industry from HubSpot
             if deal_id and not industry:
-                hubspot_info = self._extract_company_info_from_hubspot(deal_id)
+                status_text.text("📊 Extracting industry from HubSpot...")
+                progress_bar.progress(20)
+                
+                hubspot_info = _self._extract_company_info_from_hubspot(deal_id)
                 industry = hubspot_info.get('industry')
                 
                 if not industry:
@@ -459,13 +570,32 @@ class AgentRunner:
                         industry = f"{company_name} industry"  # Fallback
                     else:
                         raise ValueError(f"Could not extract industry from deal {deal_id}")
+                        
+                _self.log_execution(f"Extracted industry '{industry}' from HubSpot deal {deal_id}")
             
             if not industry:
                 raise ValueError("Industry/sector is required for market research")
             
+            status_text.text("🔍 Researching market with enhanced intelligence...")
+            progress_bar.progress(40)
+            
             # Run the market intelligence agent
-            logger.info(f"Running market research for sector: {industry}")
-            result = run_market_intelligence_cli(industry)
+            _self.log_execution(f"Running market research for sector: {industry}")
+            
+            # Enhanced market research: pass HubSpot data if available
+            hubspot_data = None
+            if deal_id and _self.hubspot_available:
+                try:
+                    hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
+                    # Get full deal data for enhanced targeting
+                    if hubspot_data:
+                        deal_data = hubspot_client.get_deal_with_associated_data(deal_id)
+                        hubspot_data = deal_data
+                        _self.log_execution("Using HubSpot data for enhanced market targeting")
+                except Exception as e:
+                    _self.log_execution(f"Could not fetch HubSpot data for enhanced targeting: {e}")
+            
+            result = run_market_intelligence_cli(industry, hubspot_data=hubspot_data)
             
             status_text.text("📋 Compiling market analysis...")
             progress_bar.progress(90)
@@ -481,23 +611,22 @@ class AgentRunner:
             progress_bar.empty()
             status_text.empty()
             
-            st.success(f"🎉 Market research completed in {execution_time:.1f} seconds")
-            
             if result:
                 # Convert Pydantic model to dict
                 market_data = {
                     'status': 'success',
-                    'market_analysis': result.model_dump(mode='json') if hasattr(result, 'model_dump') else result
+                    'market_analysis': result.model_dump(mode='json') if hasattr(result, 'model_dump') else result,
+                    'timestamp': datetime.now().isoformat()
                 }
-                st.session_state.results['market_research'] = market_data
+                
+                # Save to cache
+                _self._save_to_cache(cache_file_path, market_data)
+                
+                st.success(f"🎉 Market research completed in {execution_time:.1f} seconds")
+                
                 return market_data
             else:
-                error_result = {
-                    'status': 'error',
-                    'error': 'Market research returned no results'
-                }
-                st.session_state.results['market_research'] = error_result
-                return error_result
+                raise ValueError("Market research returned no results")
                 
         except Exception as e:
             execution_time = time.time() - start_time
@@ -507,15 +636,15 @@ class AgentRunner:
             status_text.empty()
             
             error_msg = f"Market research failed: {str(e)}"
-            self.log_execution(error_msg, "ERROR")
+            _self.log_execution(error_msg, "ERROR")
             st.error(f"❌ {error_msg}")
-            error_result = {
+            
+            return {
                 'status': 'error',
-                'error': str(e)
+                'error': str(e),
+                'timestamp': datetime.now().isoformat()
             }
-            st.session_state.results['market_research'] = error_result
-            return error_result
-    
+
     def run_decision_support(self, company_research: Dict[str, Any] = None,
                            founder_research: Dict[str, Any] = None,
                            market_research: Dict[str, Any] = None,

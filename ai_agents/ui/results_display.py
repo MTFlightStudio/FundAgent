@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 from typing import Dict, Any, List
+import re
 
 def display_metric_card(title: str, value: Any, help_text: str = None):
     """Display a metric in a card format"""
@@ -14,199 +15,244 @@ def display_company_profile(company_data: Dict[str, Any]):
         st.info("No company data available")
         return
     
-    # Handle both direct company profile and wrapped response
-    if 'company_profile' in company_data:
-        profile = company_data['company_profile']
+    # ---------- Helper utilities ----------
+    def _format_currency(val: Any, default: str = "N/A") -> str:
+        """Standardise currency values: add £ symbol if missing, abbreviate thousands+.
+        Accepts strings like "35000", "$35,000", "£35k", "£10-20m", "£0 (prior funding)", etc."""
+        if val is None:
+            return default
+        
+        # Convert to string for processing
+        s_val = str(val).strip()
+        
+        # Handle empty or zero-like values
+        if not s_val or s_val.lower() in ['0', '£0', '$0', '€0']:
+            return "£0"
+        
+        # If it's already a well-formatted currency string with ranges or descriptions, return as-is
+        if any(indicator in s_val.lower() for indicator in ['-', 'range', 'raising', 'funding', 'prior', 'current']):
+            # Ensure it starts with a currency symbol
+            if not re.match(r'^[£$€]', s_val):
+                return f"£{s_val}"
+            return s_val
+        
+        # Handle simple numeric values
+        if isinstance(val, (int, float)):
+            num = float(val)
+            symbol = "£"
+        else:
+            # Extract symbol if present
+            symbol_match = re.match(r"([£$€])", s_val)
+            symbol = symbol_match.group(1) if symbol_match else "£"
+            
+            # Try to extract just the first number for simple cases
+            number_match = re.search(r"(\d+(?:\.\d+)?)", s_val)
+            if number_match:
+                try:
+                    num = float(number_match.group(1))
+                except ValueError:
+                    return s_val  # Return original if we can't parse
+            else:
+                return s_val  # Return original if no number found
+        
+        # Abbreviate simple numeric values
+        if num == 0:
+            return f"{symbol}0"
+        elif num >= 1e9:
+            num_fmt = f"{num/1e9:.1f}B"
+        elif num >= 1e6:
+            num_fmt = f"{num/1e6:.1f}M"
+        elif num >= 1e3:
+            num_fmt = f"{num/1e3:.0f}K"
+        else:
+            num_fmt = f"{num:,.0f}"
+        
+        return f"{symbol}{num_fmt}"
+    
+    # ---------- Resolve profile dict ----------
+    profile = company_data.get('company_profile', company_data)
+    key_metrics = profile.get('key_metrics', {})
+    
+    # ------------------------------------------------
+    # 🏢  COMPANY HEADER  
+    # ------------------------------------------------
+    st.markdown(f"# 🏢 {profile.get('company_name', 'Unknown Company')}")
+    
+    # Basic info in a clean single row
+    industry_info = profile.get('industry', 'Unknown Industry')
+    location_info = profile.get('location_hq', 'Unknown Location')
+    stage_info = key_metrics.get('Business Stage', profile.get('funding_stage', 'Unknown Stage'))
+    
+    # Add employee count if available
+    employee_count = profile.get('team_size') or profile.get('number_of_employees')
+    if employee_count:
+        st.markdown(f"**{industry_info}** • **{location_info}** • **{stage_info}** • **{employee_count} employees**")
     else:
-        profile = company_data
+        st.markdown(f"**{industry_info}** • **{location_info}** • **{stage_info}**")
     
-    # Company Overview
-    st.subheader("🏢 Company Overview")
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        display_metric_card("Company Name", profile.get('company_name', 'N/A'))
-        display_metric_card("Founded", profile.get('founded_year', 'N/A'))
-    
-    with col2:
-        display_metric_card("Industry", profile.get('industry', 'N/A'))
-        display_metric_card("Sub-Industry", profile.get('sub_industry', 'N/A'))
-    
-    with col3:
-        display_metric_card("Team Size", profile.get('team_size', 'N/A'))
-        display_metric_card("HQ Location", profile.get('location_hq', profile.get('headquarters', 'N/A')))
-    
-    # Description
+    # ------------------------------------------------
+    # 📝  DESCRIPTION & BUSINESS MODEL
+    # ------------------------------------------------
     if profile.get('description'):
-        st.subheader("📝 Description")
+        st.markdown("### About")
         st.write(profile['description'])
     
-    # Enhanced Financial Information Section
-    st.subheader("💰 Financial Information")
-    
-    # Current Metrics Row
-    funding_history = profile.get('funding_history', {})
-    current_metrics = funding_history.get('current_metrics', {})
-    current_round = funding_history.get('current_round', {})
-    
-    # Display current revenue metrics
-    revenue_col1, revenue_col2, revenue_col3 = st.columns(3)
-    with revenue_col1:
-        ltm_revenue = current_metrics.get('annual_revenue') or current_metrics.get('ltm_revenue')
-        if ltm_revenue:
-            display_metric_card("LTM Revenue", f"£{ltm_revenue}", "Last 12 months revenue")
-        else:
-            display_metric_card("LTM Revenue", "N/A")
-    
-    with revenue_col2:
-        monthly_revenue = current_metrics.get('monthly_revenue')
-        if monthly_revenue:
-            display_metric_card("Monthly Revenue", f"£{monthly_revenue}", "Current monthly revenue")
-        else:
-            display_metric_card("Monthly Revenue", "N/A")
-    
-    with revenue_col3:
-        # Calculate ARR from monthly if available
-        arr_estimate = "N/A"
-        if monthly_revenue and str(monthly_revenue).replace(',', '').replace('£', '').replace('$', '').isdigit():
-            try:
-                monthly_num = float(str(monthly_revenue).replace(',', '').replace('£', '').replace('$', ''))
-                arr_estimate = f"£{monthly_num * 12:,.0f} (est.)"
-            except:
-                pass
-        display_metric_card("ARR (Estimated)", arr_estimate, "Annual Recurring Revenue estimate")
-    
-    # Fundraising Information
-    st.markdown("**Current Fundraising Round:**")
-    funding_col1, funding_col2, funding_col3 = st.columns(3)
-    
-    with funding_col1:
-        raising_amount = current_round.get('amount_raising')
-        if raising_amount:
-            display_metric_card("Raising Amount", raising_amount, "Amount being raised in current round")
-        else:
-            display_metric_card("Raising Amount", "N/A")
-    
-    with funding_col2:
-        valuation = current_round.get('valuation')
-        if valuation:
-            display_metric_card("Valuation", valuation, "Target valuation for current round")
-        else:
-            display_metric_card("Valuation", "N/A")
-    
-    with funding_col3:
-        total_raised = funding_history.get('total_raised') or profile.get('total_funding_raised')
-        if total_raised:
-            display_metric_card("Prior Funding", total_raised, "Total amount raised in previous rounds")
-        else:
-            display_metric_card("Prior Funding", "N/A")
-    
-    # Additional funding details
-    funding_stage = profile.get('funding_stage')
-    if funding_stage:
-        st.markdown(f"**Current Stage:** {funding_stage}")
-    
-    # Funding rounds details (if any)
-    if profile.get('funding_rounds_details'):
-        with st.expander("📈 Detailed Funding History"):
-            for round_data in profile['funding_rounds_details']:
-                st.write(f"**{round_data.get('round_name', 'Unknown Round')}:** {round_data.get('amount_raised', 'N/A')}")
-                if round_data.get('date_announced'):
-                    st.write(f"  Date: {round_data['date_announced']}")
-                if round_data.get('key_investors'):
-                    st.write(f"  Investors: {', '.join(round_data['key_investors'])}")
-    
-    # Business Model & Strategy
     if profile.get('business_model'):
-        st.subheader("💼 Business Model & Strategy")
+        st.markdown("### Business Model & USP")
         st.write(profile['business_model'])
     
-    # Target Customer & Market Position
-    market_col1, market_col2 = st.columns(2)
-    
-    with market_col1:
-        if profile.get('target_customer'):
-            st.subheader("🎯 Target Customer")
-            st.write(profile['target_customer'])
-    
-    with market_col2:
-        # Check for any market-related metrics
-        key_metrics = profile.get('key_metrics', {})
-        if key_metrics:
-            st.subheader("📊 Key Metrics")
-            for metric, value in key_metrics.items():
-                st.write(f"**{metric}:** {value}")
-    
-    # Products & Services
     if profile.get('key_products_services'):
-        st.subheader("🛍️ Products & Services")
+        st.markdown("### Products & Services")
         for product in profile['key_products_services']:
-            st.write(f"- {product}")
+            st.write(f"• {product}")
     
-    # Mission & Vision
-    if profile.get('mission_statement'):
-        st.subheader("🎯 Mission Statement")
-        st.write(profile['mission_statement'])
+    # ------------------------------------------------
+    # 🌍  IMPACT & INNOVATION (New Section)
+    # ------------------------------------------------
+    impact_items = []
     
-    # Additional Business Details (from HubSpot)
-    # These might be in various fields depending on how they were merged
-    additional_details = []
+    # Check for UN SDG goals
+    sdg_goals = profile.get('which__if_any__of_the_un_sdg_17_goals_does_your_business_address_')
+    if sdg_goals:
+        impact_items.append(("🎯 UN SDG Goals", sdg_goals))
     
-    # Look for UN SDG goals
-    if profile.get('un_sdg_goals'):
-        additional_details.append(f"**UN SDG Goals:** {profile['un_sdg_goals']}")
+    # Check for health/human impact
+    health_impact = profile.get('does_your_product_contribute_to_a_healthier__happier_whole_human_experience_')
+    health_detail = profile.get('how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_')
+    if health_impact == "Yes" and health_detail:
+        impact_items.append(("❤️ Health & Wellbeing Impact", health_detail))
     
-    # Look for customer base description
-    if profile.get('customer_base'):
-        additional_details.append(f"**Customer Base:** {profile['customer_base']}")
+    # Check for innovation/technology
+    innovation = profile.get('how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__')
+    if innovation:
+        impact_items.append(("🚀 Innovation & Technology", innovation))
     
-    # Look for innovation/technology use
-    if profile.get('innovation_use'):
-        additional_details.append(f"**Innovation Use:** {profile['innovation_use']}")
+    if impact_items:
+        st.markdown("### 🌍 Impact & Innovation")
+        for title, content in impact_items:
+            with st.expander(title):
+                st.write(content)
     
-    # Look for health/happiness contribution
-    if profile.get('health_happiness_contribution'):
-        additional_details.append(f"**Health/Happiness Impact:** {profile['health_happiness_contribution']}")
+    # ------------------------------------------------
+    # 💰  FINANCIAL METRICS - Simple Grid
+    # ------------------------------------------------
+    st.markdown("### 💰 Financial Metrics")
     
-    # Look for partnership objectives (Flight-specific)
-    if profile.get('partnership_objectives'):
-        additional_details.append(f"**Partnership Objectives:** {profile['partnership_objectives']}")
+    # Prepare financial data
+    ltm_revenue = key_metrics.get('LTM Revenue')
+    monthly_revenue = key_metrics.get('Monthly Revenue')
+    arr_estimate = None
+    if monthly_revenue and str(monthly_revenue) != "£0":
+        try:
+            m_val = float(re.sub(r"[^0-9\.]+", "", str(monthly_revenue)))
+            if m_val > 0:
+                arr_estimate = m_val * 12
+        except ValueError:
+            pass
     
-    if additional_details:
-        st.subheader("ℹ️ Additional Business Information")
-        for detail in additional_details:
-            st.markdown(detail)
+    # Try to extract raising amount from different sources
+    raising_amount = key_metrics.get('Current Raise Amount')
+    if not raising_amount:
+        # Look for it in the total_funding_raised string
+        funding_str = profile.get('total_funding_raised', '')
+        if 'raising' in str(funding_str).lower():
+            # Extract the raising amount using regex
+            raising_match = re.search(r'raising\s+([£$€][\d\-,.\s]+[kmb]?)', str(funding_str), re.IGNORECASE)
+            if raising_match:
+                raising_amount = raising_match.group(1).strip()
     
-    # Links
-    st.subheader("🔗 Links")
+    valuation = key_metrics.get('Valuation')
+    
+    # For prior funding, extract just the prior amount, not the full string
+    total_raised = profile.get('total_funding_raised')
+    prior_funding = None
+    if total_raised and 'prior funding' in str(total_raised).lower():
+        # Extract just the prior funding amount
+        prior_match = re.search(r'([£$€][\d,]+)\s*\(prior funding\)', str(total_raised), re.IGNORECASE)
+        if prior_match:
+            prior_funding = prior_match.group(1)
+        else:
+            prior_funding = total_raised
+    else:
+        prior_funding = total_raised
+    
+    # Two rows of metrics
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("LTM Revenue", _format_currency(ltm_revenue))
+    with col2:
+        st.metric("Monthly Revenue", _format_currency(monthly_revenue))
+    with col3:
+        st.metric("ARR (Est.)", _format_currency(arr_estimate))
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Amount Raising", _format_currency(raising_amount))
+    with col2:
+        st.metric("Valuation", _format_currency(valuation))
+    with col3:
+        st.metric("Prior Funding", _format_currency(prior_funding))
+    
+    # ------------------------------------------------
+    # 📈  INVESTMENT & STRATEGY (New Section)
+    # ------------------------------------------------
+    strategy_items = []
+    
+    # Investment use/expansion plans
+    investment_use = profile.get('please_expand')
+    if investment_use:
+        strategy_items.append(("💡 Investment Use & Expansion Plans", investment_use))
+    
+    # Partnership seeking
+    partnership_seek = profile.get('what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_')
+    if partnership_seek and partnership_seek != "Other":
+        strategy_items.append(("🤝 Partnership Goals", partnership_seek))
+    
+    if strategy_items:
+        st.markdown("### 📈 Investment Strategy")
+        for title, content in strategy_items:
+            with st.expander(title):
+                st.write(content)
+    
+    # ------------------------------------------------
+    # 👥  TEAM & OPERATIONS
+    # ------------------------------------------------
+    st.markdown("### 👥 Team & Operations")
+    
     col1, col2 = st.columns(2)
     with col1:
-        if profile.get('website'):
-            st.markdown(f"[Company Website]({profile['website']})")
+        st.metric("Team Equity", f"{key_metrics.get('Team Equity', 'N/A')}%" if key_metrics.get('Team Equity') else 'N/A')
     with col2:
+        if key_metrics.get('Founders'):
+            founder_name = key_metrics['Founders'].split(' (')[0]  # Remove email
+            st.metric("Founder", founder_name)
+    
+    # ------------------------------------------------
+    # 🔗  LINKS & RESOURCES
+    # ------------------------------------------------
+    st.markdown("### 🔗 Links & Resources")
+    
+    link_col1, link_col2 = st.columns(2)
+    with link_col1:
+        if profile.get('website'):
+            st.markdown(f"🌐 [Company Website]({profile['website']})")
+    with link_col2:
         if profile.get('linkedin_url'):
-            st.markdown(f"[LinkedIn Profile]({profile['linkedin_url']})")
+            st.markdown(f"🔗 [LinkedIn Profile]({profile['linkedin_url']})")
     
-    # Founder LinkedIn URLs (if available and different from company LinkedIn)
-    founder_linkedin_urls = profile.get('founder_linkedin_urls', [])
-    if founder_linkedin_urls:
-        st.markdown("**Founder LinkedIn Profiles:**")
-        founder_links_col1, founder_links_col2 = st.columns(2)
-        for i, url in enumerate(founder_linkedin_urls):
-            # Extract founder name from key_metrics if available
-            founder_names = []
-            if profile.get('key_metrics', {}).get('Founders'):
-                founder_names = profile['key_metrics']['Founders'].split(', ')
-            
-            founder_name = founder_names[i] if i < len(founder_names) else f"Founder {i+1}"
-            # Remove email from founder name for display
-            founder_display_name = founder_name.split(' (')[0] if ' (' in founder_name else founder_name
-            
-            with founder_links_col1 if i % 2 == 0 else founder_links_col2:
-                st.markdown(f"[{founder_display_name}]({url})")
+    # Check for pitch deck
+    pitch_deck = profile.get('please_attach_your_pitch_deck')
+    if pitch_deck:
+        st.markdown("### 📎 Documents")
+        if pitch_deck.startswith('http'):
+            st.markdown(f"📄 [Pitch Deck]({pitch_deck})")
+        else:
+            st.write(f"📄 Pitch Deck: {pitch_deck}")
     
-    # Debug Information (collapsible)
-    with st.expander("🔍 Debug: Raw Data Structure"):
+    # ------------------------------------------------
+    # DEBUG (collapsible only)
+    # ------------------------------------------------
+    with st.expander("🔍 Debug: Raw Data"):
         st.json(profile)
 
 def display_founder_profiles(founders_data: Any):

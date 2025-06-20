@@ -1,0 +1,24 @@
+{
+  "associated_companies": [
+    {
+      "properties": {
+        "name": "BajanWheels Ltd",
+        "describe_the_business_product_in_one_sentence": "BajanWheels is shaping Barbados' future transit network by providing a public transit companion app that offers real-time updates, seamless payments, and a safer commute.",
+        "what_is_your_usp__what_makes_you_different_from_your_competitors_": "We provide real-time tracking and digital payments specifically designed for Caribbean public transit systems.",
+        "what_sector_is_your_business_product_": "Transportation",
+        "what_best_describes_your_customer_base_": "Commuters and travelers in Barbados seeking efficient, real-time public transportation solutions.",
+        "where_is_your_business_based_": "Bridgetown, Saint Michael, Barbados"
+      }
+    }
+  ],
+  "associated_contacts": [
+    {
+      "properties": {
+        "firstname": "Brandon",
+        "lastname": "Louis",
+        "email": "brandon@bajanwheels.com",
+        "hs_linkedin_url": "https://www.linkedin.com/in/brandon-h-louis/"
+      }
+    }
+  ]
+} 

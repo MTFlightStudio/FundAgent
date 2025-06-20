@@ -55,7 +55,7 @@ DECISION_SUPPORT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
             "    - Public Sector & Non-Profit\n"
             "    - Science & Technology (including Space, Biotech, and AI)\n"
             "    - Wellness/Wellbeing\n\n"
-            "2.  **Mission Alignment**: The company's mission MUST align with creating a 'healthier, happier humanity'. It must be genuinely impact-driven.\n\n"
+            "2.  **Mission Alignment**: The company's business MUST NOT harm humanity or damage the Flight Story/Steven Bartlett brand. We are looking to avoid businesses that are categorically misaligned with our mission - such as tobacco, harmful drugs, gambling, predatory financial products, or anything that could cause significant brand reputational risk. This is NOT about requiring active positive impact, but rather ensuring no obvious harm.\n\n"
             "3.  **Exciting Solution (The 'SB Test')**: This is a critical, qualitative test. The idea must be genuinely exciting. Ask yourself:\n"
             "    - Is it cool, interesting, or 'sexy'?\n"
             "    - Is it something SB would personally use, be proud to be associated with, or post about on his social media?\n"
@@ -64,10 +64,15 @@ DECISION_SUPPORT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
             "    - Does it have the potential for serious economic impact?\n\n"
             "--- Founder Potential ---\n"
             "4.  **Founded Something Relevant Before**: The founder(s) MUST have founded another company *before* the one being evaluated. The previous venture should be impressive or relevant. Do NOT count the current company as prior experience.\n\n"
-            "5.  **Impressive, Relevant Past Experience**: The founder(s) should have worked at impressive or highly relevant companies that would have prepared them for success (e.g., FAANG, major brands, other successful VC-backed startups).\n\n"
-            "6.  **Exceptionally Smart or Strategic**: There must be strong evidence of the founder(s) being exceptionally intelligent or strategic. Look for signals such as education from top-tier institutions, experience at elite companies, or outstanding thought leadership. While not an exhaustive list, here are prime examples of strong signals:\n"
-            "    - **Universities**: Cambridge, Oxford, Harvard, MIT, LSE, Durham, Imperial, St Andrews, Yale, Stanford, Princeton, Brown, Cornell, Penn, Dartmouth, Columbia.\n"
-            "    - **Companies**: McKinsey, BCG, Bain, Morgan Stanley, JP Morgan, Goldman Sachs, Bank of America, Allen & Overy, Kirkland & Ellis, Clifford Chance, Freshfields, Linklaters, Slaughter and May, Amazon, Google, Meta, TikTok, Microsoft.\n\n"
+            "5.  **Impressive, Relevant Past Experience**: The founder(s) should have worked at impressive companies that are highly relevant to their current venture and would have prepared them for success. This includes successful startups, major brands, FAANG companies, or other well-known firms in relevant industries. This is broader than the 'exceptionally smart' criteria - it's about relevant preparation, not just prestige.\n\n"
+            "6.  **Exceptionally Smart or Strategic**: There must be strong evidence of the founder(s) being exceptionally intelligent or strategic. Look for signals such as education from exceptionally prestigious institutions (roughly top 100 globally for universities) or experience at elite/top-tier companies. While not exhaustive, here are prime examples of qualifying institutions:\n"
+            "    - **Universities (Top-tier only)**: Cambridge, Oxford, Harvard, MIT, LSE, Durham, Imperial, St Andrews, Yale, Stanford, Princeton, Brown, Cornell, Penn, Dartmouth, Columbia.\n"
+            "    - **Companies (Elite firms only)**:\n"
+            "      * Consulting: McKinsey, BCG, Bain\n"
+            "      * Finance: Morgan Stanley, JP Morgan, Goldman Sachs, Bank of America\n"
+            "      * Law: Allen & Overy, Kirkland & Ellis, Clifford Chance, Freshfields, Bruckhaus Deringer, Linklaters, Slaughter and May\n"
+            "      * Tech: Amazon, Google, Meta, TikTok, Microsoft\n"
+            "    - Be EXTREMELY selective - only mark 'true' for genuinely exceptional credentials that clearly demonstrate top 1% intelligence/strategic ability.\n\n"
             "SCORING GUIDELINES:\n"
             "- Be VERY conservative and strict. Only mark 'true' if there is clear, undeniable evidence. When in doubt, score 'false' or 'null'.\n"
             "- Consider all founders collectively for criteria 4-6.\n\n"
@@ -224,7 +229,19 @@ def run_decision_support_analysis(
         company_profile: Optional[CompanyProfile] = None
         if company_data_dict:
             try:
-                company_profile = CompanyProfile(**company_data_dict)
+                # Preprocess URLs to ensure they have proper protocol
+                processed_data = company_data_dict.copy()
+                if 'website' in processed_data and processed_data['website']:
+                    website = processed_data['website']
+                    if isinstance(website, str) and not website.startswith(('http://', 'https://')):
+                        processed_data['website'] = f'https://{website}'
+                        
+                if 'linkedin_url' in processed_data and processed_data['linkedin_url']:
+                    linkedin_url = processed_data['linkedin_url']
+                    if isinstance(linkedin_url, str) and not linkedin_url.startswith(('http://', 'https://')):
+                        processed_data['linkedin_url'] = f'https://{linkedin_url}'
+                
+                company_profile = CompanyProfile(**processed_data)
             except Exception as e:
                 logger.error(f"Error parsing company data: {e}. Data: {company_data_dict}", exc_info=True)
                 # Create a fallback or return error InvestmentResearch
