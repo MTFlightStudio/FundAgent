@@ -203,37 +203,102 @@ class AgentRunner:
             
             # Extract founder information with LinkedIn URLs
             founders = []
-            linkedin_urls = []
+            founder_linkedin_urls = []
+            founder_info_list = []  # Store complete founder info
+
             if deal_data.get('associated_contacts'):
                 for contact in deal_data['associated_contacts']:
                     props = contact.get('properties', {})
                     first_name = props.get('firstname', '')
                     last_name = props.get('lastname', '')
                     email = props.get('email', '')
-                    linkedin_url = props.get('hs_linkedin_url', '')
+                    
+                    # Primary LinkedIn URL for this contact
+                    primary_linkedin = props.get('hs_linkedin_url', '')
                     
                     if first_name or last_name:
                         full_name = f"{first_name} {last_name}".strip()
-                        if email:
-                            founders.append(f"{full_name} ({email})")
-                        else:
-                            founders.append(full_name)
                         
-                        if linkedin_url:
-                            linkedin_urls.append(linkedin_url)
-                
-                # Update key_metrics with founder info
-                if company_info.get('key_metrics'):
-                    if founders:
-                        company_info['key_metrics']['Founders'] = founders[0] if len(founders) == 1 else ', '.join(founders)
-            
+                        founder_info = {
+                            'name': full_name,
+                            'email': email,
+                            'linkedin_url': primary_linkedin,
+                            'first_name': first_name,
+                            'last_name': last_name
+                        }
+                        
+                        founder_info_list.append(founder_info)
+                        founders.append(full_name)
+                        
+                        if primary_linkedin:
+                            founder_linkedin_urls.append(primary_linkedin)
+
+            # Extract additional founder LinkedIn URLs from the multi-line field
+            additional_founders_field = None
+            if deal_data.get('associated_contacts') and deal_data['associated_contacts']:
+                # Check first contact for the additional founders field
+                first_contact_props = deal_data['associated_contacts'][0].get('properties', {})
+                additional_founders_field = first_contact_props.get('attach_link_to_all_founders_linkedin_profiles', '')
+
+            # Parse additional LinkedIn URLs
+            additional_linkedin_urls = []
+            if additional_founders_field:
+                # Split by newlines and clean up
+                urls = additional_founders_field.strip().split('\n')
+                for url in urls:
+                    url = url.strip()
+                    if url and 'linkedin.com' in url:
+                        additional_linkedin_urls.append(url)
+
+            # Try to extract names from additional LinkedIn URLs
+            for url in additional_linkedin_urls:
+                if url not in founder_linkedin_urls:  # Avoid duplicates
+                    # Extract username from LinkedIn URL
+                    import re
+                    match = re.search(r'linkedin\.com/in/([^/]+)', url)
+                    if match:
+                        username = match.group(1)
+                        # Convert username to a readable name (basic heuristic)
+                        name_parts = username.replace('-', ' ').title()
+                        
+                        # Check if this might be an existing founder
+                        matched = False
+                        for founder_info in founder_info_list:
+                            # Simple matching - could be improved
+                            if any(part.lower() in founder_info['name'].lower() for part in username.split('-')):
+                                # This URL likely belongs to this founder
+                                if not founder_info['linkedin_url']:
+                                    founder_info['linkedin_url'] = url
+                                matched = True
+                                break
+                        
+                        if not matched:
+                            # This is likely an additional founder
+                            founder_info = {
+                                'name': name_parts,
+                                'email': None,
+                                'linkedin_url': url,
+                                'first_name': name_parts.split()[0] if name_parts else '',
+                                'last_name': ' '.join(name_parts.split()[1:]) if len(name_parts.split()) > 1 else ''
+                            }
+                            founder_info_list.append(founder_info)
+                            founders.append(name_parts)
+                            founder_linkedin_urls.append(url)
+
+            # Update key_metrics with founder info
+            if company_info.get('key_metrics'):
+                if founders:
+                    company_info['key_metrics']['Founders'] = ', '.join(founders)
+                    company_info['key_metrics']['Founder Count'] = str(len(founders))
+
             return {
                 'company_name': company_name,
                 'industry': industry,
-                'founders': [f.split(' (')[0] for f in founders] if founders else [],  # Names only for processing
-                'linkedin_urls': linkedin_urls,
+                'founders': founders,
+                'founder_info_list': founder_info_list,  # Complete founder information
+                'linkedin_urls': founder_linkedin_urls,
                 'deal_data': deal_data,
-                'company_info': company_info  # Full structured company info for display
+                'company_info': company_info
             }
             
         except Exception as e:
@@ -438,49 +503,61 @@ class AgentRunner:
             progress_bar.progress(10)
             
             # Extract founder info from HubSpot if needed
-            current_company = company_name  # Use provided company_name parameter first
+            founder_info_list = []
+            current_company = company_name
+            
             if deal_id and not founder_names:
                 hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
-                founder_names = hubspot_data.get('founders', [])
-                if not current_company:  # Only set from HubSpot if not provided as parameter
+                founder_info_list = hubspot_data.get('founder_info_list', [])
+                if not current_company:
                     current_company = hubspot_data.get('company_name')
-                if hubspot_data.get('linkedin_urls'):
-                    linkedin_urls = hubspot_data['linkedin_urls']
-                if not founder_names:
+                if not founder_info_list:
                     raise ValueError("Could not extract founder information from HubSpot deal")
             elif deal_id and not current_company:
-                # Even if founder_names provided, we should get company name for context
                 hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
                 current_company = hubspot_data.get('company_name')
             
-            if not founder_names:
-                raise ValueError("Founder names are required")
+            # If manual entry, create founder info list
+            if founder_names and not founder_info_list:
+                for i, name in enumerate(founder_names):
+                    linkedin_url = linkedin_urls[i] if linkedin_urls and i < len(linkedin_urls) else None
+                    founder_info_list.append({
+                        'name': name,
+                        'linkedin_url': linkedin_url
+                    })
+            
+            if not founder_info_list:
+                raise ValueError("No founder information available")
             
             status_text.text("🔗 Searching LinkedIn profiles...")
             progress_bar.progress(25)
             
             founder_profiles = []
-            total_founders = len(founder_names)
+            total_founders = len(founder_info_list)
             
-            for i, founder_name in enumerate(founder_names):
+            for i, founder_info in enumerate(founder_info_list):
                 progress = 25 + (50 * (i + 1) / total_founders)
-                status_text.text(f"📊 Analyzing {founder_name}'s background...")
+                founder_name = founder_info['name']
+                linkedin_url = founder_info.get('linkedin_url')
+                
+                status_text.text(f"📊 Analyzing {founder_name}'s background... ({i+1}/{total_founders})")
                 progress_bar.progress(int(progress))
                 
-                _self.log_execution(f"Running founder research for: {founder_name}")
+                _self.log_execution(f"Running founder research for: {founder_name}" + (f" with LinkedIn: {linkedin_url}" if linkedin_url else ""))
                 
-                linkedin_url = None
-                if linkedin_urls and i < len(linkedin_urls):
-                    linkedin_url = linkedin_urls[i]
-                
-                if linkedin_url:
-                    founder_result = run_founder_research_cli_entrypoint(founder_name, linkedin_url, current_company)
-                else:
-                    founder_result = run_founder_research_cli_entrypoint(founder_name, current_company=current_company)
-                
-                if founder_result:
-                    founder_dict = founder_result.model_dump(mode='json')
-                    founder_profiles.append(founder_dict)
+                try:
+                    if linkedin_url:
+                        founder_result = run_founder_research_cli_entrypoint(founder_name, linkedin_url, current_company)
+                    else:
+                        founder_result = run_founder_research_cli_entrypoint(founder_name, current_company=current_company)
+                    
+                    if founder_result:
+                        founder_dict = founder_result.model_dump(mode='json')
+                        founder_profiles.append(founder_dict)
+                except Exception as e:
+                    _self.log_execution(f"Failed to research founder {founder_name}: {str(e)}", "ERROR")
+                    # Continue with other founders
+                    continue
             
             status_text.text("✅ Founder research completed!")
             progress_bar.progress(100)
@@ -489,6 +566,7 @@ class AgentRunner:
                 'status': 'success',
                 'founders': founder_profiles,
                 'founder_count': len(founder_profiles),
+                'total_attempted': total_founders,
                 'timestamp': datetime.now().isoformat()
             }
             
@@ -503,7 +581,7 @@ class AgentRunner:
             progress_bar.empty()
             status_text.empty()
             
-            st.success(f"🎉 Founder research completed in {execution_time:.1f} seconds (Cached for future use)")
+            st.success(f"🎉 Founder research completed in {execution_time:.1f} seconds ({len(founder_profiles)}/{total_founders} founders researched successfully)")
             
             return founder_data
                 

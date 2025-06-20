@@ -256,7 +256,7 @@ def display_company_profile(company_data: Dict[str, Any]):
         st.json(profile)
 
 def display_founder_profiles(founders_data: Any):
-    """Display founder profiles"""
+    """Display founder profiles with enhanced multi-founder support"""
     # Handle different data structures
     if isinstance(founders_data, dict):
         # Check if it's a wrapped response
@@ -275,51 +275,146 @@ def display_founder_profiles(founders_data: Any):
         st.info("No founder profiles available")
         return
     
-    for i, founder in enumerate(founders_list):
-        with st.expander(f"👤 {founder.get('name', f'Founder {i+1}')}"):
-            # Basic Info
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"**Role:** {founder.get('role_in_company', 'N/A')}")
-                if founder.get('linkedin_url'):
-                    st.markdown(f"[LinkedIn Profile]({founder['linkedin_url']})")
+    # Summary metrics
+    if isinstance(founders_data, dict) and 'founder_count' in founders_data:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Founders", founders_data.get('founder_count', len(founders_list)))
+        with col2:
+            st.metric("Profiles Analyzed", len(founders_list))
+        with col3:
+            success_rate = (len(founders_list) / founders_data.get('total_attempted', len(founders_list))) * 100
+            st.metric("Success Rate", f"{success_rate:.0f}%")
+    
+    # Create tabs for each founder if multiple
+    if len(founders_list) > 1:
+        # Create founder tabs
+        founder_names = [f"👤 {founder.get('name', f'Founder {i+1}')}" for i, founder in enumerate(founders_list)]
+        founder_tabs = st.tabs(founder_names)
+        
+        for i, (tab, founder) in enumerate(zip(founder_tabs, founders_list)):
+            with tab:
+                _display_single_founder_profile(founder, i)
+    else:
+        # Single founder - no tabs needed
+        if founders_list:
+            _display_single_founder_profile(founders_list[0], 0)
+
+def _display_single_founder_profile(founder: Dict[str, Any], index: int):
+    """Display a single founder profile"""
+    # Header with basic info
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.subheader(f"{founder.get('name', f'Founder {index+1}')}")
+        if founder.get('role_in_company'):
+            st.write(f"**{founder['role_in_company']}**")
+    
+    with col2:
+        if founder.get('linkedin_url'):
+            st.markdown(f"[🔗 LinkedIn Profile]({founder['linkedin_url']})")
+    
+    # Background Summary
+    if founder.get('background_summary'):
+        st.markdown("### 📝 Background")
+        st.write(founder['background_summary'])
+    
+    # Investment Criteria Assessment - Highlighted Section
+    if founder.get('investment_criteria_assessment'):
+        assessment = founder['investment_criteria_assessment']
+        st.markdown("### 🎯 Investment Criteria Assessment")
+        
+        # Create two columns for criteria
+        criteria_col1, criteria_col2 = st.columns(2)
+        
+        with criteria_col1:
+            st.markdown("**Industry & Mission**")
+            st.write(f"✓ Focus Industry Fit: {'✅ Yes' if assessment.get('focus_industry_fit') else '❌ No'}")
+            st.write(f"✓ Mission Alignment: {'✅ Yes' if assessment.get('mission_alignment') else '❌ No'}")
+            st.write(f"✓ Exciting Solution: {'✅ Yes' if assessment.get('exciting_solution_to_problem') else '❌ No'}")
+        
+        with criteria_col2:
+            st.markdown("**Founder Qualities**")
+            st.write(f"✓ Founded Before: {'✅ Yes' if assessment.get('founded_something_relevant_before') else '❌ No'}")
+            st.write(f"✓ Impressive Experience: {'✅ Yes' if assessment.get('impressive_relevant_past_experience') else '❌ No'}")
+            st.write(f"✓ Exceptionally Smart: {'✅ Yes' if assessment.get('exceptionally_smart_or_strategic') else '❌ No'}")
+        
+        # Score summary
+        criteria_met = sum([
+            1 for key in ['focus_industry_fit', 'mission_alignment', 'exciting_solution_to_problem',
+                         'founded_something_relevant_before', 'impressive_relevant_past_experience',
+                         'exceptionally_smart_or_strategic']
+            if assessment.get(key) is True
+        ])
+        
+        if criteria_met >= 5:
+            st.success(f"✅ **Strong Founder Profile** - Meets {criteria_met}/6 criteria")
+        elif criteria_met >= 3:
+            st.warning(f"⚠️ **Moderate Founder Profile** - Meets {criteria_met}/6 criteria")
+        else:
+            st.error(f"❌ **Weak Founder Profile** - Meets only {criteria_met}/6 criteria")
+        
+        if assessment.get('assessment_summary'):
+            with st.expander("📋 Detailed Assessment Summary"):
+                st.write(assessment['assessment_summary'])
+    
+    # Previous Experience
+    if founder.get('previous_companies'):
+        st.markdown("### 💼 Previous Experience")
+        for company in founder['previous_companies']:
+            was_founder_badge = " 🚀 **FOUNDER**" if company.get('was_founder') else ""
+            company_name = company.get('company_name', 'Unknown Company')
+            role = company.get('role', 'Unknown Role')
+            duration = company.get('duration', '')
             
-            # Background Summary
-            if founder.get('background_summary'):
-                st.write("**Background:**")
-                st.write(founder['background_summary'])
+            st.write(f"**{company_name}** - {role}{was_founder_badge}")
+            if duration:
+                st.write(f"*Duration: {duration}*")
+            if company.get('description'):
+                st.write(f"{company['description']}")
+            st.write("")  # Add spacing
+    
+    # Education
+    if founder.get('education'):
+        st.markdown("### 🎓 Education")
+        for edu in founder['education']:
+            institution = edu.get('institution', 'Unknown Institution')
+            degree = edu.get('degree', '')
+            year = edu.get('graduation_year', '')
             
-            # Previous Experience
-            if founder.get('previous_companies'):
-                st.write("**Previous Experience:**")
-                for company in founder['previous_companies']:
-                    was_founder = " (Founder)" if company.get('was_founder') else ""
-                    st.write(f"- {company.get('company_name', 'N/A')} - {company.get('role', 'N/A')}{was_founder}")
+            edu_text = f"**{institution}**"
+            if degree:
+                edu_text += f" - {degree}"
+            if year:
+                edu_text += f" ({year})"
+            st.write(edu_text)
             
-            # Education
-            if founder.get('education'):
-                st.write("**Education:**")
-                for edu in founder['education']:
-                    st.write(f"- {edu.get('institution', 'N/A')} - {edu.get('degree', 'N/A')}")
-            
-            # Investment Criteria Assessment
-            if founder.get('investment_criteria_assessment'):
-                assessment = founder['investment_criteria_assessment']
-                st.write("**Investment Criteria Assessment:**")
+            if edu.get('notable_achievements'):
+                st.write(f"*{edu['notable_achievements']}*")
+    
+    # Skills and Expertise
+    if founder.get('key_skills_and_expertise'):
+        st.markdown("### 🔧 Key Skills & Expertise")
+        # Display as tags
+        skills_html = " ".join([f'<span style="background-color: #f0f2f6; padding: 4px 12px; border-radius: 20px; margin: 4px; display: inline-block;">{skill}</span>' for skill in founder['key_skills_and_expertise']])
+        st.markdown(skills_html, unsafe_allow_html=True)
+    
+    # Public Content
+    if founder.get('public_speaking_or_content'):
+        st.markdown("### 📢 Public Speaking & Content")
+        for content in founder['public_speaking_or_content']:
+            if isinstance(content, dict):
+                content_type = content.get('type', 'Content')
+                title = content.get('title', 'Untitled')
+                url = content.get('url', '')
                 
-                criteria_cols = st.columns(2)
-                with criteria_cols[0]:
-                    st.write(f"✓ Focus Industry Fit: {'Yes' if assessment.get('focus_industry_fit') else 'No'}")
-                    st.write(f"✓ Mission Alignment: {'Yes' if assessment.get('mission_alignment') else 'No'}")
-                    st.write(f"✓ Exciting Solution: {'Yes' if assessment.get('exciting_solution_to_problem') else 'No'}")
-                
-                with criteria_cols[1]:
-                    st.write(f"✓ Founded Before: {'Yes' if assessment.get('founded_something_relevant_before') else 'No'}")
-                    st.write(f"✓ Impressive Experience: {'Yes' if assessment.get('impressive_relevant_past_experience') else 'No'}")
-                    st.write(f"✓ Exceptionally Smart: {'Yes' if assessment.get('exceptionally_smart_or_strategic') else 'No'}")
-                
-                if assessment.get('assessment_summary'):
-                    st.write(f"**Summary:** {assessment['assessment_summary']}")
+                if url:
+                    st.write(f"- [{content_type}: {title}]({url})")
+                else:
+                    st.write(f"- {content_type}: {title}")
+    
+    # Debug info in expander
+    with st.expander("🔍 Raw Founder Data"):
+        st.json(founder)
 
 def display_market_analysis(market_data: Dict[str, Any]):
     """Display market analysis information"""

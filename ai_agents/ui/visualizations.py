@@ -20,35 +20,38 @@ def create_investment_criteria_radar_chart(decision_data: Dict[str, Any]) -> go.
         'fs_exceptionally_smart_or_strategic': 'Exceptionally Smart'
     }
     
-    # Default scores if not found
     criteria_scores = {}
     
-    # Try to extract from different possible data structures
-    if isinstance(decision_data, dict):
-        # Look for criteria in various nested structures
-        search_paths = [
-            decision_data,
-            decision_data.get('investment_research', {}),
-            decision_data.get('analysis', {}),
-            decision_data.get('criteria_analysis', {}),
-            decision_data.get('investment_assessment', {})  # This is where the criteria actually live
-        ]
-        
-        for data_section in search_paths:
-            if isinstance(data_section, dict):
-                for key, label in criteria_mapping.items():
-                    if key in data_section and label not in criteria_scores:
-                        value = data_section[key]
-                        # Convert boolean to score
-                        if isinstance(value, bool):
-                            criteria_scores[label] = 1.0 if value else 0.0
-                        elif isinstance(value, (int, float)):
-                            criteria_scores[label] = float(value)
+    # Extract from the correct path in decision_support result
+    investment_assessment = None
     
-    # Fill in missing criteria with default values
-    for key, label in criteria_mapping.items():
-        if label not in criteria_scores:
-            criteria_scores[label] = 0.5  # Default neutral score
+    if isinstance(decision_data, dict):
+        # Check if it's wrapped in investment_research
+        if 'investment_research' in decision_data:
+            investment_research = decision_data['investment_research']
+            if isinstance(investment_research, dict):
+                investment_assessment = investment_research.get('investment_assessment', {})
+        # Direct access to investment_assessment
+        elif 'investment_assessment' in decision_data:
+            investment_assessment = decision_data['investment_assessment']
+    
+    # Extract scores from investment_assessment
+    if investment_assessment:
+        for key, label in criteria_mapping.items():
+            if key in investment_assessment:
+                value = investment_assessment[key]
+                # Convert boolean to score
+                if isinstance(value, bool):
+                    criteria_scores[label] = 1.0 if value else 0.0
+                elif value is None:
+                    criteria_scores[label] = 0.0  # None means not met
+                else:
+                    criteria_scores[label] = float(value)
+    
+    # If no scores found, use zeros
+    if not criteria_scores:
+        for key, label in criteria_mapping.items():
+            criteria_scores[label] = 0.0
     
     # Create radar chart
     categories = list(criteria_scores.keys())
@@ -76,7 +79,7 @@ def create_investment_criteria_radar_chart(decision_data: Dict[str, Any]) -> go.
                 visible=True,
                 range=[0, 1],
                 tickvals=[0, 0.25, 0.5, 0.75, 1.0],
-                ticktext=['0%', '25%', '50%', '75%', '100%']
+                ticktext=['Not Met', '25%', '50%', '75%', 'Met']
             ),
             angularaxis=dict(
                 tickfont=dict(size=12),
@@ -182,43 +185,55 @@ def create_market_size_breakdown_chart(market_data: Dict[str, Any]) -> Optional[
     """
     Create a market size breakdown chart (TAM, SAM, SOM)
     """
-    # Extract market size data
-    tam = sam = som = None
-    cagr = None
+    # Extract market size data from the correct structure
+    market_analysis = None
     
     if isinstance(market_data, dict):
-        # Look for market size information
-        search_paths = [
-            market_data.get('market_analysis', {}),
-            market_data.get('market_size', {}),
-            market_data
-        ]
+        if 'market_analysis' in market_data:
+            market_analysis = market_data['market_analysis']
+        else:
+            market_analysis = market_data
+    
+    if not market_analysis:
+        return None
+    
+    # Extract TAM, SAM, SOM values
+    tam_str = market_analysis.get('market_size_tam', '')
+    sam_str = market_analysis.get('market_size_sam', '')
+    som_str = market_analysis.get('market_size_som', '')
+    
+    # Function to parse currency strings
+    def parse_market_size(size_str):
+        if not size_str or size_str == 'N/A':
+            return None
         
-        for data_section in search_paths:
-            if isinstance(data_section, dict):
-                tam = tam or data_section.get('tam') or data_section.get('total_addressable_market')
-                sam = sam or data_section.get('sam') or data_section.get('serviceable_addressable_market')
-                som = som or data_section.get('som') or data_section.get('serviceable_obtainable_market')
-                cagr = cagr or data_section.get('cagr') or data_section.get('growth_rate')
-    
-    # Parse TAM if it's a string with currency
-    if isinstance(tam, str):
         import re
-        # Extract numeric value from strings like "$908.5B" or "$3,140.9B"
-        match = re.search(r'[\$]?([0-9,]+\.?[0-9]*)\s*([BMK])', tam)
+        # Remove currency symbols and spaces
+        size_str = str(size_str).replace('$', '').replace('€', '').replace('£', '').strip()
+        
+        # Extract numeric value and unit
+        match = re.match(r'([\d,]+\.?\d*)\s*([BMK])?', size_str, re.IGNORECASE)
         if match:
-            value, unit = match.groups()
-            value = float(value.replace(',', ''))
-            multiplier = {'K': 1e3, 'M': 1e6, 'B': 1e9}.get(unit, 1)
-            tam = value * multiplier
+            value = float(match.group(1).replace(',', ''))
+            unit = match.group(2)
+            if unit:
+                multipliers = {'K': 1e3, 'M': 1e6, 'B': 1e9}
+                value *= multipliers.get(unit.upper(), 1)
+            return value
+        return None
     
-    # Default values if not found
-    if not tam or not isinstance(tam, (int, float)):
-        tam = 100e9  # $100B default
-    if not sam or not isinstance(sam, (int, float)):
-        sam = tam * 0.1  # 10% of TAM
-    if not som or not isinstance(som, (int, float)):
-        som = sam * 0.1  # 10% of SAM
+    tam = parse_market_size(tam_str)
+    sam = parse_market_size(sam_str)
+    som = parse_market_size(som_str)
+    
+    # Use defaults if parsing failed
+    if not tam:
+        return None  # Can't create chart without TAM
+    
+    if not sam:
+        sam = tam * 0.1  # Default to 10% of TAM
+    if not som:
+        som = sam * 0.1  # Default to 10% of SAM
     
     # Create funnel chart
     fig = go.Figure()
@@ -231,21 +246,32 @@ def create_market_size_breakdown_chart(market_data: Dict[str, Any]) -> Optional[
         # Calculate bar width for funnel effect
         width = 1 - (i * 0.2)
         
+        # Format the display value
+        if value >= 1e9:
+            display_value = f'${value/1e9:.1f}B'
+        elif value >= 1e6:
+            display_value = f'${value/1e6:.1f}M'
+        else:
+            display_value = f'${value/1e3:.1f}K'
+        
         fig.add_trace(go.Bar(
             name=market,
             x=[market],
             y=[value],
             width=width,
             marker_color=color,
-            text=f'${value/1e9:.1f}B',
+            text=display_value,
             textposition='inside',
             textfont=dict(size=14, color='white'),
-            hovertemplate=f'<b>{market}</b><br>Market Size: $%{{y:,.0f}}<extra></extra>'
+            hovertemplate=f'<b>{market}</b><br>Market Size: ${value:,.0f}<extra></extra>'
         ))
+    
+    # Add CAGR if available
+    cagr = market_analysis.get('market_growth_rate_cagr', '')
     
     fig.update_layout(
         title=dict(
-            text="Market Size Analysis",
+            text=f"Market Size Analysis{f' (CAGR: {cagr})' if cagr else ''}",
             x=0.5,
             font=dict(size=16, color='rgb(50, 50, 50)')
         ),
@@ -355,31 +381,66 @@ def create_founder_skills_matrix(founder_data: Dict[str, Any]) -> Optional[go.Fi
 
 def create_risk_opportunity_matrix(decision_data: Dict[str, Any]) -> go.Figure:
     """
-    Create a risk vs opportunity matrix scatter plot
+    Create a risk vs opportunity matrix scatter plot based on actual assessment data
     """
-    # Extract or calculate risk and opportunity scores
-    risk_score = 0.3  # Default medium risk
-    opportunity_score = 0.7  # Default high opportunity
+    # Extract investment assessment data
+    investment_research = None
+    investment_assessment = None
     
     if isinstance(decision_data, dict):
-        # Look for risk/opportunity indicators
-        confidence = decision_data.get('confidence_score', 0.5)
-        recommendation = decision_data.get('recommendation', 'UNKNOWN')
-        
-        # Calculate opportunity score based on recommendation and confidence
-        if recommendation == 'PASS':
-            opportunity_score = 0.6 + (confidence * 0.4)
-            risk_score = 0.5 - (confidence * 0.3)
-        elif recommendation == 'FAIL':
-            opportunity_score = 0.4 - (confidence * 0.3)
-            risk_score = 0.5 + (confidence * 0.4)
-        else:
-            opportunity_score = 0.5
-            risk_score = 0.5
+        if 'investment_research' in decision_data:
+            investment_research = decision_data['investment_research']
+            if isinstance(investment_research, dict):
+                investment_assessment = investment_research.get('investment_assessment', {})
+        elif 'investment_assessment' in decision_data:
+            investment_assessment = decision_data['investment_assessment']
     
-    # Ensure values are in valid range
-    risk_score = max(0, min(1, risk_score))
-    opportunity_score = max(0, min(1, opportunity_score))
+    # Calculate risk and opportunity scores based on actual criteria
+    if investment_assessment:
+        # Count met criteria
+        criteria_scores = {
+            'industry': investment_assessment.get('fs_focus_industry_fit', False),
+            'mission': investment_assessment.get('fs_mission_alignment', False),
+            'solution': investment_assessment.get('fs_exciting_solution_to_problem', False),
+            'founded_before': investment_assessment.get('fs_founded_something_relevant_before', False),
+            'experience': investment_assessment.get('fs_impressive_relevant_past_experience', False),
+            'smart': investment_assessment.get('fs_exceptionally_smart_or_strategic', False)
+        }
+        
+        criteria_met = sum(1 for v in criteria_scores.values() if v)
+        
+        # Calculate opportunity score (higher when more criteria are met)
+        opportunity_score = criteria_met / 6.0
+        
+        # Calculate risk score based on missing criteria and identified risks
+        risk_factors = investment_assessment.get('key_risk_factors', [])
+        opportunities = investment_assessment.get('key_opportunities', [])
+        
+        # Base risk on missing criteria
+        risk_score = (6 - criteria_met) / 6.0
+        
+        # Adjust based on identified risks/opportunities
+        if risk_factors:
+            risk_adjustment = min(0.2, len(risk_factors) * 0.05)
+            risk_score = min(1.0, risk_score + risk_adjustment)
+        
+        if opportunities:
+            opp_adjustment = min(0.2, len(opportunities) * 0.05)
+            opportunity_score = min(1.0, opportunity_score + opp_adjustment)
+        
+        # Get recommendation and confidence
+        recommendation = 'UNKNOWN'
+        confidence = 0.5
+        
+        if investment_research:
+            recommendation = investment_research.get('overall_summary_and_recommendation', 'UNKNOWN')
+            confidence = investment_research.get('confidence_score_overall', 0.5)
+    else:
+        # Default values if no assessment data
+        risk_score = 0.5
+        opportunity_score = 0.5
+        recommendation = 'UNKNOWN'
+        confidence = 0.5
     
     # Create quadrant background
     fig = go.Figure()
@@ -394,8 +455,8 @@ def create_risk_opportunity_matrix(decision_data: Dict[str, Any]) -> go.Figure:
     
     for quad in quadrants:
         fig.add_trace(go.Scatter(
-            x=quad['x'] + [quad['x'][0]],  # Close the shape
-            y=quad['y'] + [quad['y'][0]],  # Close the shape
+            x=quad['x'] + [quad['x'][0]],
+            y=quad['y'] + [quad['y'][0]],
             fill='toself',
             fillcolor=quad['color'],
             line=dict(color='rgba(0,0,0,0)'),
@@ -404,21 +465,31 @@ def create_risk_opportunity_matrix(decision_data: Dict[str, Any]) -> go.Figure:
             showlegend=False
         ))
     
-    # Add the investment opportunity point
-    color = 'green' if opportunity_score > 0.6 and risk_score < 0.4 else 'orange' if opportunity_score > 0.5 else 'red'
+    # Color based on recommendation
+    if 'PASS' in str(recommendation).upper():
+        color = 'green'
+    elif 'EXPLORE' in str(recommendation).upper():
+        color = 'orange'
+    elif 'DECLINE' in str(recommendation).upper():
+        color = 'red'
+    else:
+        color = 'gray'
     
+    # Add the investment opportunity point
     fig.add_trace(go.Scatter(
         x=[risk_score],
         y=[opportunity_score],
-        mode='markers',
+        mode='markers+text',
         marker=dict(
-            size=20,
+            size=20 + (confidence * 20),  # Size based on confidence
             color=color,
             line=dict(width=3, color='white'),
             symbol='star'
         ),
-        name='Investment Opportunity',
-        hovertemplate='<b>Investment Position</b><br>Risk: %{x:.1%}<br>Opportunity: %{y:.1%}<extra></extra>'
+        text=[recommendation],
+        textposition='bottom center',
+        name='Investment Position',
+        hovertemplate='<b>Investment Position</b><br>Risk: %{x:.1%}<br>Opportunity: %{y:.1%}<br>Recommendation: ' + str(recommendation) + '<br>Confidence: ' + f'{confidence:.1%}' + '<extra></extra>'
     ))
     
     # Add quadrant labels
