@@ -15,9 +15,9 @@ def create_investment_criteria_radar_chart(decision_data: Dict[str, Any]) -> go.
         'fs_focus_industry_fit': 'Industry Focus Fit',
         'fs_mission_alignment': 'Mission Alignment', 
         'fs_exciting_solution_to_problem': 'Exciting Solution',
-        'fs_large_market_size': 'Large Market Size',
-        'fs_exceptional_founder_team': 'Exceptional Team',
-        'fs_clear_path_to_significant_revenue': 'Revenue Path'
+        'fs_founded_something_relevant_before': 'Founded Before',
+        'fs_impressive_relevant_past_experience': 'Impressive Experience',
+        'fs_exceptionally_smart_or_strategic': 'Exceptionally Smart'
     }
     
     # Default scores if not found
@@ -30,13 +30,14 @@ def create_investment_criteria_radar_chart(decision_data: Dict[str, Any]) -> go.
             decision_data,
             decision_data.get('investment_research', {}),
             decision_data.get('analysis', {}),
-            decision_data.get('criteria_analysis', {})
+            decision_data.get('criteria_analysis', {}),
+            decision_data.get('investment_assessment', {})  # This is where the criteria actually live
         ]
         
         for data_section in search_paths:
             if isinstance(data_section, dict):
                 for key, label in criteria_mapping.items():
-                    if key in data_section:
+                    if key in data_section and label not in criteria_scores:
                         value = data_section[key]
                         # Convert boolean to score
                         if isinstance(value, bool):
@@ -487,12 +488,12 @@ def display_all_visualizations(results: Dict[str, Any]):
             with st.expander("📋 Criteria Explanation"):
                 st.markdown("""
                 **Flight Story's 6 Investment Criteria:**
-                - **Industry Focus Fit**: Alignment with our target sectors
-                - **Mission Alignment**: Shared values and vision
-                - **Exciting Solution**: Innovative approach to real problems
-                - **Large Market Size**: Significant addressable market
-                - **Exceptional Team**: Strong founder and team capabilities
-                - **Revenue Path**: Clear path to significant revenue generation
+                - **Industry Focus Fit**: Alignment with our focus industries (Media, Brand, Tech, Creator Economy)
+                - **Mission Alignment**: Avoids harm to humanity and brand reputational risk
+                - **Exciting Solution**: Innovative approach to real and meaningful problems
+                - **Founded Before**: Has founded something impressive and relevant before
+                - **Impressive Experience**: Impressive and relevant past work experience
+                - **Exceptionally Smart**: Evidence of being super smart or strategic
                 """)
         else:
             st.info("🔄 Run Decision Support analysis to see investment criteria visualization")
