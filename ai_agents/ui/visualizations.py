@@ -583,10 +583,16 @@ def display_all_visualizations(results: Dict[str, Any]):
                 st.subheader("Market Metrics")
                 market_data = results['market_research']
                 if isinstance(market_data, dict):
-                    # Extract key metrics
-                    tam = market_data.get('tam', 'Not specified')
-                    cagr = market_data.get('cagr', 'Not specified')
-                    timing = market_data.get('timing', 'Not specified')
+                    # Extract from the correct market analysis structure
+                    if 'market_analysis' in market_data:
+                        analysis = market_data['market_analysis']
+                    else:
+                        analysis = market_data
+                    
+                    # Extract key metrics using correct field names
+                    tam = analysis.get('market_size_tam', 'Not specified')
+                    cagr = analysis.get('market_growth_rate_cagr', 'Not specified')
+                    timing = analysis.get('market_timing_assessment', 'Not specified')
                     
                     st.metric("Total Addressable Market", tam)
                     st.metric("Market Growth Rate (CAGR)", cagr)

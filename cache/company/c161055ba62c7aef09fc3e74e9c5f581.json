@@ -1,0 +1,36 @@
+{
+  "status": "success",
+  "company_profile": {
+    "company_name": "Sylvi",
+    "website": "https://www.sylvi.ai/",
+    "description": "We're a language learning app that's fundamentally different - using AI to help people actually speak a language, not just learn grammar rules and vocab. Through conversations with AI tutors and penpals, discussing news in your target language, and practicing with fellow learners / friends, you get instant corrections and feedback on every interaction.",
+    "industry": "Education/ Ed-tech",
+    "sub_industry": "Education/ Ed-tech",
+    "location_hq": "UK",
+    "business_model": "Sylvi is different as it combines social learning with AI in ways competitors haven't achieved. Our defensibility stems from a strong community of early adopters providing invaluable feedback for our product roadmap, plus validation from prestigious institutions such as Epsom College opening up the B2B channel.",
+    "target_customer": "B2C",
+    "funding_stage": "I have a business that I want to scale",
+    "total_funding_raised": "35000",
+    "team_size": null,
+    "number_of_employees": "0-10",
+    "which__if_any__of_the_un_sdg_17_goals_does_your_business_address_": "Quality Education",
+    "does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Yes",
+    "how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Learning a language is rewarding as it opens up new connections, cultures, and opportunities, while providing the satisfaction of mastering a new skill. However, anxiety about making mistakes often prevents people from speaking, which is crucial for development. Sylvi transforms language learning into a confident, social experience through daily conversations with instant, private corrections - all at a fraction of the cost of private tutoring, making it more accessible.",
+    "how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__": "Sylvi uses AI to deliver a conversational language learning experience akin to how people learn in real life.",
+    "please_expand": "Looking for investment, start up advice / support, and to be part of the flight community.\r\n\r\nNote we raised 35000 in ASAs that are yet to convert.",
+    "what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_": "Advice and support",
+    "please_attach_your_pitch_deck": "https://api-eu1.hubspot.com/form-integrations/v1/uploaded-files/signed-url-redirect/208865284334?portalId=145458831&sign=Ao4C_l2ixGM6AoBUMC9F6pn6OlA%3D&conversionId=7785e384-8d16-4f71-9db9-bb481f30cdcc&filename=7785e384-8d16-4f71-9db9-bb481f30cdcc-0-2/please_attach_your_pitch_deck-Sylvi+pitch+deck+-+Jan-25.pdf",
+    "key_metrics": {
+      "LTM Revenue": "30500",
+      "Monthly Revenue": "7500",
+      "Current Raise Amount": "\u00a3250-500k",
+      "Valuation": "\u00a32-5m",
+      "Prior Funding": "35000",
+      "Team Equity": "100",
+      "Business Stage": "I have a business that I want to scale",
+      "Founders": "Thomas Standen",
+      "Founder Count": "1"
+    }
+  },
+  "timestamp": "2025-06-23T09:40:20.475356"
+}

@@ -1,0 +1,57 @@
+{
+  "status": "success",
+  "founders": [
+    {
+      "name": "Thomas Standen",
+      "linkedin_url": "https://www.linkedin.com/in/tom-standen-sylvi/",
+      "role_in_company": "Founder",
+      "background_summary": "Tom Standen is the founder of Sylvi, a tech startup he has been building for over a year and a half. His background is academically strong, with a Master's in Physics from The University of Manchester and UCLA. Prior to founding Sylvi, he built a formidable corporate career in strategy and analytics, working at both IBM and, most recently, McKinsey & Company. This experience at elite consulting firms signals a high level of strategic and analytical capability. His recent content on LinkedIn is focused on building Sylvi in public, demonstrating significant momentum and founder-led credibility. Key posts highlight a recently closed \u00a3350k angel round from notable investors, a new key hire, and product development driven directly by community feedback. His tone is confident and modern, using creative formats (e.g., a football-style \"transfer announcement\" for a new hire) that suggest strong brand-building potential. The posts consistently generate good engagement, indicating a supportive and interested network. His focus on running design workshops with students suggests Sylvi may operate in the EdTech space.",
+      "previous_companies": [
+        {
+          "company_name": "McKinsey & Company",
+          "role": "Strategy & Analytics",
+          "duration": null,
+          "description": "Worked in strategy and analytics, contributing to high-level consulting projects.",
+          "was_founder": false
+        },
+        {
+          "company_name": "IBM",
+          "role": null,
+          "duration": null,
+          "description": "Corporate career in analytics and strategy.",
+          "was_founder": false
+        }
+      ],
+      "education": [
+        {
+          "institution": "The University of Manchester",
+          "degree": "Master's",
+          "field_of_study": "Physics",
+          "graduation_year": null,
+          "notable_achievements": null
+        },
+        {
+          "institution": "UCLA",
+          "degree": "Master's",
+          "field_of_study": "Physics",
+          "graduation_year": null,
+          "notable_achievements": null
+        }
+      ],
+      "key_skills_and_expertise": null,
+      "public_speaking_or_content": null,
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": true,
+        "exciting_solution_to_problem": true,
+        "founded_something_relevant_before": false,
+        "impressive_relevant_past_experience": true,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "Tom Standen is a highly strategic and analytically strong founder with elite consulting experience at McKinsey & Company and IBM. He has not previously founded a relevant company before Sylvi, but demonstrates impressive credentials, strong industry fit, and a compelling, mission-aligned solution in the EdTech/tech space."
+      }
+    }
+  ],
+  "founder_count": 1,
+  "total_attempted": 1,
+  "timestamp": "2025-06-23T09:41:11.172272"
+}
