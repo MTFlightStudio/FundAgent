@@ -2,18 +2,17 @@
   "company_name": "Shopthru",
   "website": "https://shopthru.com/",
   "linkedin_url": "https://www.linkedin.com/in/kevin-groarke-1118318a/",
-  "description": "Shopthru is a UK-based fintech company that guarantees 100% attribution on affiliate sales, compared to just 40% through traditional networks. Their technology is designed to improve affiliate marketing efficiency and transparency for merchants and partners.",
+  "description": "Shopthru is a UK-based fintech company that provides technology guaranteeing 100% attribution on affiliate sales, compared to just 40% through traditional networks. The company aims to revolutionize affiliate marketing attribution for merchants and partners.",
   "industry": "Financial Services/ Fintech",
-  "sub_industry": "Fintech, Affiliate Marketing",
+  "sub_industry": "Affiliate Marketing Technology",
   "founded_year": null,
   "funding_stage": "I have a business that I want to scale",
   "total_funding_raised": "£0 (prior funding), currently raising £1-£2m",
   "funding_rounds_details": null,
   "key_products_services": [
-    "Affiliate sales attribution technology",
-    "Merchant and partner analytics"
+    "Affiliate sales attribution technology"
   ],
-  "business_model": "Shopthru generates revenue by providing affiliate sales attribution technology to merchants and partners, likely through SaaS or commission-based models.. USP: Our tech guarantees 100% attribution on affiliate sales, compared to just 40% through traditional networks.",
+  "business_model": "Shopthru generates revenue by providing merchants and partners with technology that ensures accurate affiliate sales attribution, likely charging fees or commissions for its service.. USP: Our tech guarantees 100% attribution on affiliate sales, compared to just 40% through traditional networks.",
   "target_customer": "B2B",
   "key_metrics": {
     "LTM Revenue": "£30,000",

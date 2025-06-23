@@ -5,27 +5,27 @@
       "name": "Kevin Groarke",
       "linkedin_url": "https://www.linkedin.com/in/kevin-groarke-1118318a/",
       "role_in_company": "CRO & Co-Founder",
-      "background_summary": "Kevin Groarke is a seasoned sales leader with over 20 years of experience in the fintech and payments sectors across the UK and Europe. His career is marked by senior roles at high-profile companies, including PayPal (UK Sales Director), Juni (Senior Sales Director EMEA), and most notably, Braintree, where he was one of the first three employees to launch and scale its European operations. This background demonstrates significant credibility and deep operational experience in growing tech companies from the ground up. He is now the Co-Founder and CRO of his own venture, Shopthru.com. His core strengths are in building and leading high-performance sales teams, with a stated focus on culture, passion and integrity.",
+      "background_summary": "Kevin Groarke is a Co-Founder and CRO at Shopthru.com with over 20 years of sales leadership experience, primarily focused on the fintech and payments sectors in the UK and Europe. His career is marked by senior roles at high-profile tech companies, including UK Sales Director at PayPal and Senior Sales Director EMEA at the VC-backed startup Juni. He was one of the first three employees to launch and scale Braintree in Europe, demonstrating strong go-to-market strategy and execution. Kevin is known for building high-performing sales teams based on culture, passion, and integrity, and has deep operational experience in both large corporations and high-growth startups.",
       "previous_companies": [
         {
           "company_name": "Juni",
           "role": "Senior Sales Director EMEA",
           "duration": null,
-          "description": null,
+          "description": "Senior sales leadership at a VC-backed fintech startup.",
           "was_founder": false
         },
         {
           "company_name": "PayPal",
           "role": "UK Sales Director",
           "duration": null,
-          "description": null,
+          "description": "Led UK sales for PayPal, a major global payments company.",
           "was_founder": false
         },
         {
           "company_name": "Braintree",
-          "role": "Founding Team, European Operations",
+          "role": "Founding Team, Europe",
           "duration": null,
-          "description": "One of the first three employees to launch and scale Braintree's European operations.",
+          "description": "One of the first three employees to launch and scale Braintree in Europe.",
           "was_founder": true
         }
       ],
@@ -39,34 +39,34 @@
         "founded_something_relevant_before": true,
         "impressive_relevant_past_experience": true,
         "exceptionally_smart_or_strategic": true,
-        "assessment_summary": "Kevin Groarke has a strong track record in fintech and payments, with senior roles at PayPal, Juni, and as a founding team member at Braintree Europe. He has founded something relevant before (Braintree Europe, not counting current company Shopthru), and has impressive, relevant past experience. He appears exceptionally smart and strategic based on his trajectory and operational achievements. Industry fit is strong. Mission alignment and excitement of the current solution are not fully assessable from available data."
+        "assessment_summary": "Kevin Groarke has a strong track record in fintech and payments, with senior roles at PayPal and Juni, and was a founding team member for Braintree in Europe. He demonstrates impressive, relevant experience and strategic leadership, and has founded something relevant prior to Shopthru. Industry fit is clear, though mission alignment and the excitement of the current solution are not fully determined from available data."
       }
     },
     {
       "name": "Liz McGuinness",
       "linkedin_url": "https://www.linkedin.com/in/cooscaleup/",
       "role_in_company": "Chief Operating Officer",
-      "background_summary": "Liz McGuinness is a seasoned executive operator with over 20 years of leadership experience spanning fintech, SaaS, e-commerce, and financial services. Her career began at American Express, providing a strong foundation in operational discipline, and has progressed to C-level roles in scale-up environments. Notably, she served as COO at the fintech company Bink, where she was instrumental in scaling the team, and now holds the same position at shopthru, an embedded e-commerce tech company. She is the co-founder of C-Suite Squad, a community for female executives, and is recognized for her ability to build influential networks and foster supportive environments. Her thought leadership on scaling businesses and her professional, mission-driven tone are evident in her public content.",
+      "background_summary": "Liz McGuinness is a seasoned executive operator with over 20 years of leadership experience across fintech, SaaS, ecommerce, and financial services. Her career trajectory shows a strong blend of corporate discipline, gained at American Express, and hands-on scale-up expertise. Notably, she served as COO at the fintech company Bink, where she was instrumental in its growth, and now holds the same position at shopthru, an embedded eCommerce tech company. Her content on LinkedIn highlights her professional focus on scaling operations and her personal mission of fostering community. She is also the co-founder of C-Suite Squad, a network for senior female leaders, which signals strong leadership, influence, and a commitment to impact-driven initiatives.",
       "previous_companies": [
-        {
-          "company_name": "C-Suite Squad",
-          "role": "Co-founder",
-          "duration": null,
-          "description": "Co-founder of a community for female executives, focused on building networks and fostering supportive environments.",
-          "was_founder": true
-        },
         {
           "company_name": "Bink",
           "role": "Chief Operating Officer",
           "duration": null,
-          "description": "COO at fintech company Bink, instrumental in scaling the team and operations.",
+          "description": "Instrumental in the growth of the fintech company Bink.",
           "was_founder": false
+        },
+        {
+          "company_name": "C-Suite Squad",
+          "role": "Co-founder",
+          "duration": null,
+          "description": "Co-founder of a network for senior female leaders.",
+          "was_founder": true
         },
         {
           "company_name": "American Express",
           "role": null,
           "duration": null,
-          "description": "Early career at American Express, providing a strong foundation in operational discipline.",
+          "description": "Corporate discipline and leadership experience.",
           "was_founder": false
         }
       ],
@@ -80,34 +80,34 @@
         "founded_something_relevant_before": true,
         "impressive_relevant_past_experience": true,
         "exceptionally_smart_or_strategic": true,
-        "assessment_summary": "Liz McGuinness has a strong track record as an executive operator in fintech, SaaS, and e-commerce, with notable experience at American Express and Bink. She has founded C-Suite Squad, demonstrating relevant founding experience outside her current company, and is recognized for her strategic thinking and thought leadership. Her background aligns well with the investment criteria, showing both industry fit and founder potential."
+        "assessment_summary": "Liz McGuinness is a highly experienced operator with a strong track record in fintech, SaaS, and ecommerce. She has founded a relevant network (C-Suite Squad) and held impressive roles at Bink and American Express. Her leadership, strategic vision, and commitment to impact-driven initiatives make her a strong fit for investment criteria."
       }
     },
     {
       "name": "Matt Parkinson",
       "linkedin_url": "https://www.linkedin.com/in/mattparkinsonuk/",
       "role_in_company": "Co-Founder & CEO",
-      "background_summary": "Matt Parkinson is a seasoned entrepreneur with two decades of hands-on experience building and leading companies in the e-commerce sector. As a serial founder, he has a proven track record that includes his current venture, shopthru, his long-standing e-commerce agency, GENE Commerce, and two prior digital marketing agencies. This deep history demonstrates significant leadership capability and domain expertise in navigating the digital commerce landscape. His credibility is reinforced by his recent content, which focuses on solving technical challenges within the Adobe Commerce and Magento ecosystems. The launch of a new product, BlueFinch, and collaborations with major partners like PayPal signal strong industry connections and an ability to execute on product development. Matt's tone is that of an expert practitioner\u2014confident, direct, and focused on providing tangible solutions to real-world business problems. This approach appears to resonate well with his technical B2B audience and establishes him as a credible, founder-led voice in his niche.",
+      "background_summary": "Matt Parkinson is a seasoned, serial entrepreneur with two decades of deep, hands-on experience in the e-commerce sector. His career demonstrates a clear trajectory of identifying market needs and building solutions, having founded multiple companies including Gene Commerce (a full-service e-commerce agency), Active Parity (a digital marketing agency), and his current ventures, shopthru and BlueFinch. This extensive background as a founder and CEO provides him with significant credibility and domain expertise in building and scaling e-commerce technology. His recent content on LinkedIn is highly focused and professional, targeting a B2B audience of e-commerce merchants and developers, particularly within the Adobe Commerce ecosystem. He effectively uses the platform to launch new products (BlueFinch), announce strategic partnerships (PayPal), and establish thought leadership around industry challenges. The tone is direct, confident, and solution-oriented, signalling a founder who is deeply embedded in his industry and understands the specific pain points of his customers. This focused activity and consistent engagement suggest a strong potential to build a founder-led brand.",
       "previous_companies": [
         {
-          "company_name": "GENE Commerce",
+          "company_name": "BlueFinch",
           "role": "Founder",
           "duration": null,
-          "description": "Founded and led an e-commerce agency specializing in Adobe Commerce and Magento ecosystems. Built strong industry partnerships and launched new products.",
+          "description": null,
           "was_founder": true
         },
         {
-          "company_name": "Digital Marketing Agency (Name Not Specified)",
-          "role": "Founder",
+          "company_name": "Gene Commerce",
+          "role": "Founder & CEO",
           "duration": null,
-          "description": "Founded and led digital marketing agencies prior to GENE Commerce, focusing on digital solutions and marketing strategies.",
+          "description": "Full-service e-commerce agency.",
           "was_founder": true
         },
         {
-          "company_name": "Digital Marketing Agency (Name Not Specified)",
+          "company_name": "Active Parity",
           "role": "Founder",
           "duration": null,
-          "description": "Founded and led digital marketing agencies prior to GENE Commerce, focusing on digital solutions and marketing strategies.",
+          "description": "Digital marketing agency.",
           "was_founder": true
         }
       ],
@@ -121,81 +121,66 @@
         "founded_something_relevant_before": true,
         "impressive_relevant_past_experience": true,
         "exceptionally_smart_or_strategic": true,
-        "assessment_summary": "Matt Parkinson is a serial founder with deep expertise in e-commerce and digital marketing. He has founded multiple relevant companies prior to Shopthru, including GENE Commerce and two digital marketing agencies. His experience, industry connections, and technical thought leadership make him an impressive and strategic founder. The venture fits the focus industry and solves real problems, though it does not specifically align with a mission-driven or impact-focused mandate."
+        "assessment_summary": "Matt Parkinson is a highly experienced serial entrepreneur in e-commerce, having founded multiple relevant companies prior to Shopthru. He demonstrates strong industry fit, a compelling founder-led approach, and impressive past experience. While his ventures are not specifically impact-driven, he is exceptionally smart and strategic, with a proven track record of building and scaling technology businesses."
       }
     },
     {
       "name": "Mark Wallman",
       "linkedin_url": "https://www.linkedin.com/in/markwallman/",
       "role_in_company": "Chief Technology Officer",
-      "background_summary": "Mark Wallman is a Chief Technology Officer with a deep, specialised background in e-commerce technology and architecture. His career demonstrates a clear upward trajectory from technical and solutions architect roles to his current C-level position at shopthru. His experience is rooted in software development, holding a BSc in the field from Bournemouth University.",
+      "background_summary": "Mark Wallman is a seasoned technology leader with a deep specialisation in the e-commerce sector. His career shows a clear progression from technical and solutions architect roles to his current position as CTO of shopthru. His experience is rooted in building and delivering e-commerce solutions, demonstrated by his time at specialised companies like Spryker Systems, eShopWorld, and Gene Commerce.",
       "previous_companies": [
-        {
-          "company_name": "shopthru",
-          "role": "Chief Technology Officer",
-          "duration": "1 yr 6 mos",
-          "description": "Current role as CTO",
-          "was_founder": false
-        },
         {
           "company_name": "MW Ecom Solutions",
           "role": "Founder",
           "duration": null,
-          "description": "Founded his own consultancy where he developed a SaaS application for click-and-collect services",
+          "description": "Consultancy that worked with clients including Krispy Kreme UK",
           "was_founder": true
         },
         {
-          "company_name": "Spryker",
-          "role": "Solutions Architect",
+          "company_name": "Spryker Systems",
+          "role": null,
           "duration": null,
-          "description": "Senior technical role at e-commerce service company",
+          "description": "Experience in e-commerce solutions",
           "was_founder": false
         },
         {
           "company_name": "eShopWorld",
-          "role": "Solutions Architect",
+          "role": null,
           "duration": null,
-          "description": "Senior technical role at e-commerce service company",
+          "description": "Experience in e-commerce solutions",
           "was_founder": false
         },
         {
-          "company_name": "Krispy Kreme UK",
-          "role": "Solutions Architect",
+          "company_name": "Gene Commerce",
+          "role": null,
           "duration": null,
-          "description": "Technical architecture role for major brand",
+          "description": "Experience in e-commerce solutions",
           "was_founder": false
         }
       ],
-      "education": [
-        {
-          "institution": "Bournemouth University",
-          "degree": "BSc",
-          "field_of_study": "Software Development",
-          "graduation_year": null,
-          "notable_achievements": null
-        }
-      ],
+      "education": [],
       "key_skills_and_expertise": [
-        "E-commerce Technology",
-        "Software Development",
-        "Technical Architecture",
-        "Solutions Architecture",
-        "SaaS Development",
-        "Click-and-Collect Solutions"
+        "E-commerce solutions",
+        "Technology leadership",
+        "Solutions architecture",
+        "Technical architecture",
+        "Product delivery",
+        "Strategic vision"
       ],
       "public_speaking_or_content": null,
       "investment_criteria_assessment": {
         "focus_industry_fit": true,
         "mission_alignment": null,
-        "exciting_solution_to_problem": null,
+        "exciting_solution_to_problem": true,
         "founded_something_relevant_before": true,
         "impressive_relevant_past_experience": true,
         "exceptionally_smart_or_strategic": true,
-        "assessment_summary": "Mark Wallman has strong technical expertise in e-commerce with relevant founding experience through MW Ecom Solutions where he developed a SaaS application. He has impressive experience working with major brands like Krispy Kreme UK and e-commerce service companies. His educational background in software development and career progression to CTO demonstrates strategic capability. However, there is insufficient information to assess mission alignment or the excitement factor of his current solution at shopthru."
+        "assessment_summary": "Mark Wallman meets most of the investment criteria with his strong technical background in e-commerce, having founded MW Ecom Solutions previously, and demonstrating impressive experience with companies like Spryker Systems, eShopWorld, and Gene Commerce. His profile suggests he is a builder-focused technical founder rather than a public-facing thought leader. While his industry fit and solution approach are strong, there is insufficient information to assess mission alignment."
       }
     }
   ],
   "founder_count": 4,
   "total_attempted": 4,
-  "timestamp": "2025-06-23T09:52:19.408668"
+  "timestamp": "2025-06-23T19:11:17.225209"
 }

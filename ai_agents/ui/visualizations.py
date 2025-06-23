@@ -434,7 +434,12 @@ def create_risk_opportunity_matrix(decision_data: Dict[str, Any]) -> go.Figure:
         
         if investment_research:
             recommendation = investment_research.get('overall_summary_and_recommendation', 'UNKNOWN')
-            confidence = investment_research.get('confidence_score_overall', 0.5)
+            raw_confidence = investment_research.get('confidence_score_overall', 0.5)
+            # Ensure confidence is a valid number
+            if raw_confidence is not None and isinstance(raw_confidence, (int, float)):
+                confidence = float(raw_confidence)
+            else:
+                confidence = 0.5
     else:
         # Default values if no assessment data
         risk_score = 0.5
@@ -481,7 +486,7 @@ def create_risk_opportunity_matrix(decision_data: Dict[str, Any]) -> go.Figure:
         y=[opportunity_score],
         mode='markers+text',
         marker=dict(
-            size=20 + (confidence * 20),  # Size based on confidence
+            size=20 + (max(0, min(1, confidence or 0.5)) * 20),  # Size based on confidence (safe calculation)
             color=color,
             line=dict(width=3, color='white'),
             symbol='star'
@@ -489,7 +494,7 @@ def create_risk_opportunity_matrix(decision_data: Dict[str, Any]) -> go.Figure:
         text=[recommendation],
         textposition='bottom center',
         name='Investment Position',
-        hovertemplate='<b>Investment Position</b><br>Risk: %{x:.1%}<br>Opportunity: %{y:.1%}<br>Recommendation: ' + str(recommendation) + '<br>Confidence: ' + f'{confidence:.1%}' + '<extra></extra>'
+        hovertemplate='<b>Investment Position</b><br>Risk: %{x:.1%}<br>Opportunity: %{y:.1%}<br>Recommendation: ' + str(recommendation) + '<br>Confidence: ' + f'{confidence or 0.5:.1%}' + '<extra></extra>'
     ))
     
     # Add quadrant labels

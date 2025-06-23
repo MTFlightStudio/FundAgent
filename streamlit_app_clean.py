@@ -106,7 +106,7 @@ def run_company_research():
         log_execution(f"Company research failed: {error_msg}", "error")
         st.error(f"Company research failed: {error_msg}")
 
-def run_founder_research():
+def run_founder_research(bypass_cache: bool = False):
     """Run founder research agent"""
     try:
         update_workflow_state('founder_research', 'running')
@@ -114,13 +114,17 @@ def run_founder_research():
         
         if st.session_state.input_method == "HubSpot Deal ID":
             deal_id = st.session_state.deal_id
-            result = st.session_state.agent_runner.run_founder_research(deal_id=deal_id)
+            result = st.session_state.agent_runner.run_founder_research(
+                deal_id=deal_id,
+                bypass_cache=bypass_cache
+            )
         else:
             founder_names = st.session_state.founder_names.split('\n')
             linkedin_urls = st.session_state.linkedin_urls.split('\n')
             result = st.session_state.agent_runner.run_founder_research(
                 founder_names=founder_names,
-                linkedin_urls=linkedin_urls
+                linkedin_urls=linkedin_urls,
+                bypass_cache=bypass_cache
             )
         
         st.session_state.results['founder_research'] = result
@@ -408,6 +412,27 @@ elif page == "🔍 Research Analysis":
                 run_founder_research()
             if st.button("📊 Decision", use_container_width=True):
                 run_decision_support()
+        
+        # Force refresh option for founders (bypasses cache)
+        if st.button("🔄 Refresh Founders (bypass cache)", use_container_width=True):
+            run_founder_research(bypass_cache=True)
+        
+        st.divider()
+        
+        # Cache Management
+        st.subheader("🗑️ Cache Management")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Clear Founder Cache", use_container_width=True):
+                st.session_state.agent_runner.clear_cache('founder')
+                # Also clear Streamlit's cache for founder research
+                st.cache_data.clear()
+                st.success("🗑️ Founder cache cleared!")
+        with col2:
+            if st.button("Clear All Cache", use_container_width=True):
+                st.session_state.agent_runner.clear_cache()
+                st.cache_data.clear()
+                st.success("🗑️ All caches cleared!")
 
     # Main content area with tabs
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([

@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import traceback
 from contextlib import contextmanager
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Add project root to Python path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -58,6 +59,8 @@ class AgentRunner:
             st.session_state.errors = {}
         if 'execution_times' not in st.session_state:
             st.session_state.execution_times = {}
+        if 'max_parallel_founders' not in st.session_state:
+            st.session_state.max_parallel_founders = 4  # Default to 4 parallel workers
         
         self.cache_expiry_hours = 24  # Cache expires after 24 hours
         self._setup_cache_directories()
@@ -273,16 +276,18 @@ class AgentRunner:
                                 break
                         
                         if not matched:
-                            # This is likely an additional founder
+                            # This is likely an additional founder - use LinkedIn username as fallback
+                            # Don't auto-generate names from usernames as they're often not real names
                             founder_info = {
-                                'name': name_parts,
+                                'name': f"LinkedIn User: {username}",  # More clear this is from username
                                 'email': None,
                                 'linkedin_url': url,
-                                'first_name': name_parts.split()[0] if name_parts else '',
-                                'last_name': ' '.join(name_parts.split()[1:]) if len(name_parts.split()) > 1 else ''
+                                'first_name': '',
+                                'last_name': '',
+                                'needs_manual_name': True  # Flag for manual name resolution
                             }
                             founder_info_list.append(founder_info)
-                            founders.append(name_parts)
+                            founders.append(f"LinkedIn User: {username}")
                             founder_linkedin_urls.append(url)
 
             # Update key_metrics with founder info
@@ -326,11 +331,18 @@ class AgentRunner:
             st.session_state.progress = progress
 
     def log_execution(self, message: str, level: str = "INFO"):
-        """Log execution details and update session state"""
+        """Log execution details and update session state (thread-safe)"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] {level}: {message}"
         logger.info(log_entry)
-        st.session_state.agent_logs.append(log_entry)
+        
+        # Only update session state if we're in the main thread
+        try:
+            if 'agent_logs' in st.session_state:
+                st.session_state.agent_logs.append(log_entry)
+        except Exception:
+            # Ignore session state errors in worker threads
+            pass
 
     def handle_error(self, error: Exception, agent_name: str):
         """Handle and log errors during agent execution"""
@@ -473,9 +485,25 @@ class AgentRunner:
                 'timestamp': datetime.now().isoformat()
             }
 
+    def run_founder_research(self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
+                           deal_id: str = None, company_name: str = None, 
+                           bypass_cache: bool = False) -> Dict[str, Any]:
+        """Run founder research agent with optional cache bypass"""
+        if bypass_cache:
+            self.log_execution("🔄 CACHE BYPASS: Running founder research without cache")
+            return self._run_founder_research_no_cache(founder_names, linkedin_urls, deal_id, company_name)
+        else:
+            self.log_execution("📋 Using cached founder research if available")
+            return self._run_founder_research_cached(founder_names, linkedin_urls, deal_id, company_name)
+    
     @st.cache_data(ttl=3600)
-    def run_founder_research(_self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
-                           deal_id: str = None, company_name: str = None) -> Dict[str, Any]:
+    def _run_founder_research_cached(_self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
+                                   deal_id: str = None, company_name: str = None) -> Dict[str, Any]:
+        """Cached version of founder research"""
+        return _self._run_founder_research_no_cache(founder_names, linkedin_urls, deal_id, company_name)
+    
+    def _run_founder_research_no_cache(self, founder_names: List[str] = None, linkedin_urls: List[str] = None, 
+                                     deal_id: str = None, company_name: str = None) -> Dict[str, Any]:
         """Run founder research agent with caching"""
         start_time = time.time()
         
@@ -483,23 +511,17 @@ class AgentRunner:
             st.session_state.execution_times = {}
         
         # Generate cache key
-        cache_key = _self._get_cache_key('founder', founder_names=founder_names, linkedin_urls=linkedin_urls, deal_id=deal_id, company_name=company_name)
-        cache_file_path = _self._get_cache_file_path('founder', cache_key)
+        cache_key = self._get_cache_key('founder', founder_names=founder_names, linkedin_urls=linkedin_urls, deal_id=deal_id, company_name=company_name)
+        cache_file_path = self._get_cache_file_path('founder', cache_key)
         
-        # Check cache first
-        if _self._is_cache_valid(cache_file_path):
-            cached_result = _self._load_from_cache(cache_file_path)
-            if cached_result:
-                execution_time = time.time() - start_time
-                st.session_state.execution_times['founder_research'] = execution_time
-                st.success(f"⚡ Founder research loaded from cache in {execution_time:.1f} seconds (Age: {cached_result['_cache_info']['cache_age_hours']:.1f} hours)")
-                return cached_result
+        # Skip cache check in no-cache version
+        # This method is called when bypass_cache=True, so don't check cache
         
         progress_bar = st.progress(0)
         status_text = st.empty()
         
         try:
-            status_text.text("👤 Initializing founder research...")
+            status_text.text("👤 Initializing founder research (bypassing cache)...")
             progress_bar.progress(10)
             
             # Extract founder info from HubSpot if needed
@@ -507,14 +529,14 @@ class AgentRunner:
             current_company = company_name
             
             if deal_id and not founder_names:
-                hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
+                hubspot_data = self._extract_company_info_from_hubspot(deal_id)
                 founder_info_list = hubspot_data.get('founder_info_list', [])
                 if not current_company:
                     current_company = hubspot_data.get('company_name')
                 if not founder_info_list:
                     raise ValueError("Could not extract founder information from HubSpot deal")
             elif deal_id and not current_company:
-                hubspot_data = _self._extract_company_info_from_hubspot(deal_id)
+                hubspot_data = self._extract_company_info_from_hubspot(deal_id)
                 current_company = hubspot_data.get('company_name')
             
             # If manual entry, create founder info list
@@ -529,21 +551,20 @@ class AgentRunner:
             if not founder_info_list:
                 raise ValueError("No founder information available")
             
-            status_text.text("🔗 Searching LinkedIn profiles...")
+            status_text.text("🔗 Searching LinkedIn profiles in parallel...")
             progress_bar.progress(25)
             
             founder_profiles = []
+            failed_founders = []
             total_founders = len(founder_info_list)
+            completed_founders = 0
             
-            for i, founder_info in enumerate(founder_info_list):
-                progress = 25 + (50 * (i + 1) / total_founders)
+            # Function to research a single founder
+            def research_single_founder(founder_info: Dict[str, str], index: int) -> Optional[Dict[str, Any]]:
                 founder_name = founder_info['name']
                 linkedin_url = founder_info.get('linkedin_url')
                 
-                status_text.text(f"📊 Analyzing {founder_name}'s background... ({i+1}/{total_founders})")
-                progress_bar.progress(int(progress))
-                
-                _self.log_execution(f"Running founder research for: {founder_name}" + (f" with LinkedIn: {linkedin_url}" if linkedin_url else ""))
+                self.log_execution(f"Starting parallel research for: {founder_name}" + (f" with LinkedIn: {linkedin_url}" if linkedin_url else ""))
                 
                 try:
                     if linkedin_url:
@@ -552,12 +573,51 @@ class AgentRunner:
                         founder_result = run_founder_research_cli_entrypoint(founder_name, current_company=current_company)
                     
                     if founder_result:
-                        founder_dict = founder_result.model_dump(mode='json')
-                        founder_profiles.append(founder_dict)
+                        return founder_result.model_dump(mode='json')
+                    else:
+                        self.log_execution(f"No result returned for founder {founder_name}", "WARNING")
+                        return None
+                        
                 except Exception as e:
-                    _self.log_execution(f"Failed to research founder {founder_name}: {str(e)}", "ERROR")
-                    # Continue with other founders
-                    continue
+                    self.log_execution(f"Failed to research founder {founder_name}: {str(e)}", "ERROR")
+                    return None
+            
+            # Use ThreadPoolExecutor for parallel processing
+            # Get max workers from session state or default to 4, but respect founder count and limit to 10
+            max_workers = min(
+                st.session_state.get('max_parallel_founders', 4),
+                total_founders,
+                10
+            )
+            
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # Submit all founder research tasks
+                future_to_founder = {
+                    executor.submit(research_single_founder, founder_info, i): (i, founder_info) 
+                    for i, founder_info in enumerate(founder_info_list)
+                }
+                
+                # Process completed futures
+                for future in as_completed(future_to_founder):
+                    index, founder_info = future_to_founder[future]
+                    try:
+                        result = future.result()
+                        if result:
+                            founder_profiles.append(result)
+                        else:
+                            failed_founders.append(founder_info['name'])
+                            
+                        completed_founders += 1
+                        
+                        # Update progress
+                        progress = 25 + (50 * completed_founders / total_founders)
+                        status_text.text(f"📊 Completed {completed_founders}/{total_founders} founders...")
+                        progress_bar.progress(int(progress))
+                        
+                    except Exception as exc:
+                        self.log_execution(f"Exception for founder {founder_info['name']}: {exc}", "ERROR")
+                        failed_founders.append(founder_info['name'])
+                        completed_founders += 1
             
             status_text.text("✅ Founder research completed!")
             progress_bar.progress(100)
@@ -571,7 +631,7 @@ class AgentRunner:
             }
             
             # Save to cache
-            _self._save_to_cache(cache_file_path, founder_data)
+            self._save_to_cache(cache_file_path, founder_data)
             
             # Track execution time
             execution_time = time.time() - start_time
@@ -581,7 +641,24 @@ class AgentRunner:
             progress_bar.empty()
             status_text.empty()
             
-            st.success(f"🎉 Founder research completed in {execution_time:.1f} seconds ({len(founder_profiles)}/{total_founders} founders researched successfully)")
+            # Calculate performance metrics
+            sequential_time_estimate = total_founders * 60  # Assuming 1 minute per founder sequentially
+            time_saved = sequential_time_estimate - execution_time
+            savings_percentage = (time_saved / sequential_time_estimate * 100) if sequential_time_estimate > 0 else 0
+            
+            # Create success message with performance details
+            success_msg = f"🎉 Founder research completed in {execution_time:.1f} seconds ({len(founder_profiles)}/{total_founders} founders)"
+            if max_workers > 1:
+                success_msg += f" - {savings_percentage:.0f}% faster with {max_workers} parallel workers!"
+            else:
+                success_msg += f" - sequential processing"
+            
+            # Add failed founders info if any
+            if failed_founders:
+                self.log_execution(f"Failed to research {len(failed_founders)} founders: {', '.join(failed_founders)}", "WARNING")
+                success_msg += f" ({len(failed_founders)} failed)"
+            
+            st.success(success_msg)
             
             return founder_data
                 
@@ -593,7 +670,7 @@ class AgentRunner:
             status_text.empty()
             
             error_msg = f"Founder research failed: {str(e)}"
-            _self.log_execution(error_msg, "ERROR")
+            self.log_execution(error_msg, "ERROR")
             st.error(f"❌ {error_msg}")
             
             return {
