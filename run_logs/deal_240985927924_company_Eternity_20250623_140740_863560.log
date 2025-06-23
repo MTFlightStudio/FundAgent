@@ -1,0 +1,26 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python3.12 -m ai_agents.agents.company_research_agent --company_name Eternity
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"company_name":"Eternity","website":null,"linkedin_url":null,"description":null,"industry":null,"sub_industry":null,"founded_year":null,"funding_stage":null,"total_funding_raised":null,"funding_rounds_details":null,"key_products_services":null,"business_model":null,"target_customer":null,"key_metrics":null,"team_size":null,"location_hq":null,"other_locations":null,"mission_statement":null}
+
+
+--- STDERR ---
+2025-06-23 15:07:41,303 - INFO - __main__ - Company research agent CLI starting...
+2025-06-23 15:07:41,303 - INFO - __main__ - CompanyResearchAgent: Starting comprehensive research for company: "Eternity" via CLI entry point.
+Agent 'company_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-23 15:07:41,556 - INFO - __main__ - CompanyResearchAgent: Executing core research logic for "Eternity" with model gpt-4.1.
+2025-06-23 15:07:42,416 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Eternity company official website
+2025-06-23 15:07:43,801 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Eternity company overview
+2025-06-23 15:07:45,126 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Eternity company profile
+2025-06-23 15:07:45,996 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 15:07:46,983 - INFO - __main__ - CompanyResearchAgent: Successfully researched and validated profile for company: Eternity
+2025-06-23 15:07:46,986 - INFO - __main__ - CompanyResearchAgent: Profile for "Eternity" saved to company_research_Eternity.json
+2025-06-23 15:07:46,986 - INFO - __main__ - Company research agent: Successfully generated JSON output for Eternity
+

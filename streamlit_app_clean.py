@@ -184,10 +184,6 @@ def run_decision_support():
             update_workflow_state('decision_support', 'error', 'Company research not available')
             return
         
-        # Log what data we're passing
-        log_execution(f"Company research available: {company_research is not None}")
-        log_execution(f"Company research status: {company_research.get('status') if company_research else 'None'}")
-        
         result = st.session_state.agent_runner.run_decision_support(
             company_research=company_research,
             founder_research=st.session_state.results.get('founder_research'),
@@ -278,6 +274,16 @@ def run_full_pipeline():
         st.error(f"❌ **Pipeline Failed:** {error_msg}")
         st.warning("💡 **Tip:** Check individual agent results above - partial results may still be available!")
 
+def check_api_connections():
+    """Check if required environment variables are set"""
+    import os
+    status = {}
+    status['hubspot'] = bool(os.getenv('HUBSPOT_ACCESS_TOKEN'))
+    status['openai'] = bool(os.getenv('OPENAI_API_KEY'))
+    status['tavily'] = bool(os.getenv('TAVILY_API_KEY'))
+    status['relevance'] = bool(os.getenv('RELEVANCE_AI_TOKEN'))
+    return status
+
 # Navigation
 st.sidebar.title("🚀 Flight Story")
 st.sidebar.markdown("### AI Investment Research Platform")
@@ -291,16 +297,6 @@ page = st.sidebar.radio(
 # System Status
 st.sidebar.markdown("---")
 with st.sidebar.expander("🔍 System Status"):
-    def check_api_connections():
-        """Check if required environment variables are set"""
-        import os
-        status = {}
-        status['hubspot'] = bool(os.getenv('HUBSPOT_ACCESS_TOKEN'))
-        status['openai'] = bool(os.getenv('OPENAI_API_KEY'))
-        status['tavily'] = bool(os.getenv('TAVILY_API_KEY'))
-        status['relevance'] = bool(os.getenv('RELEVANCE_AI_TOKEN'))
-        return status
-    
     api_status = check_api_connections()
     
     col1, col2 = st.columns(2)
@@ -419,223 +415,71 @@ elif page == "🔍 Research Analysis":
         "🌍 Market", "📊 Decision", "📈 Charts", "📝 Logs"
     ])
 
-with tab1:
-    # Use the enhanced workflow display function
-    from ai_agents.ui.workflow_visualizer import display_workflow
-    display_workflow()
-    
-    # Comprehensive export section
-    st.subheader("📦 Complete Research Package")
-    
-    # Show available results
-    available_results = list(st.session_state.results.keys())
-    if available_results:
-        st.write("**Available Research Components:**")
-        for result_type in available_results:
-            status_icon = "✅" if result_type in st.session_state.results else "❌"
-            result_label = {
-                'company_research': 'Company Research',
-                'founder_research': 'Founder Research', 
-                'market_research': 'Market Analysis',
-                'decision_support': 'Investment Decision'
-            }.get(result_type, result_type)
-            st.write(f"{status_icon} {result_label}")
-        
-        # Comprehensive export buttons
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button("📋 Export Complete Report", key="export_complete_report"):
-                # Create comprehensive report with metadata
-                from datetime import datetime
-                
-                # Extract key information for the report
-                company_name = "Unknown Company"
-                deal_id = st.session_state.get('deal_id', 'N/A')
-                
-                if 'company_research' in st.session_state.results:
-                    company_data = st.session_state.results['company_research']
-                    if isinstance(company_data, dict) and 'company_profile' in company_data:
-                        company_name = company_data['company_profile'].get('company_name', company_name)
-                    elif isinstance(company_data, dict):
-                        company_name = company_data.get('company_name', company_name)
-                
-                # Create comprehensive report
-                complete_report = {
-                    "report_metadata": {
-                        "generated_at": datetime.now().isoformat(),
-                        "company_name": company_name,
-                        "deal_id": deal_id,
-                        "input_method": st.session_state.get('input_method', 'N/A'),
-                        "components_included": available_results,
-                        "report_version": "1.0"
-                    },
-                    "research_results": st.session_state.results,
-                    "execution_logs": st.session_state.logs[-20:] if st.session_state.logs else [],  # Last 20 logs
-                    "workflow_state": st.session_state.workflow_state
-                }
-                
-                json_str = json.dumps(complete_report, indent=2)
-                filename = f"investment_report_{company_name.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-                
-                st.download_button(
-                    label="Download Complete Investment Report",
-                    data=json_str,
-                    file_name=filename,
-                    mime="application/json",
-                    key="download_complete_report"
-                )
-        
-        with col2:
-            if st.button("📊 Export Results Only", key="export_results_only"):
-                # Export just the research results without metadata
-                json_str = json.dumps(st.session_state.results, indent=2)
-                
-                # Generate filename based on available results
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"research_results_{timestamp}.json"
-                
-                st.download_button(
-                    label="Download Results JSON",
-                    data=json_str,
-                    file_name=filename,
-                    mime="application/json",
-                    key="download_results_only"
-                )
+    with tab1:
+        # Use the enhanced workflow display function
+        from ai_agents.ui.workflow_visualizer import display_workflow
+        display_workflow()
         
         # Summary statistics
         st.subheader("📈 Research Summary")
-        summary_col1, summary_col2, summary_col3 = st.columns(3)
-        
-        with summary_col1:
-            total_components = 4  # company, founder, market, decision
-            completed_components = len(available_results)
-            st.metric("Completion Rate", f"{completed_components}/{total_components}", 
-                     f"{(completed_components/total_components)*100:.0f}%")
-        
-        with summary_col2:
-            if 'decision_support' in st.session_state.results:
-                decision_data = st.session_state.results['decision_support']
-                if isinstance(decision_data, dict):
-                    # Try to extract recommendation
-                    recommendation = "N/A"
-                    if 'investment_research' in decision_data:
-                        recommendation = decision_data['investment_research'].get('overall_summary_and_recommendation', 'N/A')
-                    elif 'overall_summary_and_recommendation' in decision_data:
+        available_results = list(st.session_state.results.keys())
+        if available_results:
+            summary_col1, summary_col2, summary_col3 = st.columns(3)
+            
+            with summary_col1:
+                total_components = 4  # company, founder, market, decision
+                completed_components = len(available_results)
+                st.metric("Completion Rate", f"{completed_components}/{total_components}", 
+                         f"{(completed_components/total_components)*100:.0f}%")
+            
+            with summary_col2:
+                if 'decision_support' in st.session_state.results:
+                    decision_data = st.session_state.results['decision_support']
+                    if isinstance(decision_data, dict):
                         recommendation = decision_data.get('overall_summary_and_recommendation', 'N/A')
-                    
-                    st.metric("Investment Recommendation", recommendation)
-                else:
-                    st.metric("Investment Recommendation", "N/A")
-            else:
-                st.metric("Investment Recommendation", "Pending", "Run decision support")
-        
-        with summary_col3:
-            if 'decision_support' in st.session_state.results:
-                decision_data = st.session_state.results['decision_support']
-                if isinstance(decision_data, dict):
-                    # Try to extract confidence
-                    confidence = None
-                    if 'investment_research' in decision_data:
-                        confidence = decision_data['investment_research'].get('confidence_score_overall')
-                    elif 'confidence_score_overall' in decision_data:
-                        confidence = decision_data.get('confidence_score_overall')
-                    elif 'confidence_score' in decision_data:
-                        confidence = decision_data.get('confidence_score')
-                    elif 'confidence' in decision_data:
-                        confidence = decision_data.get('confidence')
-                    
-                    # Handle None or invalid confidence scores
-                    if confidence is not None and isinstance(confidence, (int, float)):
-                        # If confidence is already a percentage (>1), don't multiply by 100
-                        if confidence > 1:
-                            st.metric("Confidence Score", f"{confidence:.0f}%")
-                        else:
-                            st.metric("Confidence Score", f"{confidence*100:.0f}%")
+                        st.metric("Investment Recommendation", recommendation)
                     else:
-                        st.metric("Confidence Score", "N/A")
+                        st.metric("Investment Recommendation", "N/A")
                 else:
-                    st.metric("Confidence Score", "0%")
-            else:
-                st.metric("Confidence Score", "0%", "Run decision support")
-    
-    else:
-        st.info("No research results available yet. Run an analysis to see the workflow in action.")
-        st.write("**Next Steps:**")
-        st.write("1. Configure your research parameters in the sidebar")
-        st.write("2. Click '🚀 Run Full Analysis' or run individual agents")
-        st.write("3. Monitor progress in this workflow visualization")
-        st.write("4. Export your complete investment research report")
-    
-with tab2:
-    st.header("Company Research")
-    if 'company_research' in st.session_state.results:
-        display_company_profile(st.session_state.results['company_research'])
-        # Export button specific to company research
-        if st.button("Export Company Data", key="export_company"):
-            json_str = json.dumps(st.session_state.results['company_research'], indent=2)
-            st.download_button(
-                label="Download Company JSON",
-                data=json_str,
-                file_name="company_research.json",
-                mime="application/json",
-                key="download_company_json"
-            )
+                    st.metric("Investment Recommendation", "Pending", "Run decision support")
+            
+            with summary_col3:
+                if 'decision_support' in st.session_state.results:
+                    decision_data = st.session_state.results['decision_support']
+                    if isinstance(decision_data, dict):
+                        confidence = decision_data.get('confidence_score_overall', 0)
+                        if isinstance(confidence, (int, float)):
+                            if confidence > 1:
+                                st.metric("Confidence Score", f"{confidence:.0f}%")
+                            else:
+                                st.metric("Confidence Score", f"{confidence*100:.0f}%")
+                        else:
+                            st.metric("Confidence Score", "N/A")
+                    else:
+                        st.metric("Confidence Score", "0%")
+                else:
+                    st.metric("Confidence Score", "0%", "Run decision support")
 
-with tab3:
-    st.header("Founder Research")
-    if 'founder_research' in st.session_state.results:
-        display_founder_profiles(st.session_state.results['founder_research'])
-        # Export button specific to founder research
-        if st.button("Export Founder Data", key="export_founders"):
-            json_str = json.dumps(st.session_state.results['founder_research'], indent=2)
-            st.download_button(
-                label="Download Founder JSON",
-                data=json_str,
-                file_name="founder_research.json",
-                mime="application/json",
-                key="download_founder_json"
-            )
+    with tab2:
+        st.header("Company Research")
+        if 'company_research' in st.session_state.results:
+            display_company_profile(st.session_state.results['company_research'])
 
-with tab4:
-    st.header("Market Analysis")
-    if 'market_research' in st.session_state.results:
-        display_market_analysis(st.session_state.results['market_research'])
-        # Export button specific to market research
-        if st.button("Export Market Data", key="export_market"):
-            json_str = json.dumps(st.session_state.results['market_research'], indent=2)
-            st.download_button(
-                label="Download Market JSON",
-                data=json_str,
-                file_name="market_research.json",
-                mime="application/json",
-                key="download_market_json"
-            )
+    with tab3:
+        st.header("Founder Research")
+        if 'founder_research' in st.session_state.results:
+            display_founder_profiles(st.session_state.results['founder_research'])
 
-with tab5:
-    st.header("Investment Decision")
-    if 'decision_support' in st.session_state.results:
-        display_investment_decision(st.session_state.results['decision_support'])
-        # Export button specific to decision support
-        if st.button("Export Decision", key="export_decision"):
-            json_str = json.dumps(st.session_state.results['decision_support'], indent=2)
-            st.download_button(
-                label="Download Decision JSON",
-                data=json_str,
-                file_name="investment_decision.json",
-                mime="application/json",
-                key="download_decision_json"
-            )
+    with tab4:
+        st.header("Market Analysis")
+        if 'market_research' in st.session_state.results:
+            display_market_analysis(st.session_state.results['market_research'])
 
-with tab6:
-    st.header("📈 Interactive Visualizations")
-    if st.session_state.results:
-        # Import and display visualizations
-        from ai_agents.ui.visualizations import display_all_visualizations
-        display_all_visualizations(st.session_state.results)
-    else:
-        st.info("No analysis data available yet. Run the research agents to see interactive visualizations.")
-    
+    with tab5:
+        st.header("Investment Decision")
+        if 'decision_support' in st.session_state.results:
+            display_investment_decision(st.session_state.results['decision_support'])
+
     with tab6:
         st.header("📈 Interactive Visualizations")
         if st.session_state.results:

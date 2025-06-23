@@ -1,0 +1,26 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python3.12 -m ai_agents.agents.founder_research_agent --linkedin_url https://www.linkedin.com/in/anshika-arora-ab5021137/ --name Anshika Arora
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"name":"Anshika Arora","linkedin_url":"https://www.linkedin.com/in/anshika-arora-ab5021137/","role_in_company":"Founder","background_summary":"Anshika Arora is the founder of Eternity, a B2B SaaS CRM aimed at modernizing the wedding industry by providing management, communication, and payment tools for solopreneurs and SMEs. Her founder journey was sparked by a personal experience during the pandemic, giving her a clear and authentic mission. Prior to founding Eternity, she had a brief role as a Relationship Manager at HSBC after graduating with a Business Management degree from the University of Birmingham. Anshika is actively building significant credibility and influence within her niche, recently appointed as a Gen-Z and emerging trends advisor to the UK Wedding Association. Her content on LinkedIn is strategic and focused, clearly articulating the problem Eternity solves and positioning it alongside successful vertical SaaS platforms. She is building a personal brand as a key voice for the future of the wedding industry, particularly in the multicultural and Gen-Z segments.","previous_companies":[{"company_name":"Eternity","role":"Founder","duration":"3 yrs 3 mos","description":"Founded Eternity, a B2B SaaS CRM for the wedding industry, providing management, communication, and payment tools for solopreneurs and SMEs.","was_founder":true},{"company_name":"HSBC","role":"Relationship Manager","duration":null,"description":"Brief role as Relationship Manager prior to founding Eternity.","was_founder":false}],"education":[{"institution":"University of Birmingham","degree":"Business Management","field_of_study":null,"graduation_year":null,"notable_achievements":null}],"key_skills_and_expertise":null,"public_speaking_or_content":null,"investment_criteria_assessment":{"focus_industry_fit":true,"mission_alignment":true,"exciting_solution_to_problem":true,"founded_something_relevant_before":false,"impressive_relevant_past_experience":false,"exceptionally_smart_or_strategic":true,"assessment_summary":"Anshika Arora is a first-time founder with a strong personal mission and strategic positioning in the wedding industry SaaS space. She has not previously founded a relevant company before Eternity, but demonstrates thought leadership, industry recognition, and a clear understanding of her market. Her background includes a business degree and a brief stint at HSBC, but her main strength is her current founder journey and emerging influence in her sector."}}
+
+
+--- STDERR ---
+2025-06-23 15:07:41,301 - INFO - __main__ - Founder research agent CLI starting...
+2025-06-23 15:07:41,301 - INFO - ai_agents.utils.retry_handler - Initial LLM not provided for founder_research. Attempting to fetch with model_selector_func.
+Agent 'founder_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-23 15:07:41,556 - INFO - ai_agents.utils.retry_handler - Fetched initial LLM for founder_research: gpt-4.1
+2025-06-23 15:07:41,556 - INFO - __main__ - Starting research for founder: "Anshika Arora" using EnhancedFounderResearchAgent.
+2025-06-23 15:07:41,556 - INFO - __main__ - Processed LinkedIn URL for research: https://www.linkedin.com/in/anshika-arora-ab5021137/
+2025-06-23 15:07:42,325 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/anshika-arora-ab5021137/
+2025-06-23 15:08:24,181 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Anshika Arora Eternity founder key skills expertise
+search_tool: Searching Tavily for: Anshika Arora public speaking articles podcasts content
+2025-06-23 15:08:26,212 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 15:08:33,857 - INFO - __main__ - Successfully researched and validated profile for founder: Anshika Arora
+2025-06-23 15:08:33,858 - INFO - __main__ - Founder research agent: Successfully generated and printed JSON output for Anshika Arora
+

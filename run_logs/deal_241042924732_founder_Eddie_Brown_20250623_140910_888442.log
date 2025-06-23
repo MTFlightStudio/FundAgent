@@ -1,0 +1,26 @@
+--- Command ---
+/Users/matt.toland/AI-Agents/venv/bin/python3.12 -m ai_agents.agents.founder_research_agent --linkedin_url https://www.linkedin.com/in/eddie-brown-943417194/ --name Eddie Brown
+
+--- Return Code ---
+0
+
+--- STDOUT ---
+{"name":"Eddie Brown","linkedin_url":"https://www.linkedin.com/in/eddie-brown-943417194/","role_in_company":"CEO, Co-Founder, Aerospace Engineer","background_summary":"Eddie Brown is a highly technical founder with a strong academic and professional background in aerospace and software engineering. He holds a First Class Master's degree in Aeronautics with Spacecraft Engineering from Imperial College London, where he was on the Dean's List, and gained early leadership experience as a Propulsion Engineering Team Lead for the university's rocketry group. His credibility is further bolstered by experience at notable tech companies like Darktrace and MathWorks, and most significantly, his current venture, Astron Systems, is a graduate of the Techstars Space 2024 accelerator. Eddie's content on LinkedIn establishes him as a founder with a clear, deeply-held, and contrarian vision for the space industry. His posts are direct, opinionated, and focused on a singular mission: proving that 100% rocket reusability is the only viable future for commercial space launch. He actively debunks what he considers industry misconceptions and advocates for higher standards in sustainability and technology. While his audience is niche, his voice is that of a subject matter expert with a strong founder-led point of view, signaling significant brand potential as a leader in the European space-tech ecosystem.","previous_companies":[{"company_name":"Astron Systems Ltd.","role":"CEO, Co-Founder, Aerospace Engineer","duration":"4 yrs 3 mos","description":"Leading a space technology company focused on 100% rocket reusability. Graduate of Techstars Space 2024 accelerator.","was_founder":true},{"company_name":"MathWorks","role":null,"duration":null,"description":null,"was_founder":false},{"company_name":"Darktrace","role":null,"duration":null,"description":null,"was_founder":false}],"education":[{"institution":"Imperial College London","degree":"Master's (First Class)","field_of_study":"Aeronautics with Spacecraft Engineering","graduation_year":null,"notable_achievements":"Dean's List"}],"key_skills_and_expertise":null,"public_speaking_or_content":null,"investment_criteria_assessment":{"focus_industry_fit":true,"mission_alignment":true,"exciting_solution_to_problem":true,"founded_something_relevant_before":false,"impressive_relevant_past_experience":true,"exceptionally_smart_or_strategic":true,"assessment_summary":"Eddie Brown is a highly technical and mission-driven founder with a strong academic background and experience at notable tech companies. His current venture, Astron Systems, is well-aligned with focus industries and demonstrates a compelling, founder-led vision for the future of space technology. However, based on available data, he does not appear to have founded a relevant company prior to Astron Systems."}}
+
+
+--- STDERR ---
+2025-06-23 15:09:11,435 - INFO - __main__ - Founder research agent CLI starting...
+2025-06-23 15:09:11,436 - INFO - ai_agents.utils.retry_handler - Initial LLM not provided for founder_research. Attempting to fetch with model_selector_func.
+Agent 'founder_research' selected model: gpt-4.1 (Key: gpt-4.1, Type: primary_preferred, Provider: openai)
+2025-06-23 15:09:11,697 - INFO - ai_agents.utils.retry_handler - Fetched initial LLM for founder_research: gpt-4.1
+2025-06-23 15:09:11,697 - INFO - __main__ - Starting research for founder: "Eddie Brown" using EnhancedFounderResearchAgent.
+2025-06-23 15:09:11,698 - INFO - __main__ - Processed LinkedIn URL for research: https://www.linkedin.com/in/eddie-brown-943417194/
+2025-06-23 15:09:12,291 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+research_prospect_tool: Calling Relevance AI for URL: https://www.linkedin.com/in/eddie-brown-943417194/
+2025-06-23 15:10:04,405 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+search_tool: Searching Tavily for: Eddie Brown Astron Systems key skills expertise
+search_tool: Searching Tavily for: Eddie Brown Astron Systems public speaking articles interviews
+2025-06-23 15:10:06,148 - INFO - httpx - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 15:10:13,719 - INFO - __main__ - Successfully researched and validated profile for founder: Eddie Brown
+2025-06-23 15:10:13,721 - INFO - __main__ - Founder research agent: Successfully generated and printed JSON output for Eddie Brown
+

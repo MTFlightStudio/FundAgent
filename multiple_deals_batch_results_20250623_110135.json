@@ -1,0 +1,583 @@
+{
+  "batch_id": "batch_20250623_110135",
+  "total_deals": 20,
+  "processed_deals": 20,
+  "successful_deals": 20,
+  "failed_deals": 0,
+  "deals": {
+    "76273250499": {
+      "deal_id": "76273250499",
+      "status": "basic_fetch_only"
+    },
+    "76273401051": {
+      "deal_id": "76273401051",
+      "status": "basic_fetch_only"
+    },
+    "76311761131": {
+      "deal_id": "76311761131",
+      "status": "basic_fetch_only"
+    },
+    "76328434915": {
+      "deal_id": "76328434915",
+      "status": "basic_fetch_only"
+    },
+    "76329598180": {
+      "deal_id": "76329598180",
+      "status": "basic_fetch_only"
+    },
+    "76427203825": {
+      "deal_id": "76427203825",
+      "status": "basic_fetch_only"
+    },
+    "76445707504": {
+      "deal_id": "76445707504",
+      "status": "basic_fetch_only"
+    },
+    "76489082088": {
+      "deal_id": "76489082088",
+      "status": "basic_fetch_only"
+    },
+    "76527581401": {
+      "deal_id": "76527581401",
+      "status": "basic_fetch_only"
+    },
+    "76810581181": {
+      "deal_id": "76810581181",
+      "status": "basic_fetch_only"
+    },
+    "76812583131": {
+      "deal_id": "76812583131",
+      "status": "basic_fetch_only"
+    },
+    "76892927169": {
+      "deal_id": "76892927169",
+      "status": "basic_fetch_only"
+    },
+    "76955136197": {
+      "deal_id": "76955136197",
+      "status": "basic_fetch_only"
+    },
+    "77367866607": {
+      "deal_id": "77367866607",
+      "status": "basic_fetch_only"
+    },
+    "77380780262": {
+      "deal_id": "77380780262",
+      "status": "basic_fetch_only"
+    },
+    "77433425115": {
+      "deal_id": "77433425115",
+      "status": "basic_fetch_only"
+    },
+    "77559137521": {
+      "deal_id": "77559137521",
+      "status": "basic_fetch_only"
+    },
+    "77578201315": {
+      "deal_id": "77578201315",
+      "status": "basic_fetch_only"
+    },
+    "77590693073": {
+      "deal_id": "77590693073",
+      "status": "basic_fetch_only"
+    },
+    "77595928775": {
+      "deal_id": "77595928775",
+      "status": "basic_fetch_only"
+    }
+  },
+  "errors": [],
+  "processing_start": "2025-06-23T11:01:35.439622+00:00",
+  "processing_end": "2025-06-23T11:01:35.439813+00:00",
+  "pipeline_analysis": {
+    "pipeline_id": "default",
+    "total_stages": 13,
+    "stages": {
+      "appointmentscheduled": {
+        "label": "Must-have checks",
+        "id": "appointmentscheduled",
+        "deal_count": 0,
+        "deals": []
+      },
+      "1245906141": {
+        "label": "SB kill/continue",
+        "id": "1245906141",
+        "deal_count": 0,
+        "deals": []
+      },
+      "presentationscheduled": {
+        "label": "Screening Call",
+        "id": "presentationscheduled",
+        "deal_count": 0,
+        "deals": []
+      },
+      "decisionmakerboughtin": {
+        "label": "Investment Memo",
+        "id": "decisionmakerboughtin",
+        "deal_count": 0,
+        "deals": []
+      },
+      "contractsent": {
+        "label": "IC meeting",
+        "id": "contractsent",
+        "deal_count": 0,
+        "deals": []
+      },
+      "968989903": {
+        "label": "Founders pitch",
+        "id": "968989903",
+        "deal_count": 0,
+        "deals": []
+      },
+      "968989904": {
+        "label": "Deal terms and offer",
+        "id": "968989904",
+        "deal_count": 0,
+        "deals": []
+      },
+      "968989905": {
+        "label": "Due diligence, legals and sign off",
+        "id": "968989905",
+        "deal_count": 0,
+        "deals": []
+      },
+      "closedwon": {
+        "label": "Accepted",
+        "id": "closedwon",
+        "deal_count": 0,
+        "deals": []
+      },
+      "closedlost": {
+        "label": "Rejected",
+        "id": "closedlost",
+        "deal_count": 0,
+        "deals": []
+      },
+      "1457423574": {
+        "label": "Rejected emailed",
+        "id": "1457423574",
+        "deal_count": 20,
+        "deals": [
+          {
+            "id": "76273250499",
+            "name": "UAB \u201cBrailis - Pitch for investment",
+            "amount": "100000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "100000",
+              "closedate": "2025-01-15T20:39:49.928Z",
+              "createdate": "2024-12-17T11:02:50.452Z",
+              "dealname": "UAB \u201cBrailis - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-21T12:04:36.433Z",
+              "hs_object_id": "76273250499",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "30"
+            }
+          },
+          {
+            "id": "76273401051",
+            "name": "Molly website test - Pitch for investment",
+            "amount": "1000000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "1000000",
+              "closedate": "2025-04-11T16:34:23.791Z",
+              "createdate": "2024-12-17T10:53:38.953Z",
+              "dealname": "Molly website test - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-06-23T07:37:44.370Z",
+              "hs_object_id": "76273401051",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "40"
+            }
+          },
+          {
+            "id": "76311761131",
+            "name": "Unlimited Choice Ltd (ConnectAsian) - Pitch for investment",
+            "amount": "150000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "150000",
+              "closedate": "2024-12-19T12:06:29.207Z",
+              "createdate": "2024-12-17T12:08:48.285Z",
+              "dealname": "Unlimited Choice Ltd (ConnectAsian) - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:17:16.157Z",
+              "hs_object_id": "76311761131",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "15"
+            }
+          },
+          {
+            "id": "76328434915",
+            "name": "Boitumelo Rethabile Group (PTY) LTD - Pitch for investment",
+            "amount": "239505.31",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "239505.31",
+              "closedate": "2025-01-15T20:20:54.448Z",
+              "createdate": "2024-12-17T12:30:36.472Z",
+              "dealname": "Boitumelo Rethabile Group (PTY) LTD - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-21T12:04:31.308Z",
+              "hs_object_id": "76328434915",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "9.00"
+            }
+          },
+          {
+            "id": "76329598180",
+            "name": "Adora Digital Health Ltd - Pitch for investment",
+            "amount": "250000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "250000",
+              "closedate": "2024-12-20T16:04:40.707Z",
+              "createdate": "2024-12-17T12:54:52.312Z",
+              "dealname": "Adora Digital Health Ltd - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:18:03.498Z",
+              "hs_object_id": "76329598180",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "6"
+            }
+          },
+          {
+            "id": "76427203825",
+            "name": "Buzz Social - Pitch for investment",
+            "amount": "100000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "100000",
+              "closedate": "2024-12-20T16:13:21.826Z",
+              "createdate": "2024-12-17T14:12:45.543Z",
+              "dealname": "Buzz Social - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:22:40.581Z",
+              "hs_object_id": "76427203825",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "10"
+            }
+          },
+          {
+            "id": "76445707504",
+            "name": "Linkup - Pitch for investment",
+            "amount": "100000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "100000",
+              "closedate": "2025-01-14T21:40:40.221Z",
+              "createdate": "2024-12-17T14:53:52.782Z",
+              "dealname": "Linkup - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-21T12:03:54.500Z",
+              "hs_object_id": "76445707504",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "3"
+            }
+          },
+          {
+            "id": "76489082088",
+            "name": "Kosarin - Pitch for investment",
+            "amount": "250",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "250",
+              "closedate": "2025-01-13T15:01:27.530Z",
+              "createdate": "2024-12-17T15:59:12.718Z",
+              "dealname": "Kosarin - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-21T12:01:07.217Z",
+              "hs_object_id": "76489082088",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "25"
+            }
+          },
+          {
+            "id": "76527581401",
+            "name": "The Social Sport Network - Pitch for investment",
+            "amount": "50000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "50000",
+              "closedate": "2025-01-11T12:02:53.044Z",
+              "createdate": "2024-12-17T17:10:20.278Z",
+              "dealname": "The Social Sport Network - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-21T12:00:56.215Z",
+              "hs_object_id": "76527581401",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "15"
+            }
+          },
+          {
+            "id": "76810581181",
+            "name": "MIVIA - Pitch for investment",
+            "amount": "100000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "100000",
+              "closedate": "2024-12-20T13:12:41.310Z",
+              "createdate": "2024-12-18T05:43:23.601Z",
+              "dealname": "MIVIA - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:17:47.538Z",
+              "hs_object_id": "76810581181",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "2"
+            }
+          },
+          {
+            "id": "76812583131",
+            "name": "UI - Pitch for investment",
+            "amount": "25000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "25000",
+              "closedate": "2024-12-20T12:13:43.381Z",
+              "createdate": "2024-12-17T22:31:14.035Z",
+              "dealname": "UI - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:17:45.820Z",
+              "hs_object_id": "76812583131",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "15"
+            }
+          },
+          {
+            "id": "76892927169",
+            "name": "Comte de Grasse SAS - Pitch for investment",
+            "amount": "500000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "500000",
+              "closedate": "2024-12-17T22:23:02.977Z",
+              "createdate": "2024-12-17T22:20:00.372Z",
+              "dealname": "Comte de Grasse SAS - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:51:28.585Z",
+              "hs_object_id": "76892927169",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "2.5"
+            }
+          },
+          {
+            "id": "76955136197",
+            "name": "Brain Flow Elite - Pitch for investment",
+            "amount": "2000000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "2000000",
+              "closedate": "2024-12-21T21:59:54.165Z",
+              "createdate": "2024-12-18T04:49:08.736Z",
+              "dealname": "Brain Flow Elite - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:22:41.053Z",
+              "hs_object_id": "76955136197",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "30"
+            }
+          },
+          {
+            "id": "77367866607",
+            "name": "Flow School - Pitch for investment",
+            "amount": "42750",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "42750",
+              "closedate": "2025-04-11T16:35:17.966Z",
+              "createdate": "2024-12-18T12:30:35.088Z",
+              "dealname": "Flow School - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-04-25T17:18:44.345Z",
+              "hs_object_id": "77367866607",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "0"
+            }
+          },
+          {
+            "id": "77380780262",
+            "name": "Soil Health - Pitch for investment",
+            "amount": "250000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "250000",
+              "closedate": "2025-01-05T11:32:18.864Z",
+              "createdate": "2024-12-18T13:05:54.876Z",
+              "dealname": "Soil Health - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-16T15:36:10.636Z",
+              "hs_object_id": "77380780262",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "20"
+            }
+          },
+          {
+            "id": "77433425115",
+            "name": "Joint Venture Health - Pitch for investment",
+            "amount": "123000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "123000",
+              "closedate": "2025-04-11T16:37:02.481Z",
+              "createdate": "2024-12-18T12:43:00.235Z",
+              "dealname": "Joint Venture Health - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-04-23T22:03:31.487Z",
+              "hs_object_id": "77433425115",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "10"
+            }
+          },
+          {
+            "id": "77559137521",
+            "name": "Mallo - Pitch for investment",
+            "amount": "2000000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "2000000",
+              "closedate": "2025-04-29T15:46:10.658Z",
+              "createdate": "2024-12-18T16:57:04.922Z",
+              "dealname": "Mallo - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-06-19T13:30:04.094Z",
+              "hs_object_id": "77559137521",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "20"
+            }
+          },
+          {
+            "id": "77578201315",
+            "name": "Vitalmelt LTD - Pitch for investment",
+            "amount": "1000000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "1000000",
+              "closedate": "2025-01-15T20:38:36.658Z",
+              "createdate": "2024-12-18T18:04:15.021Z",
+              "dealname": "Vitalmelt LTD - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-21T12:04:36.744Z",
+              "hs_object_id": "77578201315",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "12.5"
+            }
+          },
+          {
+            "id": "77590693073",
+            "name": "SwimAR - Pitch for investment",
+            "amount": "500.000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "500.000",
+              "closedate": "2025-01-09T15:11:40.915Z",
+              "createdate": "2024-12-18T18:03:19.294Z",
+              "dealname": "SwimAR - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-02-18T09:25:32.050Z",
+              "hs_object_id": "77590693073",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "25"
+            }
+          },
+          {
+            "id": "77595928775",
+            "name": "Lume LTD - Pitch for investment",
+            "amount": "500000",
+            "stage_id": "1457423574",
+            "properties": {
+              "amount": "500000",
+              "closedate": "2024-12-24T08:48:34.356Z",
+              "createdate": "2024-12-18T18:40:43.893Z",
+              "dealname": "Lume LTD - Pitch for investment",
+              "dealstage": "1457423574",
+              "dealtype": null,
+              "hs_deal_stage_probability": "0",
+              "hs_lastmodifieddate": "2025-01-09T12:23:21.366Z",
+              "hs_object_id": "77595928775",
+              "hubspot_owner_id": null,
+              "pipeline": "default",
+              "request": "15"
+            }
+          }
+        ]
+      },
+      "1253041391": {
+        "label": "SB follow-up",
+        "id": "1253041391",
+        "deal_count": 0,
+        "deals": []
+      },
+      "qualifiedtobuy": {
+        "label": "Video Interview",
+        "id": "qualifiedtobuy",
+        "deal_count": 0,
+        "deals": []
+      }
+    },
+    "analysis": {
+      "total_deals_analyzed": 20,
+      "total_pipeline_value": 8531005.31,
+      "analysis_timestamp": "2025-06-23T11:01:35.439291+00:00",
+      "stages_with_deals": 1
+    }
+  }
+}

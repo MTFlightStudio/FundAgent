@@ -9,7 +9,6 @@ from .web_search import search_tool, tavily_search_tool_instance
 from .wikipedia import wiki_tool, wiki_tool_instance
 from .save import save_tool
 from .prospect import research_prospect_tool, relevance_ai_tool_configured
-# from .classification import classify_email_tool, EmailClassification  # REMOVED - classification.py deleted
 
 __all__ = [
     "search_tool",
@@ -19,8 +18,6 @@ __all__ = [
     "save_tool",
     "research_prospect_tool",
     "relevance_ai_tool_configured", # Expose for configuration checks
-    # "classify_email_tool",          # REMOVED - classification.py deleted
-    # "EmailClassification"           # REMOVED - classification.py deleted
 ]
 
 # You can add a simple test here to ensure imports work
@@ -30,5 +27,4 @@ if __name__ == '__main__':
     print(f"wiki_tool available: {callable(wiki_tool)}")
     print(f"save_tool available: {callable(save_tool)}")
     print(f"research_prospect_tool available: {callable(research_prospect_tool)}")
-    # print(f"classify_email_tool available: {callable(classify_email_tool)}")  # REMOVED
     print("Tool imports seem OK.") 

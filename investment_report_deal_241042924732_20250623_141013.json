@@ -1,0 +1,198 @@
+{
+  "deal_id": "241042924732",
+  "orchestration_start_time": "2025-06-23T14:08:33.971721+00:00",
+  "hubspot_deal_data": {
+    "deal": {
+      "amount": "2000000",
+      "closedate": "2025-07-18T14:27:06.106Z",
+      "createdate": "2025-06-18T14:27:07.981Z",
+      "dealname": "Astron Systems Ltd - Pitch for investment",
+      "dealstage": "1245906141",
+      "hs_lastmodifieddate": "2025-06-19T15:40:22.735Z",
+      "hs_object_id": "241042924732",
+      "hubspot_owner_id": null,
+      "pipeline": "default",
+      "request": "15",
+      "deal_stage_label": "SB kill/continue"
+    },
+    "associated_contacts": [
+      {
+        "id": "247076503779",
+        "properties": {
+          "attach_link_to_all_founders_linkedin_profiles": "https://www.linkedin.com/in/kieran-jones-tett/, https://www.linkedin.com/in/rafal-sokolowski-464a63165/",
+          "company": null,
+          "createdate": "2025-04-03T09:49:52.212Z",
+          "do_you_and_the_founders_have_the_right_to_work_in_the_uk_": "Yes",
+          "email": "eddie@astronsystems.com",
+          "firstname": "Eddie",
+          "hs_createdate": null,
+          "hs_linkedin_url": "https://www.linkedin.com/in/eddie-brown-943417194/",
+          "hs_object_id": "247076503779",
+          "jobtitle": null,
+          "lastmodifieddate": "2025-06-18T14:32:10.672Z",
+          "lastname": "Brown",
+          "lifecyclestage": "1095221483",
+          "list_name_of_all_founders": null,
+          "phone": null,
+          "website": null
+        },
+        "createdAt": "2025-04-03T09:49:52.212Z",
+        "updatedAt": "2025-06-18T14:32:10.672Z",
+        "archived": false
+      }
+    ],
+    "associated_companies": [
+      {
+        "id": "125012010204",
+        "properties": {
+          "city": null,
+          "country": null,
+          "createdate": "2025-04-03T09:49:52.720Z",
+          "describe_the_business_product_in_one_sentence": null,
+          "description": "Not just another rocket company. Affordable, fast, flexible small payload orbital launch and return with the first 100% reusable small lift rockets",
+          "does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Yes",
+          "domain": "astronsystems.com",
+          "how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__": "The nature of what we are doing is naturally highly innovative. We have a new propulsion system design we've developed (and patents filed), and are leading the way as the first building 100% reusability in a small lift rocket.",
+          "how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Space directly is infrastructure that helps humanity on earth, especially for small payloads like our customers are.",
+          "how_much_are_you_raising_at_this_stage_": "\u00a32m+",
+          "how_much_have_you_raised_prior_to_this_round_": "313987",
+          "how_much_of_the_equity_do_you_your_team_have_": "70.56",
+          "hs_createdate": null,
+          "hs_lastmodifieddate": "2025-06-19T15:40:21.779Z",
+          "hs_object_id": "125012010204",
+          "industry": null,
+          "lifecyclestage": "1095221483",
+          "name": "Astron Systems Ltd",
+          "number_of_employees": "0-10",
+          "numberofemployees": null,
+          "phone": null,
+          "please_attach_your_pitch_deck": "https://api-eu1.hubspot.com/form-integrations/v1/uploaded-files/signed-url-redirect/245906515177?portalId=145458831&sign=N3GZz7g3oyqv8WomJxihnwp0SwM%3D&conversionId=33e7a807-75eb-417f-a6f9-dc9adfeacd3f&filename=33e7a807-75eb-417f-a6f9-dc9adfeacd3f-0-2/please_attach_your_pitch_deck-Readable+deck+-+Astron+Systems.pdf",
+          "please_expand": "Looking for capital, plus the media visbility and experience of Steven and team to help take this venture to a world leader and decacorn+ company.",
+          "website": "https://astronsystems.com",
+          "what_best_describes_your_customer_base_": "B2B",
+          "what_best_describes_your_stage_of_business_": "I have a business that I want to scale",
+          "what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_": "Advice and support",
+          "what_is_your_current_monthly_revenue_": "0",
+          "what_is_your_ltm__last_12_months__revenue_": "0",
+          "what_is_your_usp__what_makes_you_different_from_your_competitors_": "Actually being commercially competitive 5 years from now within the small lift launch market. That stems from 100% reusability, good architecture design, and our highly reusable propulsion system we've developed.",
+          "what_sector_is_your_business_product_": "Science & Technology (including Space, Biotech and AI)",
+          "what_valuation_are_you_raising_at_": "\u00a310-20m",
+          "where_is_your_business_based_": "UK but wanting to scale to US",
+          "which__if_any__of_the_un_sdg_17_goals_does_your_business_address_": "Industry, Innovation, and Infrastructure"
+        },
+        "createdAt": "2025-04-03T09:49:52.720Z",
+        "updatedAt": "2025-06-19T15:40:21.779Z",
+        "archived": false
+      }
+    ]
+  },
+  "pitch_deck_analysis": {
+    "status": "success",
+    "raw_text": "AFFORDABLE, FAST, & FLEXIBLE\nrides to orbit and back for small payloads using the\nfirst 100% reusable small rockets\nEddie Brown\neddie@astronsystems.com\npage 1\n\nWe\u2019re NOT \u201cjust another launch company\u201d,\nwe\u2019re building the first 100% reusable small-lift class rocket.\n(smaller payload class than Stoke\u2019s):\n>$360M/year >$1B/year\nLOIs informal interest\n+\n4\n+ launches booked with commercial customers. Strong\ndefence uses.\n<$150K *\nmarginal cost of launch.\n(<$400/kg)\nKey innovation\nsmall long lifetime performant rocket\nengines, patents filed + prototype key hardware built.\n$2.7M >$10B $170M\nraise, exit projection and total\ncapex to cashflow positivity.\n(DCF basis >$10B exit projected)\n* Marginal costs only, for launcher and spaceport\nThis document is confidential. Unauthorized redistribution is not permitted\npage 2\n\nSmall satellites are the beating heart of the growing in orbit economy\n>2,000 SMALLSATS\nexpected to launch annually in the next decade.\n*\n$34B\nlaunch market\n**\nApplications include:\nClimate Agriculture\nPharmaceuticals Weather Communications\nMonitoring Improvements\n* Smallsat launch volume average for next decade from Novaspace 2023.\n** $34B smallsat launch market value from Novaspace for 2023-2032.\nThis document is confidential. Unauthorized redistribution is not permitted\npage 3\n\nEXPENSIVE INFLEXIBLE\nSmall satellite launches today are limited by and large\nrideshare missions with little orbit destination control.\nExpended Expended\n+\nExpended\nReused Expended Reused\nLARGE RIDESHARE SMALL LAUNCHER\nLARGE RIDESHARE\n+ TUG TODAY\nCost $$$ $$ $$$$$\n(See page 9)\nOrbit flexibility \u2713 \u2715 \u2713\u2713\nSchedule flexibility \u2715 \u2715 \u2713\u2713\nLead time \u2715 (~18 months) \u2715 (~18 months) \u2713\nThis document is confidential. Unauthorized redistribution is not permitted\npage 4\n\nWe want the full potential of space to be\nrealized by businesses.\nSo we\u2019re building the first\n100% REUSABLE SMALL\nROCKET\n,\n(Up to 360kg payload to LEO)\n5x 10x\ncutting cost by and lead time by\nwhilst enabling small satellites to launch\nEXACTLY WHEN\nand\nEXACTLY WHERE\nthey need to. Watch flight sequence:\nhttps://www.youtube.com/watch?v=jJVAgEO5KNQ\nThis document is confidential. Unauthorized redistribution is not permitted\npage 5\n\n\u2026 and we also enable regular and affordable\nmedium duration\nSPACE ACCESS AND RETURN (e.g.\nfor microgravity)\n>5x\nservices for small payloads for lower price.\n>$22B\nmarket for in space\nmanufacturing from 2033\n(Microgravity and vacuum exposure for ~20-50\nhours and return)\nThis document is confidential. Unauthorized redistribution is not permitted\npage 6\n\n\u2026and we also can provide essential defence\nmission capabilities:\nPOINT TO POINT\nrocket cargo delivery\nto contested areas without need for a\nlanding pad,\nand\nTACTICALLY RESPONSIVE\nLAUNCH\nwith high availability and low\ncost.\n(Above capabilities are desired by the US DOD\nand USSF/USAF)\nThis document is confidential. Unauthorized redistribution is not permitted\npage 7\n\nKEY DEFENSIBLE ENABLING TECHNOLOGY\nA LONG LIFETIME\nROCKET ENGINE for this\nsize is a challenge, our\nnew design enables >100x\ntheoretical lifetime\nimprovement *\nSome of the same key technology\nalso enables longer range high\nspeed air breathing propulsion\nKey \u2018hybrid electric turbopump\u2019 unit\nfirst prototype cryogenic pump testing systems as an additional\nmarket/IP opportunity\n* Relative to a similar performance conventionally designed rocket engine and turbopump at this scale. From estimated 99.9% reliable lifetime of ~10 minutes to >20 hours.\nThis document is confidential. Unauthorized redistribution is not permitted\npage 8\n\nMARGINAL COST\nTO FLY THE MANIFEST OF\nA TYPICAL TRANSPORTER* RIDESHARE MISSION\n20k\nOUR ALTERNATIVES\nSOLUTION\nSmall Large\nrocket rideshare\n$/kg\ntoday: + tug\ntoday:\nLarge\nRocket\nLarge\nrideshare\nLab,\nSpaceX, rideshare\nfuture:\nElectron\nF9 today:\nAstron SpaceX,\n+\nSystems, Starship\nSpaceX,\nTug\nAurora\nF9\n0\n* TRANSPORTER is the name given to SpaceX\u2019s smallsat rideshare missions today. Assumes ~5 tons payload\nThis document is confidential. Unauthorized redistribution is not permitted\npage 9\n\n\u2026And unlike large rideshare we can deploy\nsmallsats\nEXACTLY WHERE\nthey want\nEXACTLY WHEN\nthey want.\nOur solution, unlike large launch systems, is both cost-effective\nand specifically tailored for small satellite operators, offering\ncomplete flexibility with rapid launch times and direct-to-\ndestination services.\nThis document is confidential. Unauthorized redistribution is not permitted\npage 10\n\nEVERY relevant customer so far is keen for\nour more affordable and faster launch\n\u201cI really wanted an LV (launch vehicle) with\nyour planned performance and price point\u201d\n\u2013 Former executive of Spaceflight Inc\n>$360M/year\nLOIs signed\n>$1B/year\n+ informal interest\n4\n+ commercial launches booked with\ncustomers\nand counting\u2026\nThis document is confidential. Unauthorized redistribution is not permitted\npage 11\n\nTHE FOUNDERS\nPrior experiences\nEddie Brown, MEng\nCEO, Engineer\nTitan deployable heatshield analysis and design\nImperial rocketry upper engine lead\n10+ years commercial software experience\nImperial College London\nKieran Jones-Tett, MEng\nCOO, CFO, Engineer\nURA Thrusters, Lead HET Engineer\nSpacecraft electric propulsion novel thruster design\nImperial College London\nRafal Sokolowski, MEng\nCTO, Engineer\nOxford Space Systems, Space Mechanism Engineer\nImperial rocketry propulsion lead\nImperial College London\nThis document is confidential. Unauthorized redistribution is not permitted\npage 12\n\nSUPPORTED BY THE BEST\nGregory Greg Autry, Gautier Benjamin\nKrauland PhD Brunet, MBA Lenoir, PhD\nAdvisor Advisor Advisor Advisor, NED\nLed SpaceX Falcon 9 Stage 2 Former NASA White House Loft Orbital VP of sales Elia Product Manager\nDevelopment Liaison\nFormer COO of ThrustMe Former Thales Innovation\nFormer SpaceX Lead Forbes, New Space Manager\nPropulsion Engineer Journal, SpaceNews Former Ariane 5 Engineer\nFormer Boom Supersonic XB- Former lead AIAA\n1 Chief Engineer commercial space group\nThis document is confidential. Unauthorized redistribution is not permitted\npage 13\n\nMAKING THIS A REALITY\nOVER $620K funding to date\n(~60% private capital, ~40% non-dilutive funding)\nBUILT AND TESTED first prototype of key enabling new propulsion\ntechnology\nFirst turbopump prototype and testing with under $360k total spent since founding\nThis document is confidential. Unauthorized redistribution is not permitted\npage 14\n\nMAKING THIS A REALITY\nKEY DEVELOPMENT PARTNERSHIPS with the best for heat\nshield and recovery systems\n\u00a9ESA\n\u00a9ESA\nSpace Rider Space Rider\nExperience (TRL8/9) Experience (TRL8/9)\nThis document is confidential. Unauthorized redistribution is not permitted\npage 15\n\nLANDSCAPE \u2013 MANY BUILDING OUTDATED SMALL LIFT LAUNCH,\nASTRON LEADING THE WAY WITH 100% REUSABLE SMALL LIFT\nRadian one\nStoke space\nAstron Systems Polaris Spaceplane Heavy SpaceX Starship\nAstron leading EtherealX\nAurora iRocket shockwave\nbringing 100% Sirius 15-2\nLikely medium-lift Likely super-\nreusability to winner heavy lift winner\n(3000kg to orbit) (>100,000kg to orbit)\nsmall-lift segment\n(360kg to orbit)\nPolaris Spaceplane\nRocket Lab Neutron\nSpace engine systems hello-1\ny\nt Spinlaunch Auriga\ni\nl\ni\nb\na SpaceX Falcon 9\ns\nu Sirius space 13 SpaceX Falcon Heavy\ne Maia space\nR Relativity\nf o Orbex prime Phantom space laguna Terran R\nl\nRocket Lab PLDSpace Miura 5 Firefly MLV Blue Origin New Glenn\ne\nElectron (Future)\nv\ne\nL\nToday\u2019s leading\nsmall-lift launcher\n(300kg to orbit)\nSkyrora XL Hyimpulse\nRocket Lab Astra rocket 4\nGilmour Alpha impulsion\nElectron\nLatitude Zephyr space Leapspace RFA One Vulcan\nBlushift Aeros P p y a t c h e om Space Sirius 1 Pegasus Isar Sp Fi e r c e t f r ly u m alpha Vega Soyuz Ariane 5 Delta IV NASA SLS\nAtlas V\n10 Micro-lift 100 Small-lift 1000 Medium-lift 10000 Medium-heavy-lift 100000 Super-heavy-lift 1000000\nPayload to Low Earth Orbit (kg) *Not a completely exhaustive list\nIn development Flying Planned\nCompetitive landscape document available\nThis document is confidential. Unauthorized redistribution is not permitted\npage 16\n\nFUNDAMENTAL UNIT ECONOMICS PROVE THAT\n100% REUSABILITY WINS\nRecovering stages via helicopter (ROM marginal cost <$25k) dramatically lower cost than\nmanufacturing, assembling, qualifying for flight, and transporting to the pad new stages.\nExplore launch unit economics with different\nassumptions yourself using this online tool and see\nthat with reasonable assumptions 100% reusability is\nalways king.\nhttps://astronsystems.com/launch-unit-\neconomics.jsp\nRead more here: https://www.linkedin.com/pulse/unit-economics-\nspace-launch-why-full-reusability-king-eddie-brown-hstme/\nThis document is confidential. Unauthorized redistribution is not permitted\npage 17\n\nREVENUE PROJECTION\nFirst test launch 2028. Net profit margin 40-50% by 2032\n> $200M annual revenue by 2031. Project > $1B annual revenue from 2036.\nAnnual Revenues 2027-2037 Annual Launch Missions 2027-2037\n$1,400.00 M 350\n$1,200.00 M 300\n$1,000.00 M 250\nNet cash\n$800.00 M flow 200\npositive\n$600.00 M 150\n$400.00 M\n100\n$200.00 M\n50\n$0.00 M\n0\n2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037\n2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037\nSingle Contract Unresponsive Recurring Contracts\nSingle contract unresponsive Recurring contracts Responsive\nResponsive Return\nSecondary pump sales\nNET = No Earlier Than. Responsive launch revenue includes recurring standby fees as well as revenue for delivering launches. All revenue is recognised on service delivery,\nno pre-order revenue is recognised. Net profit margin includes both unit cost as well as business ongoing costs and overheads\nThis document is confidential. Unauthorized redistribution is not permitted\npage 18\n\nOPPORTUNITY\nRaising $2.7M seed round\nFor continuing rocket engine R&D. See timeline in appendix.\nExit:\n\u2265 100 launches/yr by 2031\n> $200 M annual revenue from 2031,\n> $10B exit. (Around $170M to net cashflow positive)\n(>$10 B exit valuation based on likely exit point DCF and 10% discount rate at that\nWebsite:\ntime, and expected dilution. ROI for seed projected >400x \u2013 ask to see\nhttps://astronsystems.com\nour financial model)\nEmail:\neddie@astronsystems.com\nWhatsApp: +44 7516 537505\nThis document is confidential. Unauthorized redistribution is not permitted\npage 19\n\nUSE OF FUNDS FOR ROUND\nContinuing rocket engine R&D\nSecond generation pump designs & first thrust chamber design already matured to near manufacturing\nready level with ESA contract. Funds from the round will be used to manufacture, test, and build towards\na first full breadboard rocket engine. Expect to occur within 12 months and then kick-off next fundraise.\nOther use of funds\nIncludes also up to 24 months of salaries and overheads slowly growing the team from 4 full-time to 11\nfull-time, use of existing third party test facilities on Wescott Venture Park (UK), upgrades to Astron\nSystems\u2019 test facility on Wescott Venture Park (UK).\nThis document is confidential. Unauthorized redistribution is not permitted\n\nFurther reading addressing many frequently asked questions and market misconceptions:\nhttps://www.linkedin.com/in/eddie-brown-943417194/recent-activity/articles/\nAPPENDICES\nThis document is confidential. Unauthorized redistribution is not permitted\npage 21\n\nDEVELOPMENT PATH\nFront-loading de-risking first the greatest perceived technical risks. Propulsion\nsystem, re-entry, recovery, and launcher designs already significantly derisked\nTop level launcher and engine designs\nFuel-side pump prototype construction + LN2\nT\nC testing Turbopump demo\nIntegrated engine\nU\nD demo\nTorch igniter first tests Thrust chamber demo\nO Stage recovery demo First test launch\nR TPS prototyping and\nP V2 pump + thrust chamber (all major Attempt first\nbreadboard engine components) designed with breadboard engine tests\nEuropean Space Agency contract, suppliers\ndemo\nquotes and near manufacturing ready\nHeat shield and recovery system partnerships\nwith industry leaders\n(Total funds ~$170M to\nPre-Seed Seed Series A Series B Series C net-cash flow positive)\nL\nA Launch license grant\nI Customer validation\nC\nR Negotiate deal for Pro-actively sell Convert to firm\nLaunch revenues\nE M Customer LOIs first spaceport launches orders (LSAs)\nM Achieve net cashflow\nO First commercial customer positive\nNOW\nC booked for launch\n* NET = No Earlier Than\nThis document is confidential. Unauthorized redistribution is not permitted\npage 22\n\nLOW CAPEX COST TO MARKET APPROACH\n~$170M\ntotal funding to cashflow positive.\n~$75M-$116M likely from private capital (equity/debt)\nSignificant fraction expected from state funding (e.g. European Space Agency, etc..). ROI projections take conservative\nassumption of all from private investment.\nLOW CAPEX TO MARKET because of:\nWorking with proven suppliers for many key subsystems\nE.g. Recovery system, heat shield components, etc\u2026 Including suppliers from the ESA Space Rider\nsupply chain such as NewSpace Systems (parafoil recovery system)\nNatural advantage of R&D and manufacturing costs in the UK and Europe\nTypically, at least half the cost of USA for personnel and manufacturing\nThis document is confidential. Unauthorized redistribution is not permitted\npage 23\n\nEXAMPLE CAPEX COST TO MARKET BREAKDOWN\nLikely private capital Development costs\n(equity/debt) contribution ~$125M (~\u00a397M)\n~$75M - $116M\n(~\u00a357M - \u00a390M)\n(Assuming non-dilutive funding\nin-line with European expectations)\nInitial operations and\ncashflow positivity\n~$45M (~\u00a335M)\nThis document is confidential. Unauthorized redistribution is not permitted\npage 24\n\nENVIRONMENTAL IMPACT\nA single (expendable) Ariane 64 launch is estimated to emit over 4,000 tons of\nCO e, of which 85% of the emissions are estimated to come from the manufacturing of\n2\nthe vehicle (PwC **)\nA fully reusable launcher and sustainable fuel choice can achieve net zero launch\nEstimated CO e emissions (tons) per launch for Aurora *\n2\nFully reusable, biomethane fuel\nFully reusable, electromethane fuel\nExpendable, methane from fossil fuels\n-50 0 50 100 150 200 250 300\nPropellant Embodied emissions\n* Assumes embodied emissions scaled from PwC New Shepard estimate, assumes fossil fuel methane carbon intensity of 121 lbs carbon/mcf (186 gCO e/MJ),\n2\nassumes electromethane carbon intensity of 12 gCO e/MJ. Assumes biomethane carbon intensity of -83 gCO e/MJ (Biosurf). Neglects additional emissions from\n2 2\nlaunch operations and logistics.\n** PwC \u2013 The future of launcher fuels, 2023\nThis document is confidential. Unauthorized redistribution is not permitted\npage 25",
+    "structured_data": {
+      "executive_summary": "Astron Systems is building the first 100% reusable small-lift class rocket for affordable, fast, and flexible rides to orbit and back for small payloads. The company aims to cut costs by 5x and lead time by 10x, enabling small satellites to launch exactly when and where needed. They have secured >$360M/year in LOIs, >$1B/year in informal interest, and 4+ commercial launches booked. Their key innovation is small long lifetime performant rocket engines with patents filed and prototype hardware built. They're raising $2.7M with a projected exit of >$10B and total capex to cashflow positivity of $170M.",
+      "problem_statement": "Small satellite launches today are limited by expensive and inflexible rideshare missions with little orbit destination control. Current options have high costs, limited orbit flexibility, poor schedule flexibility, and long lead times (approximately 18 months).",
+      "solution": "Astron Systems is building the first 100% reusable small rocket (up to 360kg payload to LEO) that cuts cost by 5x and lead time by 10x, enabling small satellites to launch exactly when and where needed. The solution also enables regular and affordable medium duration space access and return services for small payloads at >5x lower price, and provides essential defense mission capabilities including point-to-point rocket cargo delivery and tactically responsive launch.",
+      "product_service_description": "A 100% reusable small-lift class rocket with up to 360kg payload capacity to Low Earth Orbit. The key enabling technology is a long lifetime rocket engine with >100x theoretical lifetime improvement. The system includes a hybrid electric turbopump unit with the first prototype cryogenic pump testing systems. The rocket enables direct-to-destination services with rapid launch times specifically tailored for small satellite operators.",
+      "market_size_opportunity": "Over 2,000 smallsats are expected to launch annually in the next decade. The smallsat launch market is valued at $34B for 2023-2032. Additionally, there's a >$22B market for in-space manufacturing from 2033 (microgravity and vacuum exposure services). Applications include climate monitoring, agriculture improvements, pharmaceuticals, weather, and communications.",
+      "business_model": "The company generates revenue through launch services with projected net profit margins of 40-50% by 2032. Revenue streams include single contract unresponsive launches, recurring contracts, responsive launches, and secondary pump sales. They project >$200M annual revenue by 2031 and >$1B annual revenue from 2036, with first test launch in 2028 and net cash flow positive thereafter.",
+      "team": "The founding team includes Eddie Brown (CEO, Engineer with experience in Titan deployable heatshield analysis and design, Imperial rocketry upper engine lead, and 10+ years commercial software experience), Kieran Jones-Tett (COO, CFO, Engineer with experience in URA Thrusters as Lead HET Engineer and spacecraft electric propulsion novel thruster design), and Rafal Sokolowski (CTO, Engineer with experience at Oxford Space Systems as Space Mechanism Engineer and Imperial rocketry propulsion lead). They are supported by advisors Gregory Krauland (led SpaceX Falcon 9 Stage 2 Development), Greg Autry (former NASA White House Liaison), Gautier Brunet (Loft Orbital VP of sales), and Benjamin Lenoir (Elia Product Manager).",
+      "traction_milestones": "The company has secured over $620K in funding to date (approximately 60% private capital, 40% non-dilutive funding). They have built and tested the first prototype of key enabling new propulsion technology, including a turbopump prototype with under $360K total spent since founding. They have established key development partnerships for heat shield and recovery systems with industry leaders. They have secured >$360M/year in LOIs, >$1B/year in informal interest, and 4+ commercial launches booked with customers.",
+      "financials_projections": "The company projects first test launch in 2028, net profit margin of 40-50% by 2032, >$200M annual revenue by 2031, and >$1B annual revenue from 2036. They expect to achieve \u2265100 launches/year by 2031 and become net cash flow positive with total funding of approximately $170M. The exit valuation is projected at >$10B based on likely exit point DCF and 10% discount rate, with ROI for seed projected at >400x.",
+      "funding_ask_use_of_funds": "Raising $2.7M seed round for continuing rocket engine R&D, including second generation pump designs and first thrust chamber design manufacturing, testing, and building towards a first full breadboard rocket engine within 12 months. Funds will also cover up to 24 months of salaries and overheads, growing the team from 4 to 11 full-time employees, use of existing third-party test facilities, and upgrades to Astron Systems' test facility on Wescott Venture Park (UK).",
+      "competition": "The competitive landscape includes many companies building outdated small lift launch vehicles, while Astron is leading the way with 100% reusable small lift capability. Current competitors include Rocket Lab Electron (today's leading small-lift launcher with 300kg to orbit), various companies developing small-lift launchers, and larger players like SpaceX with their Falcon 9 and Starship. Astron positions itself as the leader in bringing 100% reusability to the small-lift segment (360kg to orbit).",
+      "go_to_market_strategy": "The company has already secured customer validation with LOIs and informal interest. Their go-to-market strategy includes negotiating deals for the first spaceport, proactively selling launches, converting to firm orders (Launch Service Agreements), and booking commercial customers for launches. They plan to front-load de-risking of the greatest perceived technical risks (propulsion system, re-entry, recovery) and have a low CAPEX cost to market approach by working with proven suppliers for key subsystems and leveraging the natural advantage of R&D and manufacturing costs in the UK and Europe."
+    },
+    "error_message": null
+  },
+  "founder_profiles": [
+    {
+      "name": "Eddie Brown",
+      "linkedin_url": "https://www.linkedin.com/in/eddie-brown-943417194/",
+      "role_in_company": "CEO, Co-Founder, Aerospace Engineer",
+      "background_summary": "Eddie Brown is a highly technical founder with a strong academic and professional background in aerospace and software engineering. He holds a First Class Master's degree in Aeronautics with Spacecraft Engineering from Imperial College London, where he was on the Dean's List, and gained early leadership experience as a Propulsion Engineering Team Lead for the university's rocketry group. His credibility is further bolstered by experience at notable tech companies like Darktrace and MathWorks, and most significantly, his current venture, Astron Systems, is a graduate of the Techstars Space 2024 accelerator. Eddie's content on LinkedIn establishes him as a founder with a clear, deeply-held, and contrarian vision for the space industry. His posts are direct, opinionated, and focused on a singular mission: proving that 100% rocket reusability is the only viable future for commercial space launch. He actively debunks what he considers industry misconceptions and advocates for higher standards in sustainability and technology. While his audience is niche, his voice is that of a subject matter expert with a strong founder-led point of view, signaling significant brand potential as a leader in the European space-tech ecosystem.",
+      "previous_companies": [
+        {
+          "company_name": "Astron Systems Ltd.",
+          "role": "CEO, Co-Founder, Aerospace Engineer",
+          "duration": "4 yrs 3 mos",
+          "description": "Leading a space technology company focused on 100% rocket reusability. Graduate of Techstars Space 2024 accelerator.",
+          "was_founder": true
+        },
+        {
+          "company_name": "MathWorks",
+          "role": null,
+          "duration": null,
+          "description": null,
+          "was_founder": false
+        },
+        {
+          "company_name": "Darktrace",
+          "role": null,
+          "duration": null,
+          "description": null,
+          "was_founder": false
+        }
+      ],
+      "education": [
+        {
+          "institution": "Imperial College London",
+          "degree": "Master's (First Class)",
+          "field_of_study": "Aeronautics with Spacecraft Engineering",
+          "graduation_year": null,
+          "notable_achievements": "Dean's List"
+        }
+      ],
+      "key_skills_and_expertise": null,
+      "public_speaking_or_content": null,
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": true,
+        "exciting_solution_to_problem": true,
+        "founded_something_relevant_before": false,
+        "impressive_relevant_past_experience": true,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "Eddie Brown is a highly technical and mission-driven founder with a strong academic background and experience at notable tech companies. His current venture, Astron Systems, is well-aligned with focus industries and demonstrates a compelling, founder-led vision for the future of space technology. However, based on available data, he does not appear to have founded a relevant company prior to Astron Systems."
+      }
+    }
+  ],
+  "company_profile": {
+    "company_name": "Astron Systems Ltd",
+    "website": null,
+    "linkedin_url": null,
+    "description": null,
+    "industry": null,
+    "sub_industry": null,
+    "founded_year": null,
+    "funding_stage": null,
+    "total_funding_raised": null,
+    "funding_rounds_details": null,
+    "key_products_services": null,
+    "business_model": null,
+    "target_customer": null,
+    "key_metrics": null,
+    "team_size": null,
+    "location_hq": null,
+    "other_locations": null,
+    "mission_statement": null
+  },
+  "market_analysis": {
+    "jurisdiction": "UK",
+    "industry_overview": "The Science & Technology sector in the UK encompasses a broad range of activities, including advanced research, development, and commercialization in fields such as space technology, biotechnology, and artificial intelligence (AI). The UK has a rich history of scientific innovation and remains a global leader in these sectors, with significant contributions to aerospace, pharmaceuticals, and digital technologies. The sector is characterized by a strong academic base, robust public and private investment, and a vibrant startup ecosystem.",
+    "target_market_segment": "Key customer segments include government agencies (e.g., UK Space Agency, NHS), large enterprises in pharmaceuticals and aerospace, research institutions, universities, technology startups, and investors seeking innovation in biotech, AI, and space technology.",
+    "market_size_tam": "Estimates for the combined Science & Technology (including Space, Biotech, and AI) market in the UK exceed \u00a3100 billion annually, with biotech alone valued at over \u00a37.1 billion, AI at \u00a316.9 billion, and the space sector at \u00a316.5 billion as of 2023.",
+    "market_size_sam": "The serviceable addressable market (SAM) for innovative solutions and services in these sectors is estimated at \u00a330-40 billion, focusing on organizations actively investing in R&D, digital transformation, and advanced manufacturing.",
+    "market_size_som": "A realistic SOM for a new entrant targeting niche applications (e.g., AI for healthcare, biotech for diagnostics, or satellite data analytics) is estimated at \u00a3100-300 million, depending on focus and go-to-market strategy.",
+    "market_growth_rate_cagr": "The overall sector is projected to grow at a CAGR of 7-10% through 2028, with AI and biotech segments expected to outpace the average (AI: 12-15%, Biotech: 10-12%, Space: 8-10%).",
+    "key_market_trends": [
+      "Rapid adoption of AI and machine learning across industries, especially healthcare, finance, and manufacturing.",
+      "Growth in private and public investment in space technology, including satellite communications and Earth observation.",
+      "Expansion of biotech innovation, particularly in genomics, diagnostics, and personalized medicine.",
+      "Increased focus on sustainability and green technologies, including clean energy and climate tech.",
+      "Rising importance of data security, ethics, and regulatory compliance in AI and biotech applications."
+    ],
+    "competitor_landscape_summary": "The UK Science & Technology market is highly competitive, featuring a mix of established multinationals, innovative startups, and leading research institutions. Key players include both sector-specific leaders and diversified technology companies. The market is characterized by strong venture capital activity, frequent collaborations between academia and industry, and a growing number of scale-ups, particularly in AI and biotech.",
+    "competitors": [
+      {
+        "name": "DeepMind",
+        "website": 

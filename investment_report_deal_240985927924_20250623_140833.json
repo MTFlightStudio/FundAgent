@@ -1,0 +1,191 @@
+{
+  "deal_id": "240985927924",
+  "orchestration_start_time": "2025-06-23T14:07:10.805418+00:00",
+  "hubspot_deal_data": {
+    "deal": {
+      "amount": "100000",
+      "closedate": "2025-07-18T13:48:03.781Z",
+      "createdate": "2025-06-18T13:48:04.448Z",
+      "dealname": "Eternity - Pitch for investment",
+      "dealstage": "1245906141",
+      "hs_lastmodifieddate": "2025-06-19T15:37:09.987Z",
+      "hs_object_id": "240985927924",
+      "hubspot_owner_id": null,
+      "pipeline": "default",
+      "request": "5",
+      "deal_stage_label": "SB kill/continue"
+    },
+    "associated_contacts": [
+      {
+        "id": "334465909947",
+        "properties": {
+          "attach_link_to_all_founders_linkedin_profiles": "n/a",
+          "company": null,
+          "createdate": "2025-06-18T13:47:57.322Z",
+          "do_you_and_the_founders_have_the_right_to_work_in_the_uk_": "Yes",
+          "email": "anshika@eternity-uk.com",
+          "firstname": "Anshika",
+          "hs_createdate": null,
+          "hs_linkedin_url": "https://www.linkedin.com/in/anshika-arora-ab5021137/",
+          "hs_object_id": "334465909947",
+          "jobtitle": null,
+          "lastmodifieddate": "2025-06-18T14:18:02.871Z",
+          "lastname": "Arora",
+          "lifecyclestage": "salesqualifiedlead",
+          "list_name_of_all_founders": null,
+          "phone": null,
+          "website": null
+        },
+        "createdAt": "2025-06-18T13:47:57.322Z",
+        "updatedAt": "2025-06-18T14:18:02.871Z",
+        "archived": false
+      }
+    ],
+    "associated_companies": [
+      {
+        "id": "175603737826",
+        "properties": {
+          "city": null,
+          "country": null,
+          "createdate": "2025-06-18T13:47:57.993Z",
+          "describe_the_business_product_in_one_sentence": null,
+          "description": "Eternity replaces wedding planners. With our digital CRM, we make wedding management easy for businesses and couples worldwide - allowing everyone to do what they love (no pun intended) without burning out.",
+          "does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Yes",
+          "domain": "eternity-uk.com",
+          "how_does_your_company_use_innovation__through_technology_or_to_differentiate_the_business_model__": "We're finding novel solutions to century-old problems and improving traditional processes through out collaborative CRM - a business and client portal. We continuously aim to automate the predictable and humanise the exceptional with our technology.\r\n\r\nOur business model combines SaaS with integrated FinTech payment processing - capturing and scaling efficiently - without being affected by wedding seasonality.",
+          "how_does_your_product_contribute_to_a_healthier__happier_whole_human_experience_": "Ask anyone who is getting married - wedding planning is miserable. Over 64% of individuals choose to get married. That's over 5bn unhappy individuals planning \"the happiest day of their lives\". \r\n\r\nIt takes a massive impact on our mental health, relationships and wellbeing - but is constantly overlooked.\r\n\r\nOur product is a solution for the individuals, and the businesses that they communicate with. \r\n\r\nBye-bye boring spreadsheets, hello Eternity.",
+          "how_much_are_you_raising_at_this_stage_": "\u00a30-250k",
+          "how_much_have_you_raised_prior_to_this_round_": "157000",
+          "how_much_of_the_equity_do_you_your_team_have_": "85",
+          "hs_createdate": null,
+          "hs_lastmodifieddate": "2025-06-19T15:37:04.406Z",
+          "hs_object_id": "175603737826",
+          "industry": null,
+          "lifecyclestage": "salesqualifiedlead",
+          "name": "Eternity",
+          "number_of_employees": "0-10",
+          "numberofemployees": null,
+          "phone": null,
+          "please_attach_your_pitch_deck": "https://api-eu1.hubspot.com/form-integrations/v1/uploaded-files/signed-url-redirect/245904814314?portalId=145458831&sign=UrGxovFxghL2FGQ5AFNlQxZ_L4g%3D&conversionId=df19bcf5-7c0b-4220-8ad9-0ce45c1ca87e&filename=df19bcf5-7c0b-4220-8ad9-0ce45c1ca87e-0-2/please_attach_your_pitch_deck-Eternity+SEISEIS+Pitch+Deck+JUN25.pdf",
+          "please_expand": "We have the product, we need the right positioning and marketing to grow. Flight has proven expertise in elevating vertical tech platforms like Until & Zoe. Our niche business market impacts millions of people everyday, and we want to work with Flight to make a real impact.",
+          "website": "https://eternity-uk.com/",
+          "what_best_describes_your_customer_base_": "B2B",
+          "what_best_describes_your_stage_of_business_": "I have a business that I want to scale",
+          "what_is_it_that_you_re_looking_for_with_a_partnership_from_flight_": "Advice and support",
+          "what_is_your_current_monthly_revenue_": "500",
+          "what_is_your_ltm__last_12_months__revenue_": "5000",
+          "what_is_your_usp__what_makes_you_different_from_your_competitors_": "Run by Gen-Z, for Gen-Z. We have a two-sided collaborative portal which is built for the vertical or wedding & events - allowing businesses and couples to interact, build relationships, and create magic in real time. We aren't just any random CRM that your business gets boxed into.\r\n\r\nWe also have partnerships and networks with some of the best brands - giving us a greater moat.",
+          "what_sector_is_your_business_product_": "Professional & Business Services",
+          "what_valuation_are_you_raising_at_": "\u00a31-2m",
+          "where_is_your_business_based_": "UK but wanting to scale to US",
+          "which__if_any__of_the_un_sdg_17_goals_does_your_business_address_": "Good Health and Well-being"
+        },
+        "createdAt": "2025-06-18T13:47:57.993Z",
+        "updatedAt": "2025-06-19T15:37:04.406Z",
+        "archived": false
+      }
+    ]
+  },
+  "pitch_deck_analysis": {
+    "status": "success",
+    "raw_text": "Powering the online\ninfrastructure & enabling\ndigital payments for the\nwedding & events industry\n\nERROR: THE WEDDING & EVENTS INDUSTRY IS BROKEN\nThe referenced industry still operates like it\u2019s 1998\nERR_IT_NEEDS_MAJOR_HELP\n\nOur vision\nDigitise the old-fashioned wedding & events industry, with an all-in-one, purpose built,\nvertical-specific small business CRM SaaS solution:\nBEAUTY\nGlobal industry size: $646bn\nRevenue: $43.4m\nRESTAURANT RESERVATIONS\nIndustry size: $7.71bn\nWEDDING & EVENTS\nRevenue: $479m\nGlobal industry size: $899bn\nUK industry size: \u00a315bn\nFITNESS COACHES\nIndustry size: $41.8bn\nRevenue: $8.4bn\n\nThe problem\nFragmented systems and processes for the creative businesses and their clients\nLEAD CAPTURE NURTURE BOOK COLLABORATE CLOSE\nWedding directory Brochure Quote Payment reminders Reviews\nSocial media Meeting booking Invoice Design Nurture for WoM\nWord of mouth (WoM) Proposal Contracts Notes\nWebsite Itineraries\nAlongside multiple tabs and Excel spreadsheets, Eternity stands as the all-in-one\nintegrated solution from lead capture to close\n\nThe solution is Eternity\nBUSINESS PORTAL COUPLES PORTAL\nClient info Documents\nShared communication\n& notifications\nQuotes Invoices\nNotes Analytics\nthe next-gen CRM to manage weddings for\nFree digital wedding\nprofessionals & newly engaged couples planning suite\nDirectory Reviews\n\nA stable & scalable revenue model\n\u00a324pm / \u00a3240pa 1% fees per 10% commission\n+ \u00a3100 set-up fee invoice\npartnerships secured\ntransaction\nprice per team member\npaid by couples & solopreneurs\n& SMEs: wedding decorators,\npaid by solopreneurs & SMEs: directly paid by affiliate\nphotographers, entertainment,\nwedding decorators, partnerships through our B2C\ncontent creators, stationery\nphotographers, entertainment, couple referrals & UTM links.\ndesigners etc.\ncontent creators, stationery Proven to generate \u00a32m+\ndesigners etc. revenue for trusted platforms.\nService Fees\nMonthly Subscription (launching May) Affiliate Payments\n\nOur competitive advantage\nour USPs\nclient-side portal\nembedded CRM for\nvendors\nintegrated FinTech\nsold to The Knot pre-seed and US based - raised\nUS unicorn - no F&F round of\nWorldwide for \u00a340m self-funded crowdfund of $2.3m and $2m\nrecent raise / sale UK presence or \u00a3157k raised in\nin 2020 at 18.5x \u00a31m+ in 2023 ARR in 2024 - no\nintention 2024\nmultiple UK presence or\nintention\n\nOur business moat against competitors\nTWO-SIDED NETWORK EFFECTS UMBRELLA APPROACH\ndata shows that our businesses onboard from lead capture to close, none of our\navg. 30 couples and our couples onboard competitors have captured each stage with\navg. 10 businesses - the flywheel approach the approach we have\nENRICHED WITH DATA THE NEXT GEN-Z FOCUS\nwhether it\u2019s to integrate AI, create an amongst competitors, we\u2019re the only\nindustry-leading report, or enhance value business with a gen-z founder & focus -\npre-exit, we capture B2B & B2C data winning trust of businesses faster\n\nFrom launch till now\nProduct launch\nLaunched our MVP in October 2024 and took it to market via events\nBeta PMF\nProven PMF with 10 paid beta business (avg. \u00a3140pm) users, 700+ organic couples\n3x partnerships secured\nWith 3 UK wedding directories as part of our GTM strategy\nOnboard 450 vendors in 2025\nIn April 2025, we\u2019ve had 90% MoM revenue growth since launch\nOnboard sales + technology resources\nnotable beta stats identified\nStepping away from direct founder-led sales\naverage engagement\nEmbed payment processing + automations 18 minutes\ntime per active user\nThis will increase our ARPU by 300%\ninvites to Eternity\n30 couples\nper business\n\nThe roadmap to scalability\nMake event\n2027-28\nplanning\nBecome an AI-powered\ncollaborative,\nevents CRM\nExpand international to\ndigital and\n2026 English-speaking countries\n- potential: Australia, UAE, enjoyable\nExpand into wider events: South Africa, India & US\nworldwide\ncorporates & special through partnerships\n2025\noccasions 2028 target: Series A round\nLaunch annual event Target: 28,000 B2B paid\nWe\u2019ve grown 90% MoM\nindustry data reports users & 56,000 B2C active\nrevenue (\u00a3850pm in APR25)\nIntroduce B2B CRM mobile users\n3x partnerships secured\napp Target: \u00a310.4m ARR\nwith 3 UK wedding\nExpand UK + Europe\ndirectories (part of our GTM)\nTarget: Seed round\nExpand UK nationwide\nTarget: 4,600 B2B paid\nLaunching second revenue\nusers & 9,900 B2C active\n2024 channel in June - payment\nusers\nprocessing\nTarget: \u00a31.3m ARR\nRaised \u00a3157k SEIS Target: raise \u00a3100k to 1,000\nCustom product + launch in customers & \u00a370k MRR - 12\nQ4 2024 month runway\nOnboarded 10 B2B paid beta Target: 450 B2B paid users\nusers & 1,800 B2C active users\n\nThe raise for 1,000 vendors / \u00a370k MRR\nRaising \u00a3100k (SEIS & EIS)\nenable payment processing and unlock a new revenue channel\nscale customer acquisition & partnerships\noptimise onboarding to accelerate adoption\n\nWe\u2019re already loved\nby businesses by couples\n\nLet\u2019s chat\nanshika@eternity-uk.com\nbook a meeting\n\nDream Events\nColifornia, US\n\u00a3\u00a3\nGreek\nGraze Away\nBirmingham, West Midlands\n\u00a3\u00a3\nAll\nDina The Pianist\nBrisbane, Australia\n\u00a3\u00a3\nAll\nour goal Mo\u2019s Catering\nWales, UK\n\u00a3\u00a3\nSouth Asian\ncreate seamless\nmemories worldwide",
+    "structured_data": {
+      "executive_summary": "Eternity is a digital platform powering the online infrastructure and enabling digital payments for the wedding and events industry. It provides an all-in-one, purpose-built, vertical-specific small business CRM SaaS solution to digitize the old-fashioned wedding and events industry.",
+      "problem_statement": "The wedding and events industry is broken and operates like it's 1998. Businesses in this industry face fragmented systems and processes, using multiple tools for lead capture, nurturing, booking, collaboration, and closing deals. This includes wedding directories, social media, word of mouth, websites, brochures, meeting bookings, proposals, quotes, invoices, contracts, itineraries, payment reminders, design notes, and reviews - alongside multiple tabs and Excel spreadsheets.",
+      "solution": "Eternity offers an all-in-one integrated solution from lead capture to close. It provides a Business Portal for professionals with client info, quotes, notes, analytics, and a Couples Portal with free digital wedding planning suite, documents, invoices, shared communication, notifications, directory, and reviews.",
+      "product_service_description": "Eternity is a next-gen CRM to manage weddings for professionals and newly engaged couples. It features two main components: 1) Business Portal with client info, quotes, notes, and analytics, and 2) Couples Portal with documents, invoices, shared communication, notifications, directory, and reviews. The platform launched its MVP in October 2024 and has proven product-market fit with paid beta business users.",
+      "market_size_opportunity": "The global wedding and events industry size is $899 billion, with the UK industry size at \u00a315 billion. This compares to other vertical SaaS markets: Beauty ($646bn), Restaurant Reservations ($7.71bn), and Fitness Coaches ($41.8bn).",
+      "business_model": "Eternity has a multi-stream revenue model: 1) Monthly Subscription: \u00a324pm/\u00a3240pa + \u00a3100 set-up fee per team member paid by solopreneurs & SMEs (wedding decorators, photographers, entertainment, content creators, stationery designers), 2) Service Fees: 1% fees per invoice transaction paid by businesses, 3) Affiliate Payments: 10% commission paid by affiliate partnerships through B2C couple referrals & UTM links, proven to generate \u00a32m+ revenue for trusted platforms.",
+      "team": "The company has a Gen-Z founder, Anshika (anshika@eternity-uk.com), which gives them an advantage in winning trust of businesses faster compared to competitors.",
+      "traction_milestones": "Eternity launched its MVP in October 2024 and has proven product-market fit with 10 paid beta business users (avg. \u00a3140pm), 700+ organic couples, and 3 partnerships secured with UK wedding directories. They've grown 90% MoM revenue (\u00a3850pm in April 2025). Notable beta stats show average engagement time per active user is 18 minutes, and each business invites an average of 30 couples to Eternity.",
+      "financials_projections": "The company has grown 90% month-over-month in revenue, reaching \u00a3850 per month by April 2025. Their 2025 target is 450 B2B paid users and 1,800 B2C active users. By 2026, they aim for 4,600 B2B paid users, 9,900 B2C active users, and \u00a31.3m ARR. Their 2028 target is 28,000 B2B paid users, 56,000 B2C active users, and \u00a310.4m ARR.",
+      "funding_ask_use_of_funds": "Eternity is raising \u00a3100k (SEIS & EIS) to: 1) enable payment processing and unlock a new revenue channel, 2) scale customer acquisition & partnerships, and 3) optimize onboarding to accelerate adoption. Their target is to reach 1,000 customers and \u00a370k MRR, providing a 12-month runway.",
+      "competition": "Competitors include Bridebook (sold to The Knot Worldwide for \u00a340m in 2020 at 18.5x multiple), Rock My Wedding (self-funded), Hitched (US unicorn with no UK presence or intention), and Joy (raised F&F round of \u00a3157k in 2024, crowdfund of \u00a31m+ in 2023, and US-based with $2.3m and $2m ARR in 2024 with no UK presence or intention). Eternity's competitive advantages include: client-side portal, embedded CRM for vendors, integrated FinTech, two-sided network effects, umbrella approach from lead capture to close, enriched data collection (B2B & B2C), and Gen-Z focus.",
+      "go_to_market_strategy": "Eternity's go-to-market strategy includes partnerships with UK wedding directories. They've already secured 3 partnerships. They plan to expand UK nationwide in 2025, then into wider events (corporates & special occasions), and internationally to English-speaking countries (Australia, UAE, South Africa, India & US) through partnerships by 2026-2027. They're also launching payment processing as a second revenue channel in June 2025 and planning to introduce a B2B CRM mobile app."
+    },
+    "error_message": null
+  },
+  "founder_profiles": [
+    {
+      "name": "Anshika Arora",
+      "linkedin_url": "https://www.linkedin.com/in/anshika-arora-ab5021137/",
+      "role_in_company": "Founder",
+      "background_summary": "Anshika Arora is the founder of Eternity, a B2B SaaS CRM aimed at modernizing the wedding industry by providing management, communication, and payment tools for solopreneurs and SMEs. Her founder journey was sparked by a personal experience during the pandemic, giving her a clear and authentic mission. Prior to founding Eternity, she had a brief role as a Relationship Manager at HSBC after graduating with a Business Management degree from the University of Birmingham. Anshika is actively building significant credibility and influence within her niche, recently appointed as a Gen-Z and emerging trends advisor to the UK Wedding Association. Her content on LinkedIn is strategic and focused, clearly articulating the problem Eternity solves and positioning it alongside successful vertical SaaS platforms. She is building a personal brand as a key voice for the future of the wedding industry, particularly in the multicultural and Gen-Z segments.",
+      "previous_companies": [
+        {
+          "company_name": "Eternity",
+          "role": "Founder",
+          "duration": "3 yrs 3 mos",
+          "description": "Founded Eternity, a B2B SaaS CRM for the wedding industry, providing management, communication, and payment tools for solopreneurs and SMEs.",
+          "was_founder": true
+        },
+        {
+          "company_name": "HSBC",
+          "role": "Relationship Manager",
+          "duration": null,
+          "description": "Brief role as Relationship Manager prior to founding Eternity.",
+          "was_founder": false
+        }
+      ],
+      "education": [
+        {
+          "institution": "University of Birmingham",
+          "degree": "Business Management",
+          "field_of_study": null,
+          "graduation_year": null,
+          "notable_achievements": null
+        }
+      ],
+      "key_skills_and_expertise": null,
+      "public_speaking_or_content": null,
+      "investment_criteria_assessment": {
+        "focus_industry_fit": true,
+        "mission_alignment": true,
+        "exciting_solution_to_problem": true,
+        "founded_something_relevant_before": false,
+        "impressive_relevant_past_experience": false,
+        "exceptionally_smart_or_strategic": true,
+        "assessment_summary": "Anshika Arora is a first-time founder with a strong personal mission and strategic positioning in the wedding industry SaaS space. She has not previously founded a relevant company before Eternity, but demonstrates thought leadership, industry recognition, and a clear understanding of her market. Her background includes a business degree and a brief stint at HSBC, but her main strength is her current founder journey and emerging influence in her sector."
+      }
+    }
+  ],
+  "company_profile": {
+    "company_name": "Eternity",
+    "website": null,
+    "linkedin_url": null,
+    "description": null,
+    "industry": null,
+    "sub_industry": null,
+    "founded_year": null,
+    "funding_stage": null,
+    "total_funding_raised": null,
+    "funding_rounds_details": null,
+    "key_products_services": null,
+    "business_model": null,
+    "target_customer": null,
+    "key_metrics": null,
+    "team_size": null,
+    "location_hq": null,
+    "other_locations": null,
+    "mission_statement": null
+  },
+  "market_analysis": {
+    "jurisdiction": "UK",
+    "industry_overview": "The CRM (Customer Relationship Management) software market comprises platforms and tools that help organizations manage, analyze, and improve their interactions with customers. CRM software centralizes customer data, streamlines sales, marketing, and customer service processes, and provides analytics to enhance customer satisfaction and drive business growth. The market includes cloud-based and on-premise solutions, with increasing adoption across industries such as retail, finance, healthcare, and professional services.",
+    "target_market_segment": "UK-based businesses of all sizes (SMEs to large enterprises) across sectors such as retail, financial services, healthcare, professional services, and technology, seeking to improve customer engagement, sales processes, and data-driven decision-making.",
+    "market_size_tam": "Estimated at approximately \u00a32.5 billion in 2024 for the UK CRM software market, based on proportional estimates from global CRM market data.",
+    "market_size_sam": "Approximately \u00a31.2 billion, representing UK businesses actively seeking CRM solutions with modern features (cloud, AI, integration).",
+    "market_size_som": "\u00a360-120 million, representing a realistic obtainable share for a new entrant within the first 2-3 years, assuming 5-10% of the SAM.",
+    "market_growth_rate_cagr": "11-13% CAGR (2024-2028), in line with global CRM market growth rates and UK digital transformation trends.",
+    "key_market_trends": [
+      "Rapid adoption of cloud-based CRM solutions over on-premise systems.",
+      "Integration of AI and automation for predictive analytics, customer insights, and workflow automation.",
+      "Increased demand for industry-specific CRM solutions (e.g., healthcare, finance).",
+      "Focus on data privacy and compliance with UK/EU regulations (GDPR).",
+      "Mobile CRM and remote work driving demand for accessible, user-friendly platforms."
+    ],
+    "competitor_landscape_summary": "The UK CRM software market is highly competitive, with global leaders (Salesforce, Microsoft, HubSpot) and strong local players (Sage, Zoho). Competition is based on product features, integration capabilities, pricing, and customer support. Market share is concentrated among a few large vendors, but there is room for niche and vertical-specific solutions.",
+    "competitors": [
+      {
+        "name": "Salesforce",
+        "website": 
